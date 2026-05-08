@@ -48,7 +48,7 @@ plugin = [
     "mcp>=1.0",
 ]
 dev = [
-    "pytest>=8.0",
+    "pytest>=9.0.3",
     "pytest-cov>=4.1",
     "ruff>=0.5.0",
     "mcp>=1.0",
