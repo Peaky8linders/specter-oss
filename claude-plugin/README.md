@@ -109,6 +109,16 @@ which is pulled in by the `[plugin]` extra:
 pip install 'specter[plugin]>=0.1.2'
 ```
 
+## Beyond the plugin: the Suits-themed comic SPA
+
+`specter` v0.1.4 adds a five-voice agent overlay (Harvey / Mike /
+Rachel / Louis / Jessica) and a pop-art comic-book SPA that runs as a
+local FastAPI app. The Claude Code plugin is unaffected — slash
+commands and MCP tools work the same. The agent layer is an *extra*
+surface: install with `pip install -e '.[api]'` and run
+`uvicorn specter.api.dev_app:app --reload`. See the [root README](../README.md#3-comic-book-spa--suits-themed-agent-overlay)
+for character roster and screenshots.
+
 ## License
 
 MIT (matching the `specter` package). See [LICENSE](../LICENSE) at

@@ -1,0 +1,596 @@
+"""Deterministic case-orchestrator for the Suits-themed overlay.
+
+A single :meth:`CaseOrchestrator.work` call produces a five-turn
+dialogue (Rachel → Mike → Louis → Rachel → Jessica) that the FastAPI
+route can return as JSON and the comic-book front-end can paint as a
+panelled page.
+
+Why deterministic?
+^^^^^^^^^^^^^^^^^^
+The whole point of this overlay is *interpretability* — a regulator or
+a developer reading the page can re-derive every panel from the
+question + the role + the catalog. The orchestrator is therefore a
+pure function of:
+
+* the catalogs in :mod:`specter.data` (articles, roles, taxonomy)
+* the question's keywords (mapped via :data:`_KEYWORD_HINTS`)
+* the optional :class:`MikeMemory` (replays prior cases when keys
+  match) and :class:`MikeOSSBridge` (enriches Mike's recall with
+  document text from a local mike-oss instance)
+
+Rule tables drive the personality so behaviour stays pinnable. The
+voice templates in :mod:`specter.agents.personas` describe the tone an
+LLM would imitate if a future mode swapped the rule pipeline for a
+language-model continuation; the rule pipeline imitates the same tone
+in <120 chars per turn so the comic panels stay readable.
+
+Hallucination guard
+^^^^^^^^^^^^^^^^^^^
+Every citation that ends up on a :class:`Turn` or in
+``CaseDialogue.references`` is validated through
+:func:`specter.qa.models.reference_from_article_ref` — a hallucinated
+``Art. 999`` returns ``None`` and is dropped silently before the panel
+is painted. Mike is allowed to *try* hallucinated refs internally so
+Louis has something to object to, but they never reach the wire.
+"""
+
+from __future__ import annotations
+
+import re
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+from specter.agents.memory import MikeMemory
+from specter.agents.mike_bridge import MikeOSSBridge
+from specter.agents.personas import PERSONAS, Voice
+from specter.data.articles_existence import ARTICLE_EXISTENCE
+from specter.data.roles import articles_for_role
+from specter.qa.models import question_hash, reference_from_article_ref
+
+# ─── Wire shape ───────────────────────────────────────────────────────────
+#
+# The four Pydantic models below are the contract the FastAPI route +
+# the front-end consume. Field-level docs are intentionally short — the
+# UI side reads the field name and treats every model as data.
+
+
+class Citation(BaseModel):
+    """One regulator-grounded citation attached to a turn.
+
+    ``article_ref`` is the publication form (``Article 13.1.a`` /
+    ``Annex IV.2``) — already validated by
+    :func:`reference_from_article_ref`. ``snippet`` is an optional
+    in-character one-liner that the front-end can render under the
+    bubble; we keep it short so it doesn't overflow a comic panel.
+    """
+
+    article_ref: str
+    snippet: str | None = None
+
+
+class Turn(BaseModel):
+    """One persona-attributable panel in the dialogue.
+
+    ``panel_kind`` drives the visual treatment in the front-end:
+    narration ↔ Rachel's caption box, speech ↔ standard bubble,
+    thought ↔ cloud-shaped bubble, shout ↔ jagged-edged bubble (Louis's
+    objection). The orchestrator picks the kind from each persona's
+    state machine — see ``CaseOrchestrator._build_*_turn``.
+    """
+
+    speaker: Voice
+    name: str
+    claim: str
+    citations: list[Citation] = Field(default_factory=list)
+    confidence: float = 0.0
+    flags: list[str] = Field(default_factory=list)
+    panel_kind: Literal["narration", "speech", "thought", "shout"] = "speech"
+
+
+class CaseFile(BaseModel):
+    """Inbound contract — what the front-end POSTs to ``/v1/case``.
+
+    ``role`` is the (optional) operator-role string from
+    :mod:`specter.data.roles` — when supplied, Mike pulls the role's
+    obligations directly from :func:`articles_for_role`.
+
+    ``enable_louis_objection`` lets the test suite mute Louis's
+    adversarial pass without removing his panel entirely; he still
+    appears in the dialogue (so the panel count stays stable) but with
+    a deflated "...nothing to add" line.
+    """
+
+    question: str
+    role: str | None = None
+    enable_louis_objection: bool = True
+
+
+class CaseDialogue(BaseModel):
+    """Outbound contract — the painted dialogue returned to the front-end.
+
+    ``case_id`` is a short slug derived from ``question_hash`` so the
+    same question replays under the same id (and Mike's memory keys it
+    consistently across runs).
+    """
+
+    case_id: str
+    question: str
+    role: str | None = None
+    turns: list[Turn]
+    verdict: str
+    references: list[str]
+    confidence: float
+    conflicts: list[str]
+
+
+# ─── Keyword → article hints ──────────────────────────────────────────────
+#
+# A small hand-curated map from words a user is likely to put in their
+# question to the EU AI Act articles those words tend to gate. We keep
+# this explicit (rather than embedding-based or LLM-driven) so the
+# rule pipeline stays pinnable: the test suite asserts that a question
+# with "transparency" produces an Art. 13 citation, etc.
+#
+# Refs use the internal ``Art. N(...)`` form; they're filtered through
+# ``reference_from_article_ref`` before reaching any Turn or Dialogue.
+
+
+_KEYWORD_HINTS: dict[str, tuple[str, ...]] = {
+    "transparency": ("Art. 13", "Art. 50"),
+    "transparent": ("Art. 13", "Art. 50"),
+    "risk": ("Art. 9",),
+    "data governance": ("Art. 10",),
+    "data": ("Art. 10",),
+    "human oversight": ("Art. 14",),
+    "oversight": ("Art. 14",),
+    "accuracy": ("Art. 15",),
+    "robustness": ("Art. 15",),
+    "cybersecurity": ("Art. 15",),
+    "high-risk": ("Art. 6", "Art. 9", "Art. 13", "Art. 14", "Art. 15"),
+    "high risk": ("Art. 6", "Art. 9", "Art. 13", "Art. 14", "Art. 15"),
+    "general-purpose": ("Art. 51", "Art. 53"),
+    "general purpose": ("Art. 51", "Art. 53"),
+    "gpai": ("Art. 51", "Art. 53"),
+    "biometric": ("Art. 5", "Art. 26"),
+    "transparency obligations": ("Art. 13", "Art. 50"),
+    "documentation": ("Art. 11", "Annex IV"),
+    "logging": ("Art. 12",),
+    "incident": ("Art. 73",),
+    "post-market": ("Art. 72",),
+    "fundamental rights": ("Art. 27",),
+    "deployer": ("Art. 26", "Art. 27", "Art. 29"),
+    "provider": ("Art. 16",),
+    "importer": ("Art. 23",),
+    "distributor": ("Art. 24",),
+}
+
+
+# Boundary regex used for keyword hints — splits on whitespace +
+# punctuation but keeps hyphenated compounds intact (so "high-risk"
+# matches as a single token against the hint table).
+_TOKEN_RE = re.compile(r"[A-Za-z][A-Za-z0-9\-]*")
+
+
+# ─── Orchestrator ─────────────────────────────────────────────────────────
+
+
+class CaseOrchestrator:
+    """The deterministic five-turn pipeline.
+
+    Stateless across requests — instance state is only the optional
+    memory + bridge dependencies. Call :meth:`work` with a
+    :class:`CaseFile`; you get back a fully-populated
+    :class:`CaseDialogue`.
+    """
+
+    def __init__(
+        self,
+        *,
+        memory: MikeMemory | None = None,
+        bridge: MikeOSSBridge | None = None,
+    ) -> None:
+        self._memory = memory
+        self._bridge = bridge
+
+    # ── Public API ────────────────────────────────────────────────────────
+
+    def work(self, case: CaseFile) -> CaseDialogue:
+        case_id = question_hash(case.question)[:10]
+        case_key = f"case:{case_id}"
+
+        prior = self._memory.recall(case_key) if self._memory is not None else []
+
+        # Mike's internal recall pass — produces both validated and
+        # potentially-hallucinated candidate refs. The hallucinated set
+        # never leaks past Louis's pass; he uses it as ammunition.
+        valid_refs, dropped_refs, bridge_snippets = self._mike_recall(
+            question=case.question,
+            role=case.role,
+        )
+
+        rachel_open = self._build_rachel_opening_turn(case)
+        mike = self._build_mike_turn(
+            question=case.question,
+            valid_refs=valid_refs,
+            bridge_snippets=bridge_snippets,
+            had_prior_memory=bool(prior),
+        )
+        louis = self._build_louis_turn(
+            mike_turn=mike,
+            dropped_refs=dropped_refs,
+            enable_objection=case.enable_louis_objection,
+        )
+        rachel_mediate = self._build_rachel_mediation_turn(mike, louis)
+        jessica, conflicts = self._build_jessica_turn(mike, louis)
+
+        turns = [rachel_open, mike, louis, rachel_mediate, jessica]
+
+        references = self._aggregate_references(turns)
+
+        # Persist the case so a re-run of the identical question sees
+        # ``prior`` non-empty next time and Mike can flag "I remember
+        # this one." The fact string is human-readable on disk.
+        if self._memory is not None:
+            fact = f"q={case.question} | verdict={jessica.claim} | refs={' | '.join(references)}"
+            self._memory.remember(case_key, fact)
+
+        return CaseDialogue(
+            case_id=case_id,
+            question=case.question,
+            role=case.role,
+            turns=turns,
+            verdict=jessica.claim,
+            references=references,
+            confidence=jessica.confidence,
+            conflicts=conflicts,
+        )
+
+    # ── Mike's recall pass ────────────────────────────────────────────────
+
+    def _mike_recall(
+        self,
+        *,
+        question: str,
+        role: str | None,
+    ) -> tuple[list[str], list[str], list[str]]:
+        """Build Mike's candidate article list.
+
+        Returns three lists:
+
+        * ``valid_refs`` — internal ``Art. N(...)`` strings that
+          survive ``ARTICLE_EXISTENCE`` validation. These are what
+          Mike actually cites.
+        * ``dropped_refs`` — internal refs that *failed* validation
+          (hallucinations / stale guesses). Louis uses these as
+          objection ammo; they never reach the wire.
+        * ``bridge_snippets`` — text blobs from a connected mike-oss
+          instance, if any. Currently surfaced only as a confidence
+          boost; future versions may render them as panel snippets.
+        """
+        candidates: list[str] = []
+
+        # Role-driven candidates — top-priority because they're the
+        # legally authoritative answer to "what do I owe as <role>?".
+        # Cap at 5 so Mike's panel stays readable.
+        if role:
+            for ref in articles_for_role(role)[:5]:
+                if ref not in candidates:
+                    candidates.append(ref)
+
+        # Keyword-driven candidates — grounded in the question's
+        # vocabulary. A phrase like "data governance" wins over the
+        # single-word "data" because the multi-word table entries are
+        # checked first.
+        q_lower = question.lower()
+        for phrase, refs in _KEYWORD_HINTS.items():
+            if " " in phrase or "-" in phrase:
+                if phrase in q_lower:
+                    for ref in refs:
+                        if ref not in candidates:
+                            candidates.append(ref)
+        # Single-word tokens — only added if the phrase pass missed
+        # them so we don't double-cite Art. 13 because "transparency"
+        # appeared twice.
+        tokens = {tok.lower() for tok in _TOKEN_RE.findall(question)}
+        for token in tokens:
+            for ref in _KEYWORD_HINTS.get(token, ()):
+                if ref not in candidates:
+                    candidates.append(ref)
+
+        # Validate every candidate through reference_from_article_ref.
+        # We split into valid + dropped — Louis needs the dropped list
+        # to know whether to object.
+        valid_refs: list[str] = []
+        dropped_refs: list[str] = []
+        for ref in candidates:
+            if reference_from_article_ref(ref) is not None:
+                valid_refs.append(ref)
+            else:
+                dropped_refs.append(ref)
+
+        # Optional bridge enrichment — never required, never blocks.
+        bridge_snippets: list[str] = []
+        if self._bridge is not None:
+            try:
+                if self._bridge.is_available():
+                    bridge_snippets = self._bridge.search(question)
+            except Exception:  # noqa: BLE001 — bridge is best-effort
+                bridge_snippets = []
+
+        return valid_refs, dropped_refs, bridge_snippets
+
+    # ── Turn builders ─────────────────────────────────────────────────────
+
+    def _build_rachel_opening_turn(self, case: CaseFile) -> Turn:
+        # Rachel frames the question in one line. ``narration`` panels
+        # render as caption boxes in the comic-book UI — she's setting
+        # the scene, not joining the conversation yet.
+        if case.role:
+            claim = f"New case. Role: {case.role}. Mike — pull every article that touches this. Cite them."
+        else:
+            claim = "New case. No role given. Mike — give me the catalog hits. Cite them."
+        # Hard 120-char cap: trim defensively so a stray future edit
+        # doesn't break the comic panel layout.
+        return Turn(
+            speaker=Voice.RACHEL,
+            name=PERSONAS[Voice.RACHEL].name,
+            claim=_clip(claim),
+            panel_kind="narration",
+            confidence=1.0,
+        )
+
+    def _build_mike_turn(
+        self,
+        *,
+        question: str,
+        valid_refs: list[str],
+        bridge_snippets: list[str],
+        had_prior_memory: bool,
+    ) -> Turn:
+        citations = [
+            Citation(article_ref=formatted)
+            for formatted in (
+                reference_from_article_ref(r) for r in valid_refs
+            )
+            if formatted is not None
+        ]
+
+        # Confidence ladder per the brief — the front-end paints
+        # Mike's bubble darker as confidence climbs.
+        if len(citations) >= 3:
+            confidence = 0.85
+        elif len(citations) >= 1:
+            confidence = 0.6
+        else:
+            confidence = 0.2
+
+        flags: list[str] = []
+        if bridge_snippets:
+            flags.append("mike_oss_hit")
+
+        # Voice. Citation-first. Punchy. The "I remember this case"
+        # line only fires when memory has at least one fact under the
+        # case key — it's the whole point of the persistent memory.
+        if not citations:
+            claim = "Nothing on file. No article fits cleanly."
+        else:
+            head_refs = ", ".join(_short_ref(c.article_ref) for c in citations[:2])
+            if had_prior_memory:
+                claim = f"I remember this case. {head_refs} cover it. Filed."
+            else:
+                claim = f"Got it. {head_refs} cover this. Filed it."
+
+        return Turn(
+            speaker=Voice.MIKE,
+            name=PERSONAS[Voice.MIKE].name,
+            claim=_clip(claim),
+            citations=citations,
+            confidence=confidence,
+            flags=flags,
+            panel_kind="speech",
+        )
+
+    def _build_louis_turn(
+        self,
+        *,
+        mike_turn: Turn,
+        dropped_refs: list[str],
+        enable_objection: bool,
+    ) -> Turn:
+        # When the test suite mutes Louis we still emit a panel —
+        # otherwise the front-end's five-panel grid cracks. He just
+        # delivers a deflated line.
+        if not enable_objection:
+            return Turn(
+                speaker=Voice.LOUIS,
+                name=PERSONAS[Voice.LOUIS].name,
+                claim="...nothing to add.",
+                confidence=0.0,
+                flags=[],
+                panel_kind="thought",
+            )
+
+        # Real objection: zero valid citations, OR any candidate ref
+        # was filtered out as a hallucination. Both cases mean Mike's
+        # output is shaky; Louis exists to scream about that.
+        if not mike_turn.citations:
+            return Turn(
+                speaker=Voice.LOUIS,
+                name=PERSONAS[Voice.LOUIS].name,
+                claim="OBJECTION! Ross cited NOTHING. This isn't a case, it's a vibe.",
+                confidence=0.9,
+                flags=["objection", "no_citations"],
+                panel_kind="shout",
+            )
+        if dropped_refs:
+            bad = dropped_refs[0]
+            return Turn(
+                speaker=Voice.LOUIS,
+                name=PERSONAS[Voice.LOUIS].name,
+                claim=f"OBJECTION! He cited {bad}. That article does not exist.",
+                confidence=0.9,
+                flags=["objection", "hallucinated_ref"],
+                panel_kind="shout",
+            )
+
+        # Mike's solid — Louis concedes with a sneer. Low energy panel.
+        return Turn(
+            speaker=Voice.LOUIS,
+            name=PERSONAS[Voice.LOUIS].name,
+            claim="Fine, Ross. Citations check out. This time.",
+            confidence=0.3,
+            flags=[],
+            panel_kind="speech",
+        )
+
+    def _build_rachel_mediation_turn(self, mike: Turn, louis: Turn) -> Turn:
+        # One-line summary of the exchange. Thought-cloud panel —
+        # Rachel internalising the disagreement before Jessica rules.
+        if "objection" in louis.flags:
+            claim = "Louis isn't wrong. We need to tighten Mike's cite list before we ship."
+        elif mike.citations:
+            claim = f"He's right. {_short_ref(mike.citations[0].article_ref)} is the hook here."
+        else:
+            claim = "Both panels are thin. Boss needs to call this one."
+        return Turn(
+            speaker=Voice.RACHEL,
+            name=PERSONAS[Voice.RACHEL].name,
+            claim=_clip(claim),
+            confidence=0.7,
+            panel_kind="thought",
+        )
+
+    def _build_jessica_turn(
+        self,
+        mike: Turn,
+        louis: Turn,
+    ) -> tuple[Turn, list[str]]:
+        conflicts: list[str] = []
+        objection_active = "objection" in louis.flags
+        if objection_active:
+            reason = "no_citations" if "no_citations" in louis.flags else "hallucinated_ref"
+            conflicts.append(f"Louis objected to: {reason}")
+
+        if mike.citations and not objection_active:
+            head = _short_ref(mike.citations[0].article_ref)
+            verdict = f"Ruling: comply with {head}. Document it. Move on."
+            confidence = max(0.6, mike.confidence)
+        elif mike.citations and objection_active:
+            # Mike found something but Louis flagged a hallucination —
+            # we keep the verdict cautious and push the confidence
+            # down so the front-end's confidence bar stays honest.
+            head = _short_ref(mike.citations[0].article_ref)
+            verdict = f"Ruling: tentative — {head} only. Re-check before filing."
+            confidence = 0.4
+            conflicts.append("Verdict held back pending re-check")
+        else:
+            verdict = "Ruling: refusal. No grounded article matches this question."
+            confidence = 0.0
+            conflicts.append("Closed-world refusal — no matching article")
+
+        return (
+            Turn(
+                speaker=Voice.JESSICA,
+                name=PERSONAS[Voice.JESSICA].name,
+                claim=_clip(verdict),
+                confidence=confidence,
+                panel_kind="speech",
+            ),
+            conflicts,
+        )
+
+    # ── Aggregation ───────────────────────────────────────────────────────
+
+    def _aggregate_references(self, turns: list[Turn]) -> list[str]:
+        # Dedupe-while-preserving-priority: Article refs first (sorted
+        # by integer article number then sub-paragraph), Annex refs
+        # after. Every ref has already been validated by
+        # ``reference_from_article_ref`` at Citation construction time,
+        # but we re-run it defensively to make sure no test monkey-
+        # patch bypassed the gate.
+        seen: set[str] = set()
+        articles: list[str] = []
+        annexes: list[str] = []
+        for turn in turns:
+            for cite in turn.citations:
+                ref = cite.article_ref
+                if ref in seen:
+                    continue
+                # Defensive re-validation: ``ref`` is in publication
+                # form, so we map it back through the existence
+                # catalog. Any Art. N where N < 114 stays; Article 999
+                # would never have made it past Citation construction.
+                if not _is_published_ref_valid(ref):
+                    continue
+                seen.add(ref)
+                if ref.startswith("Article "):
+                    articles.append(ref)
+                elif ref.startswith("Annex "):
+                    annexes.append(ref)
+        articles.sort(key=_article_sort_key)
+        annexes.sort()
+        return articles + annexes
+
+
+# ─── Helpers ──────────────────────────────────────────────────────────────
+
+
+_CLIP_LEN = 120
+
+
+def _clip(text: str) -> str:
+    """Hard 120-char trim with an ellipsis — comic panels are small."""
+    if len(text) <= _CLIP_LEN:
+        return text
+    return text[: _CLIP_LEN - 1].rstrip() + "…"
+
+
+def _short_ref(published_ref: str) -> str:
+    """Compact form for use inside a claim string.
+
+    ``Article 13.1.a`` → ``Art. 13(1)(a)`` so Mike's voice keeps the
+    legal-pad style without us re-implementing the formatter.
+    """
+    if published_ref.startswith("Article "):
+        rest = published_ref[len("Article ") :]
+        parts = rest.split(".")
+        head = parts[0]
+        sub = "".join(f"({p})" for p in parts[1:])
+        return f"Art. {head}{sub}"
+    if published_ref.startswith("Annex "):
+        rest = published_ref[len("Annex ") :]
+        parts = rest.split(".")
+        head = parts[0]
+        sub = "".join(f"({p})" for p in parts[1:])
+        return f"Annex {head}{sub}"
+    return published_ref
+
+
+_PUB_ART_RE = re.compile(r"^Article\s+(\d+)(?:\.([\w.]+))?$")
+_PUB_ANNEX_RE = re.compile(r"^Annex\s+([IVXLC]+)(?:\.([\w.]+))?$")
+
+
+def _is_published_ref_valid(ref: str) -> bool:
+    """Re-validate a publication-form ref against ARTICLE_EXISTENCE.
+
+    Defensive guard for the dialogue's aggregated ``references`` list:
+    if anything has injected a Citation past the constructor (a test
+    monkey-patch, a future code path that builds Citations manually),
+    we still drop it before it reaches the wire.
+    """
+    art_m = _PUB_ART_RE.match(ref)
+    if art_m:
+        return f"Art. {art_m.group(1)}" in ARTICLE_EXISTENCE
+    annex_m = _PUB_ANNEX_RE.match(ref)
+    if annex_m:
+        return f"Annex {annex_m.group(1).upper()}" in ARTICLE_EXISTENCE
+    return False
+
+
+def _article_sort_key(ref: str) -> tuple[int, str]:
+    """Sort articles by numeric article number, then sub-paragraph string."""
+    m = _PUB_ART_RE.match(ref)
+    if not m:
+        return (10_000, ref)
+    return (int(m.group(1)), m.group(2) or "")

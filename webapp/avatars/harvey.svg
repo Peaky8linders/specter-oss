@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 240 240"
+     role="img"
+     aria-label="Harvey Specter — senior partner, the closer">
+  <title>Harvey Specter — senior partner</title>
+  <desc>Pop-art portrait: confident man in a navy three-piece suit, arms crossed, against a saturated ray-burst background with halftone dots. Stylistic interpretation, not a likeness.</desc>
+
+  <!-- ───── Defs: palette, halftone pattern, ray-burst symbol ───── -->
+  <defs>
+    <style>
+      .ink   { fill: none; stroke: #0E0F12; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+      .ink-2 { fill: none; stroke: #0E0F12; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+      .ink-thick { fill: none; stroke: #0E0F12; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+      .skin  { fill: #F2C9A6; }
+      .skin-shade { fill: #D49B72; }
+      .hair  { fill: #1A120A; }
+      .hair-hi { fill: #3A2A1A; }
+      .suit  { fill: #1B2D4A; }
+      .suit-shade { fill: #0E1A30; }
+      .vest  { fill: #14253E; }
+      .shirt { fill: #FBFAF4; }
+      .tie   { fill: #A03A2C; }
+      .tie-stripe { fill: #F2C531; }
+      .blush { fill: #E8341E; opacity: 0.5; }
+    </style>
+
+    <pattern id="hx-halftone" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.1" fill="#0E0F12" opacity="0.85"/>
+    </pattern>
+
+    <radialGradient id="hx-glow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%"  stop-color="#FFF6C7"/>
+      <stop offset="55%" stop-color="#F2C531"/>
+      <stop offset="100%" stop-color="#F08C2A"/>
+    </radialGradient>
+
+    <clipPath id="hx-circle">
+      <circle cx="120" cy="120" r="116"/>
+    </clipPath>
+  </defs>
+
+  <!-- ───── Backdrop disc + ray-burst (7 wedges) ───── -->
+  <g clip-path="url(#hx-circle)">
+    <rect x="0" y="0" width="240" height="240" fill="#FBE9C5"/>
+
+    <!-- ray-burst wedges radiating from (120,120) -->
+    <g transform="translate(120 120)">
+      <polygon points="0,0 -260,-90 -260,-30"  fill="#E8341E"/>
+      <polygon points="0,0 -260,-30 -260,30"   fill="#F08C2A"/>
+      <polygon points="0,0 -260,30  -260,90"   fill="#F2C531"/>
+      <polygon points="0,0 -260,90  -90,260"   fill="#D33682"/>
+      <polygon points="0,0  90,260  260,90"    fill="#A03A2C"/>
+      <polygon points="0,0  260,90  260,30"    fill="#F08C2A"/>
+      <polygon points="0,0  260,30  260,-30"   fill="#F2C531"/>
+      <polygon points="0,0  260,-30 260,-90"   fill="#E8341E"/>
+      <polygon points="0,0  260,-90 90,-260"   fill="#D33682"/>
+      <polygon points="0,0  90,-260 -90,-260"  fill="#22A4D4"/>
+      <polygon points="0,0 -90,-260 -260,-90"  fill="#A03A2C"/>
+    </g>
+
+    <!-- inner glow disc behind figure -->
+    <circle cx="120" cy="118" r="84" fill="url(#hx-glow)"/>
+
+    <!-- halftone over the burst, masked to the disc -->
+    <rect x="0" y="0" width="240" height="240" fill="url(#hx-halftone)" opacity="0.18"/>
+
+    <!-- city silhouette strip behind shoulders -->
+    <g fill="#0E0F12" opacity="0.88">
+      <rect x="14"  y="170" width="22" height="42"/>
+      <rect x="40"  y="158" width="14" height="54"/>
+      <rect x="58"  y="178" width="20" height="34"/>
+      <rect x="82"  y="150" width="12" height="62"/>
+      <rect x="98"  y="172" width="16" height="40"/>
+      <rect x="148" y="166" width="14" height="46"/>
+      <rect x="166" y="148" width="22" height="64"/>
+      <rect x="192" y="172" width="14" height="40"/>
+      <rect x="210" y="160" width="16" height="52"/>
+    </g>
+  </g>
+
+  <!-- bold disc border -->
+  <circle cx="120" cy="120" r="116" fill="none" stroke="#0E0F12" stroke-width="6"/>
+
+  <!-- ───── Figure: Harvey, chest-up, arms crossed ───── -->
+  <g>
+    <!-- shoulders / suit jacket base -->
+    <path class="suit" d="
+      M 30 240
+      L 30 196
+      C 36 174, 60 162, 78 158
+      L 100 152
+      L 140 152
+      L 162 158
+      C 180 162, 204 174, 210 196
+      L 210 240 Z"/>
+    <path class="suit-shade" d="
+      M 30 240
+      L 30 196
+      C 36 174, 56 164, 70 162
+      L 70 240 Z"/>
+
+    <!-- lapels (V) -->
+    <path class="suit-shade" d="M 90 158 L 120 200 L 100 168 Z"/>
+    <path class="suit-shade" d="M 150 158 L 120 200 L 140 168 Z"/>
+    <path class="ink-thick" d="M 92 156 L 120 198"/>
+    <path class="ink-thick" d="M 148 156 L 120 198"/>
+    <path class="ink-2" d="M 92 156 L 78 168"/>
+    <path class="ink-2" d="M 148 156 L 162 168"/>
+
+    <!-- shirt collar V -->
+    <path class="shirt" d="M 108 156 L 120 184 L 132 156 Z"/>
+    <path class="ink-2" d="M 108 156 L 120 184 L 132 156"/>
+
+    <!-- tie -->
+    <path class="tie" d="
+      M 114 168
+      L 126 168
+      L 130 184
+      L 124 240
+      L 116 240
+      L 110 184 Z"/>
+    <path class="tie-stripe" d="M 114 178 L 126 178 L 128 186 L 112 186 Z"/>
+    <path class="tie-stripe" d="M 113 200 L 127 200 L 124 210 L 116 210 Z"/>
+    <path class="tie-stripe" d="M 116 222 L 124 222 L 122 232 L 118 232 Z"/>
+    <path class="ink-2" d="M 114 168 L 126 168 L 130 184 L 124 240"/>
+    <path class="ink-2" d="M 114 168 L 110 184 L 116 240"/>
+
+    <!-- arms crossed: left arm over right (figure's left = viewer's right) -->
+    <!-- right arm (sleeve, viewer left) -->
+    <path class="suit" d="
+      M 50 200
+      C 60 188, 80 182, 102 188
+      L 142 206
+      C 148 210, 152 218, 148 224
+      L 70 232
+      C 56 232, 46 220, 50 200 Z"/>
+    <path class="suit-shade" d="M 50 210 C 58 222, 70 228, 82 230 L 70 232 C 56 232, 46 220, 50 210 Z"/>
+
+    <!-- left arm (sleeve, viewer right) crossing on top -->
+    <path class="suit" d="
+      M 192 198
+      C 184 186, 162 182, 140 192
+      L 100 210
+      C 92 214, 90 224, 96 228
+      L 174 234
+      C 188 232, 198 218, 192 198 Z"/>
+    <path class="suit-shade" d="M 192 210 C 184 222, 170 230, 156 232 L 174 234 C 188 232, 196 220, 192 210 Z"/>
+
+    <!-- cuff lines -->
+    <path class="ink-thick" d="M 96 226 L 78 230"/>
+    <path class="ink-thick" d="M 144 226 L 162 230"/>
+    <path class="shirt" d="M 138 218 L 156 222 L 154 230 L 138 226 Z"/>
+    <path class="ink-2" d="M 138 218 L 156 222 L 154 230 L 138 226 Z"/>
+
+    <!-- hand peeking out (left, on top) -->
+    <path class="skin" d="M 154 222 C 160 218, 168 218, 172 224 C 174 228, 168 232, 162 230 Z"/>
+    <path class="ink-2" d="M 154 222 C 160 218, 168 218, 172 224 C 174 228, 168 232, 162 230 Z"/>
+
+    <!-- watch hint on the upper arm -->
+    <rect x="118" y="208" width="14" height="6" fill="#F2C531" stroke="#0E0F12" stroke-width="1.5"/>
+
+    <!-- pocket square -->
+    <path d="M 76 174 L 88 172 L 84 184 L 78 182 Z" fill="#FBFAF4"/>
+    <path class="ink-2" d="M 76 174 L 88 172 L 84 184 L 78 182 Z"/>
+
+    <!-- jacket button -->
+    <circle cx="120" cy="220" r="2.4" fill="#0E0F12"/>
+
+    <!-- ink line at jacket bottom seam -->
+    <path class="ink-thick" d="M 30 240 C 70 220, 170 220, 210 240"/>
+
+    <!-- ───── Head & face ───── -->
+    <!-- neck -->
+    <path class="skin" d="M 108 138 L 132 138 L 134 158 L 106 158 Z"/>
+    <path class="skin-shade" d="M 108 150 L 132 150 L 132 158 L 108 158 Z"/>
+    <path class="ink-2" d="M 108 138 L 106 158"/>
+    <path class="ink-2" d="M 132 138 L 134 158"/>
+
+    <!-- face shape (square jaw) -->
+    <path class="skin" d="
+      M 86 92
+      C 86 70, 102 56, 120 56
+      C 138 56, 154 70, 154 92
+      L 154 122
+      C 154 138, 140 148, 120 148
+      C 100 148, 86 138, 86 122 Z"/>
+
+    <!-- jaw shadow -->
+    <path class="skin-shade" d="
+      M 90 116
+      C 96 138, 110 146, 120 148
+      C 130 146, 144 138, 150 116
+      L 150 128
+      C 144 142, 130 148, 120 148
+      C 110 148, 96 142, 90 128 Z"/>
+
+    <!-- hair: side-parted, slick, dark -->
+    <path class="hair" d="
+      M 80 86
+      C 78 64, 96 46, 122 44
+      C 148 44, 162 60, 162 86
+      L 162 96
+      C 152 78, 132 70, 116 76
+      C 102 80, 92 90, 90 102
+      L 86 102
+      C 82 96, 80 92, 80 86 Z"/>
+    <path class="hair-hi" d="
+      M 100 70
+      C 116 60, 142 60, 156 76
+      C 142 70, 124 70, 110 78 Z"/>
+    <!-- side-part swoop -->
+    <path class="ink-thick" d="M 102 64 C 122 78, 144 78, 158 72"/>
+    <path class="ink-2" d="M 110 70 C 126 80, 142 80, 152 76"/>
+
+    <!-- ear -->
+    <path class="skin" d="M 84 102 C 80 102, 78 110, 82 116 L 88 114 Z"/>
+    <path class="ink-2" d="M 84 102 C 80 102, 78 110, 82 116"/>
+
+    <!-- eyebrows: confident, level -->
+    <path class="ink-thick" d="M 98 100 L 114 98"/>
+    <path class="ink-thick" d="M 126 98 L 142 100"/>
+
+    <!-- eyes: narrowed, decisive -->
+    <path class="ink" d="M 100 110 L 114 110"/>
+    <path class="ink" d="M 126 110 L 140 110"/>
+    <circle cx="106" cy="111" r="1.4" fill="#0E0F12"/>
+    <circle cx="134" cy="111" r="1.4" fill="#0E0F12"/>
+
+    <!-- nose -->
+    <path class="ink-2" d="M 120 112 L 116 124 L 122 126"/>
+
+    <!-- mouth: faint smirk -->
+    <path class="ink-thick" d="M 110 134 C 118 138, 128 138, 132 132"/>
+
+    <!-- chin shadow / cleft -->
+    <path class="ink-2" d="M 120 138 L 120 144"/>
+
+    <!-- face outline (last so it sits on top) -->
+    <path class="ink-thick" d="
+      M 86 92
+      C 86 70, 102 56, 120 56
+      C 138 56, 154 70, 154 92
+      L 154 122
+      C 154 138, 140 148, 120 148
+      C 100 148, 86 138, 86 122 Z"/>
+    <path class="ink-thick" d="M 80 86 C 78 64, 96 46, 122 44 C 148 44, 162 60, 162 86"/>
+  </g>
+
+  <!-- top-left tiny starburst flourish -->
+  <g transform="translate(36 36)">
+    <path d="M 0 -10 L 3 -3 L 10 0 L 3 3 L 0 10 L -3 3 L -10 0 L -3 -3 Z"
+          fill="#F2C531" stroke="#0E0F12" stroke-width="2"/>
+  </g>
+</svg>
