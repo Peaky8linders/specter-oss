@@ -1,0 +1,2693 @@
+{
+  "target_id": "reference-platform",
+  "target_label": "Reference platform",
+  "apts_version": "0.1.0",
+  "generated_at": "2026-05-07T16:11:59.860626+00:00",
+  "headline_score": 0.735,
+  "headline_tier": null,
+  "counts": {
+    "total": 173,
+    "satisfied": 95,
+    "partial": 52,
+    "gap": 26,
+    "unmapped": 0,
+    "must_total": 144,
+    "must_satisfied": 89
+  },
+  "tier_status": [
+    {
+      "tier": 1,
+      "label": "Tier 1 — Foundation",
+      "achieved": false,
+      "must_total": 72,
+      "must_satisfied": 52,
+      "must_partial": 19,
+      "must_gap": 1,
+      "should_total": 0,
+      "should_satisfied": 0,
+      "should_partial": 0,
+      "should_gap": 0,
+      "coverage_score": 0.8542
+    },
+    {
+      "tier": 2,
+      "label": "Tier 2 — Verified",
+      "achieved": false,
+      "must_total": 141,
+      "must_satisfied": 88,
+      "must_partial": 45,
+      "must_gap": 8,
+      "should_total": 16,
+      "should_satisfied": 5,
+      "should_partial": 4,
+      "should_gap": 7,
+      "coverage_score": 0.7651
+    },
+    {
+      "tier": 3,
+      "label": "Tier 3 — Comprehensive",
+      "achieved": false,
+      "must_total": 144,
+      "must_satisfied": 89,
+      "must_partial": 46,
+      "must_gap": 9,
+      "should_total": 29,
+      "should_satisfied": 6,
+      "should_partial": 6,
+      "should_gap": 17,
+      "coverage_score": 0.735
+    }
+  ],
+  "domain_summaries": [
+    {
+      "domain": "Scope Enforcement",
+      "total": 26,
+      "satisfied": 11,
+      "partial": 10,
+      "gap": 5,
+      "unmapped": 0,
+      "must_satisfied": 10,
+      "must_total": 20,
+      "coverage_score": 0.6522
+    },
+    {
+      "domain": "Safety Controls",
+      "total": 20,
+      "satisfied": 5,
+      "partial": 9,
+      "gap": 6,
+      "unmapped": 0,
+      "must_satisfied": 5,
+      "must_total": 16,
+      "coverage_score": 0.5278
+    },
+    {
+      "domain": "Human Oversight",
+      "total": 19,
+      "satisfied": 9,
+      "partial": 7,
+      "gap": 3,
+      "unmapped": 0,
+      "must_satisfied": 9,
+      "must_total": 17,
+      "coverage_score": 0.6944
+    },
+    {
+      "domain": "Graduated Autonomy",
+      "total": 28,
+      "satisfied": 13,
+      "partial": 8,
+      "gap": 7,
+      "unmapped": 0,
+      "must_satisfied": 11,
+      "must_total": 20,
+      "coverage_score": 0.6562
+    },
+    {
+      "domain": "Auditability",
+      "total": 20,
+      "satisfied": 15,
+      "partial": 3,
+      "gap": 2,
+      "unmapped": 0,
+      "must_satisfied": 15,
+      "must_total": 19,
+      "coverage_score": 0.8462
+    },
+    {
+      "domain": "Manipulation Resistance",
+      "total": 23,
+      "satisfied": 18,
+      "partial": 5,
+      "gap": 0,
+      "unmapped": 0,
+      "must_satisfied": 18,
+      "must_total": 22,
+      "coverage_score": 0.9
+    },
+    {
+      "domain": "Supply Chain Trust",
+      "total": 22,
+      "satisfied": 15,
+      "partial": 6,
+      "gap": 1,
+      "unmapped": 0,
+      "must_satisfied": 14,
+      "must_total": 19,
+      "coverage_score": 0.8415
+    },
+    {
+      "domain": "Reporting",
+      "total": 15,
+      "satisfied": 9,
+      "partial": 4,
+      "gap": 2,
+      "unmapped": 0,
+      "must_satisfied": 7,
+      "must_total": 11,
+      "coverage_score": 0.75
+    }
+  ],
+  "requirement_results": [
+    {
+      "requirement_id": "APTS-SE-001",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Rules of Engagement (RoE) Specification and Validation",
+      "level": "partial",
+      "rationale": "antifragile-ai exposes an attack registry but no formal Rules-of-Engagement artefact yet; campaign-history records intent but the RoE per-engagement file is on the roadmap.",
+      "modules": [
+        "antifragile-ai/src/antifragile/attacks/registry.py",
+        "app/engines/campaign_history.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": [
+        "OWASP APTS-SE-001"
+      ]
+    },
+    {
+      "requirement_id": "APTS-SE-002",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "IP Range Validation and RFC 1918 Awareness",
+      "level": "satisfied",
+      "rationale": "Pre-send DNS re-check and RFC 1918 / metadata-IP rejection close the SSRF TOCTOU window on /security-scan/scan-live (#186, #317).",
+      "modules": [
+        "app/routes/_security_scan_validators.py",
+        "app/routes/security_scan.py"
+      ],
+      "test_anchors": [
+        "TestSecurityScan",
+        "TestSSRFPrevention"
+      ],
+      "article_anchors": [
+        "OWASP ASVS V12.6"
+      ]
+    },
+    {
+      "requirement_id": "APTS-SE-003",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Domain Scope Validation and Wildcard Handling",
+      "level": "satisfied",
+      "rationale": "Domain-scope validation rejects wildcards and out-of-scope hosts via the same SSRF helper before the live executor dispatches.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [
+        "TestSecurityScan"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-004",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Temporal Boundary and Timezone Handling",
+      "level": "partial",
+      "rationale": "Campaign scheduler honours cron windows but doesn't yet enforce a per-engagement timezone-aware temporal boundary; documented gap.",
+      "modules": [
+        "app/engines/campaign_scheduler.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-005",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Asset Criticality Classification and Integration",
+      "level": "gap",
+      "rationale": "No first-class asset criticality classification today — closest analogue is Annex III risk tiering, which is system-level, not asset-level.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-006",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Pre-Action Scope Validation",
+      "level": "satisfied",
+      "rationale": "Every live attack runs through `_security_scan_validators` BEFORE the live executor; pre-action scope check is mandatory.",
+      "modules": [
+        "app/routes/_security_scan_validators.py",
+        "antifragile-ai/src/antifragile/attacks/live_executor.py"
+      ],
+      "test_anchors": [
+        "TestSecurityScan"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-007",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Dynamic Scope Monitoring and Drift Detection",
+      "level": "partial",
+      "rationale": "campaign_scheduler triggers recurring runs but doesn't compare against a baseline scope to detect drift; tracked as a follow-up.",
+      "modules": [
+        "app/engines/campaign_scheduler.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-008",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Temporal Scope Compliance Monitoring",
+      "level": "partial",
+      "rationale": "Engagement timestamps are recorded on every evidence-chain entry; an engagement-window enforcement gate is partial.",
+      "modules": [
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-009",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Hard Deny Lists and Critical Asset Protection",
+      "level": "satisfied",
+      "rationale": "SSRF helpers carry a hard deny list (RFC 1918, link-local, cloud-metadata IPs); critical-asset protection enforced pre-dispatch.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [
+        "TestSecurityScan"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-010",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Production Database Safeguards",
+      "level": "partial",
+      "rationale": "Live executor targets only test endpoints; production-DB safeguards rely on operator scope discipline rather than an automated gate.",
+      "modules": [
+        "antifragile-ai/src/antifragile/attacks/live_executor.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-011",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Multi-Tenant Environment Awareness",
+      "level": "satisfied",
+      "rationale": "Tenant-scoped end-to-end since #178/#180/#323; every engagement, evidence row, and audit-trail read filters by tenant_id.",
+      "modules": [
+        "app/evidence/store.py",
+        "app/dependencies.py",
+        "app/auth_jwt.py"
+      ],
+      "test_anchors": [
+        "TestEvidenceTenantScoping",
+        "TestMultiTenancyIsolation"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-012",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "DNS Rebinding Attack Prevention",
+      "level": "satisfied",
+      "rationale": "DNS-rebinding mitigation: pre-send DNS re-check on /security-scan/scan-live closes the TOCTOU window (#186).",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [
+        "TestSSRFPrevention"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-013",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Network Boundary and Lateral Movement Enforcement",
+      "level": "satisfied",
+      "rationale": "Egress allowlist + RFC1918 deny + cloud-metadata reject enforce a hard network boundary against lateral movement.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-014",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Network Topology Discovery Limitations",
+      "level": "gap",
+      "rationale": "No explicit network-topology-discovery rate limiter beyond the slowapi default; documented gap.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-015",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Scope Enforcement Audit and Compliance Verification",
+      "level": "satisfied",
+      "rationale": "Evidence chain logs every campaign action with hash-chained tamper evidence; scope audits are reproducible offline.",
+      "modules": [
+        "app/evidence/store.py",
+        "app/engines/audit_trail.py"
+      ],
+      "test_anchors": [
+        "TestAuditTrail"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-016",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Scope Refresh and Revalidation Cycle",
+      "level": "partial",
+      "rationale": "Campaign re-runs reload scope from the registry but a formal scope-revalidation cycle is not yet implemented.",
+      "modules": [
+        "app/engines/campaign_scheduler.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-017",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Engagement Boundary Definition for Recurring Tests",
+      "level": "satisfied",
+      "rationale": "campaign_scheduler ships engagement boundaries for recurring tests with persistence in `CampaignSchedule`.",
+      "modules": [
+        "app/engines/campaign_scheduler.py"
+      ],
+      "test_anchors": [
+        "TestCampaignScheduler"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-018",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Cross-Cycle Finding Correlation and Regression Detection",
+      "level": "partial",
+      "rationale": "campaign_history surfaces fragility red flags across runs but cross-cycle regression detection is heuristic.",
+      "modules": [
+        "app/engines/campaign_history.py",
+        "app/engines/_campaign_red_flags.py"
+      ],
+      "test_anchors": [
+        "TestFragilityRedFlags"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-019",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Rate Limiting, Adaptive Backoff, and Production Impact Controls",
+      "level": "satisfied",
+      "rationale": "slowapi rate limiter + DailyQuotaLimiter + adaptive backoff on every state-mutating route.",
+      "modules": [
+        "app/main.py",
+        "app/engines/roadmap_refiner/_phase2a.py"
+      ],
+      "test_anchors": [
+        "TestRateLimiting"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-020",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Deployment-Triggered Testing Governance",
+      "level": "gap",
+      "rationale": "No PR-triggered or deployment-triggered scan governance; closest analogue is the GitHub Connect manual scan path.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-021",
+      "domain": "Scope Enforcement",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Scope Conflict Resolution for Overlapping Engagements",
+      "level": "gap",
+      "rationale": "Scope conflict resolution for overlapping engagements is a Tier-3 SHOULD; not implemented today.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-022",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Client-Side Agent Scope and Safety Boundaries",
+      "level": "partial",
+      "rationale": "Frontend agent surface (Workflow Builder + CC) constrains client-side actions but no formal client-side agent boundary contract.",
+      "modules": [
+        "frontend/src/pages/WorkflowBuilder.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-023",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Credential and Secret Lifecycle Governance",
+      "level": "satisfied",
+      "rationale": "Per-user secrets stored Fernet-encrypted with rotation key support; Argon2id for passwords; sha256 hash for API keys; rotation runbook in `docs/security/rotation-log.md`.",
+      "modules": [
+        "app/integrations/github_connect/crypto.py",
+        "app/auth_jwt.py",
+        "app/integrations/security_hub/auth.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": [
+        "ISO 27002 8.24",
+        "SOC 2 CC6.1"
+      ]
+    },
+    {
+      "requirement_id": "APTS-SE-024",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Cloud-Native and Ephemeral Infrastructure Governance",
+      "level": "partial",
+      "rationale": "Railway-managed cloud hosting + R2 evidence backend; ephemeral-infra governance is partial (no per-pod isolation enforcement gate).",
+      "modules": [
+        "app/evidence/backends/r2_backend.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-025",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "API-First and Business Logic Testing Governance",
+      "level": "partial",
+      "rationale": "Code Scanner's API analyzer + business-logic analyzers cover the static surface; runtime API governance is partial.",
+      "modules": [
+        "app/engines/scanners/security_controls.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SE-026",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Out-of-Distribution Action Monitoring",
+      "level": "gap",
+      "rationale": "Out-of-distribution action monitoring is a Tier-2 SHOULD; not implemented (no behavioural baseline + drift detector for attack actions today).",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-001",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Impact Classification and CIA Scoring",
+      "level": "satisfied",
+      "rationale": "antifragile-ai's attack classifier scores impact across CIA dimensions and writes the verdict to the chain.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/classifier.py",
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-002",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Industry-Specific Impact Considerations",
+      "level": "partial",
+      "rationale": "Annex III sector + KB dimensions encode some industry-specific risk weighting; per-industry impact pre-set is partial.",
+      "modules": [
+        "app/data/kb.py",
+        "app/engines/sector_autopilot.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-003",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Real-World Impact Classification Examples",
+      "level": "gap",
+      "rationale": "Real-world impact classification examples are a Tier-2 SHOULD documentation deliverable; not yet shipped as a curated reference.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-004",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Rate Limiting, Bandwidth, and Payload Constraints",
+      "level": "satisfied",
+      "rationale": "Per-route slowapi limits + bandwidth-bound payload caps (250 MB scan upload, 20 MB evidence ingest, 5 MB per-file).",
+      "modules": [
+        "app/main.py",
+        "app/routes/evidence.py",
+        "app/engines/code_scanner.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-005",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Cascading Failure Prevention in Interconnected Systems",
+      "level": "gap",
+      "rationale": "Cascading-failure prevention in interconnected systems is a Tier-2 SHOULD; partial via DLQ for Stripe but no cross-system circuit breaker.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-006",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Threshold Escalation Workflow (Automated → Approval → Prohibited)",
+      "level": "partial",
+      "rationale": "Three-agent verifier triad (Finder/Adversary/Referee) escalates uncertain verdicts; threshold-driven Automated→Approval→Prohibited transitions are partial.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-007",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Cumulative Risk Scoring with Time-Based Decay",
+      "level": "partial",
+      "rationale": "antifragility score accumulates from stressors but doesn't decay over time; cumulative-risk-with-decay is partial.",
+      "modules": [
+        "app/engines/_campaign_antifragility.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-008",
+      "domain": "Safety Controls",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Threshold Configuration with Schema Validation",
+      "level": "gap",
+      "rationale": "Threshold configuration with formal schema validation is a Tier-3 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-009",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Kill Switch",
+      "level": "partial",
+      "rationale": "TENANT_LOCKS allows per-tenant kill of a refinement run; a global platform kill switch is documented but operator-driven (not API-exposed).",
+      "modules": [
+        "app/engines/roadmap_refiner/_phase2a.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-010",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Health Check Monitoring, Threshold Adjustment, and Automatic Halt",
+      "level": "satisfied",
+      "rationale": "/healthz + /healthz/llm health checks; Railway health probe halts unhealthy boots; alembic 30s timeout + runtime kb_version backstop.",
+      "modules": [
+        "app/main.py"
+      ],
+      "test_anchors": [
+        "TestEnsureKbVersionColumnsRuntimeGuard"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-011",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Condition-Based Automated Termination",
+      "level": "partial",
+      "rationale": "Roadmap refiner has condition-based early-stop (no_improvement >= 5); broader condition-based termination across other engines is partial.",
+      "modules": [
+        "app/engines/roadmap_refiner/engine.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-012",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Network-Level Circuit Breaker",
+      "level": "partial",
+      "rationale": "DailyQuotaLimiter (5 iters / 50K tokens for Starter) acts as a per-tenant network circuit breaker for LLM calls.",
+      "modules": [
+        "app/engines/roadmap_refiner/_phase2a.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-013",
+      "domain": "Safety Controls",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Time-Based Automatic Termination with Operator Override",
+      "level": "gap",
+      "rationale": "Time-based automatic termination with operator override is a Tier-3 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-014",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Reversible Action Tracking and Rollback",
+      "level": "gap",
+      "rationale": "Pentests are non-reversible by design; rollback semantics for stateful attacks aren't applicable but the requirement isn't met.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-015",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Post-Test System Integrity Validation",
+      "level": "partial",
+      "rationale": "Three-agent verifier triad confirms post-test that the system stayed within scope; integrity validation against a pre-test baseline is partial.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-016",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Evidence Preservation and Automated Cleanup",
+      "level": "satisfied",
+      "rationale": "All evidence persisted via hash-chained `AuditStore.record`; cleanup is GDPR Art. 17 tombstone (never silent delete).",
+      "modules": [
+        "app/evidence/store.py",
+        "app/routes/gdpr.py"
+      ],
+      "test_anchors": [
+        "TestGDPRWriteRoutes"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-017",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "External Watchdog and Operator Notification",
+      "level": "gap",
+      "rationale": "External watchdog + operator notification is a separate observability process not bundled today.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-018",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Containment and Recovery",
+      "level": "partial",
+      "rationale": "Stripe webhook DLQ + alembic 008 (`failed_webhook_events`) captures transient failures for replay; broader incident-containment runbook is partial.",
+      "modules": [
+        "app/db.py",
+        "app/routes/billing.py"
+      ],
+      "test_anchors": [
+        "TestStripeWebhookDeadLetter"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-019",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Execution Sandbox and Containment Boundary Integrity",
+      "level": "partial",
+      "rationale": "antifragile-ai attacks run in-process; execution sandbox isolation is partial (no cgroup/namespace boundary).",
+      "modules": [
+        "antifragile-ai/src/antifragile/attacks/live_executor.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-SC-020",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Action Allowlist Enforcement External to the Model",
+      "level": "satisfied",
+      "rationale": "Defense registry + attack registry constrain the action surface external to the LLM; LLM never picks unconstrained tools.",
+      "modules": [
+        "antifragile-ai/src/antifragile/defenses",
+        "antifragile-ai/src/antifragile/attacks/registry.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-001",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Pre-Approval Gates for Autonomy Levels L1 and L2",
+      "level": "satisfied",
+      "rationale": "Workflow Builder Gated Response (HITL) nodes + the 12-factor oversight Factor 6+7 substrate enforce pre-approval gates.",
+      "modules": [
+        "antifragile-ai/oversight/templates.py",
+        "frontend/src/pages/WorkflowBuilder.tsx"
+      ],
+      "test_anchors": [
+        "TestOversightTemplates"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-002",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Real-Time Monitoring and Intervention Capability",
+      "level": "satisfied",
+      "rationale": "antifragile.oversight.event_store ships per-run hash-chained event logging; CC + Workflow Builder progress overlay surface live state.",
+      "modules": [
+        "antifragile-ai/oversight/event_store.py",
+        "frontend/src/pages/CommandCenter.tsx"
+      ],
+      "test_anchors": [
+        "TestAppendOnlyEventStore"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-003",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Decision Timeout and Default-Safe Behavior",
+      "level": "satisfied",
+      "rationale": "Workflow gates default-deny on TTL expiry; tenant lock release on exception; 5s Turnstile verification timeout.",
+      "modules": [
+        "app/security/turnstile.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-004",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Authority Delegation Matrix",
+      "level": "satisfied",
+      "rationale": "RequiredRole lattice (provider/deployer/human_overseer/security_officer/data_steward/ai_agent) defines who can sign off which gate.",
+      "modules": [
+        "antifragile-ai/oversight/requests.py",
+        "antifragile-ai/oversight/templates.py"
+      ],
+      "test_anchors": [
+        "TestOversightRequest"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-005",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Delegation Chain-of-Custody and Decision Audit Trail",
+      "level": "satisfied",
+      "rationale": "Audit chain captures actor + delegation; passport stamps record signed attestations from compliance officers + auditors with cryptographic hashes.",
+      "modules": [
+        "app/engines/agent_passport/stamp_engine.py",
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [
+        "TestPassportStamps"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-006",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Graceful Pause Mechanism with State Preservation",
+      "level": "partial",
+      "rationale": "Workflow Builder run state persists between page loads; full graceful pause + state-preserve mid-run is partial.",
+      "modules": [
+        "frontend/src/pages/WorkflowBuilder.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-007",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mid-Engagement Redirect Capability",
+      "level": "partial",
+      "rationale": "Workflow Builder allows mid-run config edits via InputConfigPanel; mid-engagement redirect for live attacks is partial.",
+      "modules": [
+        "frontend/src/components/workflow/InputConfigPanel.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-008",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Immediate Kill Switch with State Dump",
+      "level": "partial",
+      "rationale": "Per-tenant kill via TENANT_LOCKS release; full state-dump on kill is partial (chain captures actions but not in-flight LLM context).",
+      "modules": [
+        "app/engines/roadmap_refiner/_phase2a.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-009",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Operator Kill Switch Authority and Handoff",
+      "level": "gap",
+      "rationale": "Multi-operator kill-switch authority + handoff is a Tier-2 MUST; only single-operator kill is implemented today.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-010",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Human Decision Points Before Irreversible Actions",
+      "level": "satisfied",
+      "rationale": "Gated Response nodes block irreversible actions until a registered reviewer signs off; reviewerNotes persist to evidence chain.",
+      "modules": [
+        "frontend/src/components/workflow/HITLGateNode.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-011",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Unexpected Findings Escalation Framework",
+      "level": "partial",
+      "rationale": "Three-agent triad escalates contested findings to the Adjudicator; broader unexpected-finding escalation framework is partial.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-012",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Impact Threshold Breach Escalation",
+      "level": "partial",
+      "rationale": "Antifragility score thresholds drive the CC HUD pulse; impact-threshold breach escalation is partial.",
+      "modules": [
+        "app/engines/_campaign_antifragility.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-013",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Confidence-Based Escalation (Scope Uncertainty)",
+      "level": "satisfied",
+      "rationale": "Annex III boundary indicators (#460) flag low-confidence classifications + route to Officer Mode review.",
+      "modules": [
+        "app/data/article_existence.py",
+        "app/engines/classifier.py",
+        "frontend/src/pages/RoleDetermination.tsx"
+      ],
+      "test_anchors": [
+        "TestBoundaryIndicators"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-014",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Legal and Compliance Escalation Triggers",
+      "level": "satisfied",
+      "rationale": "Risk Register + Officer Mode + Auditor stamps cover legal + compliance escalation triggers (Art. 14, Art. 27 FRIA, Art. 50, Art. 72).",
+      "modules": [
+        "app/routes/governance.py",
+        "app/engines/agent_passport/stamp_engine.py"
+      ],
+      "test_anchors": [
+        "TestRiskRegister"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-015",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Real-Time Activity Monitoring and Multi-Channel Notification",
+      "level": "partial",
+      "rationale": "WebhookOversightChannel ships HMAC-signed multi-channel notification; alert routing across email + Slack + webhook is partial.",
+      "modules": [
+        "antifragile-ai/oversight/channels.py"
+      ],
+      "test_anchors": [
+        "TestOversightHumanRequest"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-016",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Alert Fatigue Mitigation and Smart Aggregation",
+      "level": "gap",
+      "rationale": "Alert fatigue mitigation + smart aggregation is a Tier-2 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-017",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Stakeholder Notification and Engagement Closure",
+      "level": "partial",
+      "rationale": "Compliance Gap Report PDF + cancellation email + trial-reminder cron cover stakeholder notification; engagement-closure summary is partial.",
+      "modules": [
+        "app/engines/reconciliation_pdf.py",
+        "app/email_service.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-018",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Operator Qualification, Training, and Competency Governance",
+      "level": "satisfied",
+      "rationale": "AI Literacy agent + the Officer Mode role-aware UI gate operator competency; admin MFA enforcement requires post-2026-04-25 SOC 2 controls.",
+      "modules": [
+        "app/auth_mfa.py",
+        "frontend/src/components/aurora/"
+      ],
+      "test_anchors": [
+        "TestAuthLockoutMfa"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-HO-019",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "24/7 Operational Continuity and Shift Handoff",
+      "level": "gap",
+      "rationale": "24/7 operational continuity + shift handoff is a Tier-2 SHOULD; not yet documented.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-001",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Single Technique Execution",
+      "level": "satisfied",
+      "rationale": "antifragile-ai dispatches one technique at a time via the registry; the live executor never auto-chains.",
+      "modules": [
+        "antifragile-ai/src/antifragile/attacks/live_executor.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-002",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Human-Directed Target and Technique Selection",
+      "level": "satisfied",
+      "rationale": "Workflow Builder + Security Scan UI require human selection of target + technique before dispatch.",
+      "modules": [
+        "frontend/src/pages/SecurityScan.tsx",
+        "frontend/src/pages/WorkflowBuilder.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-003",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Parameter Configuration by Human Operator",
+      "level": "satisfied",
+      "rationale": "InputConfigPanel + Security Scan parameter sliders give the operator full parameter control before run.",
+      "modules": [
+        "frontend/src/components/workflow/InputConfigPanel.tsx",
+        "frontend/src/pages/SecurityScan.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-004",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "No Automated Chaining or Sequential Decision-Making",
+      "level": "partial",
+      "rationale": "L1 dispatch is single-step; attack_chain.py supports multi-step but only when explicitly selected — no silent auto-chain at L1.",
+      "modules": [
+        "app/engines/attack_chain.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-005",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Logging and Human-Reviewable Audit Trail",
+      "level": "satisfied",
+      "rationale": "Hash-chained evidence on every dispatch; audit-trail isolation from the agent runtime via separate Postgres + R2.",
+      "modules": [
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [
+        "TestAuditTrail"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-006",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Basic Scope Validation and Policy Enforcement",
+      "level": "satisfied",
+      "rationale": "Pre-action validators run on every campaign route; policy enforcement is mandatory not optional.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-007",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Step Technique Chaining Within Single Phase",
+      "level": "satisfied",
+      "rationale": "attack_chain.py + Workflow Builder DAG support multi-step technique chaining within a single phase.",
+      "modules": [
+        "app/engines/attack_chain.py",
+        "frontend/src/pages/WorkflowBuilder.tsx"
+      ],
+      "test_anchors": [
+        "TestAttackChains"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-008",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Real-Time Human Monitoring and Approval Gates",
+      "level": "satisfied",
+      "rationale": "Workflow Gated Response nodes provide approval gates; CC agent progress overlay streams live state to the operator.",
+      "modules": [
+        "frontend/src/components/workflow/HITLGateNode.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-009",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Tool-Proposed Actions with Operator Modification Capability",
+      "level": "satisfied",
+      "rationale": "Workflow Builder lets the operator edit any agent's input config (T2 SHOULD); roadmap refinement panel offers operator-modifiable target coverage.",
+      "modules": [
+        "frontend/src/components/workflow/InputConfigPanel.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-010",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Step-by-Step Audit Log with Phase Transitions",
+      "level": "satisfied",
+      "rationale": "Per-iteration `roadmap_refiner.iteration_started/completed` + `iteration_rejected/accepted` logs are the canonical step-by-step audit trail.",
+      "modules": [
+        "app/engines/roadmap_refiner/engine.py"
+      ],
+      "test_anchors": [
+        "TestRoadmapRefinerEngine"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-011",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Escalation Triggers and Exception Handling",
+      "level": "partial",
+      "rationale": "Three-agent verifier escalates contested findings; full escalation-trigger taxonomy is partial.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-012",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Kill Switch and Pause Capability",
+      "level": "partial",
+      "rationale": "TENANT_LOCKS allow per-tenant pause; UI-driven kill from CC is a planned follow-up.",
+      "modules": [
+        "app/engines/roadmap_refiner/_phase2a.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-013",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Complete Attack Chain Execution Within Boundaries",
+      "level": "satisfied",
+      "rationale": "attack_chain ranking enforces boundary checks; full chains never exceed registered scope.",
+      "modules": [
+        "app/engines/attack_chain.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-014",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Boundary Definition and Enforcement Framework",
+      "level": "satisfied",
+      "rationale": "Attack registry + defense registry are immutable per-deployment and define the runtime boundary.",
+      "modules": [
+        "antifragile-ai/src/antifragile/attacks/registry.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-015",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Pre-Approved Action Categories and Decision Trees",
+      "level": "satisfied",
+      "rationale": "Defense registry + per-axis Cybersec categories pre-approve action categories; no model-free-form dispatch.",
+      "modules": [
+        "antifragile-ai/src/antifragile/defenses"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-016",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Continuous Boundary Monitoring and Breach Detection",
+      "level": "partial",
+      "rationale": "campaign_history monitors for fragility red flags across runs; per-run continuous boundary monitoring is partial.",
+      "modules": [
+        "app/engines/_campaign_red_flags.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-017",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Target Assessment Management",
+      "level": "partial",
+      "rationale": "Portfolio + CC inventory cover multi-system management; multi-target campaign management at L3 is partial.",
+      "modules": [
+        "frontend/src/pages/CommandCenter.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-018",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Response During Autonomous Testing",
+      "level": "partial",
+      "rationale": "Stripe webhook DLQ pattern is the closest analogue; pentest-incident response is partial.",
+      "modules": [
+        "app/db.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-019",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Multi-Target Campaign Management Without Intervention",
+      "level": "gap",
+      "rationale": "Multi-target campaign management without intervention is a Tier-3 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-020",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Dynamic Scope Adjustment and Target Discovery",
+      "level": "gap",
+      "rationale": "Dynamic scope adjustment + target discovery is intentionally NOT shipped — APTS itself flags scope drift as the primary risk for autonomous platforms.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-021",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Adaptive Testing Strategy and Resource Reallocation",
+      "level": "partial",
+      "rationale": "Karpathy-inspired Autocompliance Loop adapts roadmap proposals to coverage gap; broader resource reallocation is partial.",
+      "modules": [
+        "app/engines/roadmap_refiner/engine.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-022",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Continuous Risk Assessment and Automated Escalation",
+      "level": "gap",
+      "rationale": "Continuous risk auto-escalation at L4 is a Tier-3 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-023",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Complete Audit Trail and Forensic Reconstruction",
+      "level": "satisfied",
+      "rationale": "Hash-chained evidence + AppendOnlyEventStore replay support full forensic reconstruction.",
+      "modules": [
+        "app/evidence/store.py",
+        "antifragile-ai/oversight/event_store.py"
+      ],
+      "test_anchors": [
+        "TestAppendOnlyEventStore"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-024",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Periodic Autonomous Review Cycles",
+      "level": "gap",
+      "rationale": "Periodic autonomous review cycles are a Tier-3 SHOULD; campaign_scheduler covers the cron half but not the review-cycle half.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-025",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Autonomy Level Authorization, Transition, and Reauthorization",
+      "level": "partial",
+      "rationale": "Tier gates on LLM-cost paths + admin MFA enforcement act as authorization gates; formal autonomy-level transition workflow is partial.",
+      "modules": [
+        "app/auth_mfa.py",
+        "app/auth_jwt.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-026",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Investigation and Autonomy Level Adjustment",
+      "level": "gap",
+      "rationale": "Incident investigation + autonomy-level adjustment is a Tier-2 MUST; not yet shipped as a structured workflow.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-027",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Evasion and Stealth Mode Governance",
+      "level": "gap",
+      "rationale": "Evasion + stealth-mode governance is a Tier-3 SHOULD intentionally avoided — the platform never operates in stealth.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AL-028",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "MUST",
+      "title": "Containment Verification for L3 and L4 Autonomy",
+      "level": "gap",
+      "rationale": "L3/L4 containment verification is a Tier-3 MUST; not yet shipped because L3/L4 autonomy is not enabled.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-001",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Structured Event Logging with Schema Validation",
+      "level": "satisfied",
+      "rationale": "structlog-emitted events + Pydantic-validated evidence payloads provide schema-validated structured logs.",
+      "modules": [
+        "app/logging_config.py",
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-002",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "State Transition Logging",
+      "level": "satisfied",
+      "rationale": "State transitions logged on every workflow node + every refinement iteration + every authentication event.",
+      "modules": [
+        "app/engines/roadmap_refiner/engine.py",
+        "app/auth_jwt.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-003",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Resource Utilization Metrics Logging",
+      "level": "partial",
+      "rationale": "Prometheus integration captures basic metrics; full per-engagement resource utilisation is partial.",
+      "modules": [
+        "app/integrations/prometheus.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-004",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Decision Point Logging and Confidence Scoring",
+      "level": "satisfied",
+      "rationale": "Three-agent verifier outputs Wilson-CI confidence per finding; iteration-level decision points logged via #412 telemetry.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py",
+        "app/engines/roadmap_refiner/engine.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-005",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Log Retention and Archival Requirements",
+      "level": "satisfied",
+      "rationale": "R2 EU evidence backend + audit-chain in Postgres; documented 10-year retention plan for Object Lock upgrade.",
+      "modules": [
+        "app/evidence/backends/r2_backend.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-006",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Decision Chain of Reasoning and Alternative Evaluation",
+      "level": "partial",
+      "rationale": "ComplianceRewardHackDetector logs origin (registry_lift / recombination / agent_novel) + rejection reason; broader chain-of-reasoning capture is partial.",
+      "modules": [
+        "app/engines/roadmap_refiner/models.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-007",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Risk Assessment Documentation Before Action Execution",
+      "level": "satisfied",
+      "rationale": "campaign_history records pre-action risk assessment for every campaign; reflected in antifragility score before dispatch.",
+      "modules": [
+        "app/engines/campaign_history.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-008",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Context-Aware Decision Logging",
+      "level": "satisfied",
+      "rationale": "Per-iteration logs carry tenant_id + run_id + audit_result_id + KB version; context-aware decisions throughout.",
+      "modules": [
+        "app/engines/roadmap_refiner/engine.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-009",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Transparency Report Requirements",
+      "level": "satisfied",
+      "rationale": "MITRE ATLAS RDF/Turtle + JSON-LD export per campaign (#485); narrative layer publishes per-system + per-obligation prose.",
+      "modules": [
+        "app/engines/atlas_export.py",
+        "app/narratives/"
+      ],
+      "test_anchors": [
+        "TestMitreAtlasExport",
+        "TestNarratives"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-010",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Cryptographic Hashing of All Evidence",
+      "level": "satisfied",
+      "rationale": "SHA-256 hash on every evidence chain entry; canonical JSON form prevents serialisation drift.",
+      "modules": [
+        "app/evidence/store.py",
+        "app/narratives/materialize/hash.py"
+      ],
+      "test_anchors": [
+        "TestEvidenceStore"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-011",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Chain of Custody for Evidence",
+      "level": "satisfied",
+      "rationale": "Evidence chain captures the actor on every entry; never derived from request payload (#180 actor-spoof hardening).",
+      "modules": [
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [
+        "TestEvidenceTenantScoping"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-012",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Tamper-Evident Logging with Hash Chains",
+      "level": "satisfied",
+      "rationale": "Hash-chained evidence chain detects any tampered row; AppendOnlyEventStore mirrors the same algorithm for oversight events.",
+      "modules": [
+        "app/evidence/store.py",
+        "antifragile-ai/oversight/event_store.py"
+      ],
+      "test_anchors": [
+        "TestAuditTrail"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-013",
+      "domain": "Auditability",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "RFC 3161 Trusted Timestamp Integration",
+      "level": "gap",
+      "rationale": "RFC 3161 trusted-timestamp integration is a Tier-3 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-014",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Screenshot and Packet Capture Evidence Standards",
+      "level": "gap",
+      "rationale": "Screenshot + packet-capture evidence standards are a Tier-2 MUST; the platform records prose + JSON evidence but not raw network captures.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-015",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Evidence Classification and Sensitive Data Handling",
+      "level": "satisfied",
+      "rationale": "PII linter + canonical JSON hashing scrub sensitive data before chain inclusion; classification levels per-row.",
+      "modules": [
+        "app/narratives/materialize/pii_linter.py"
+      ],
+      "test_anchors": [
+        "TestNarratives"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-016",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Platform Integrity and Supply Chain Attestation",
+      "level": "partial",
+      "rationale": "Dependabot-pinned dependencies + SBOM-emitting builds; full supply-chain attestation per release is partial.",
+      "modules": [
+        "requirements.txt",
+        ".github/dependabot.yml"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-017",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Safety Control Regression Testing After Platform Updates",
+      "level": "satisfied",
+      "rationale": "tests/test_security.py + TestSecurityMiddleware + TestSSRFPrevention + TestRateLimiting form the safety-control regression suite.",
+      "modules": [
+        "tests/test_security.py",
+        "tests/test_all.py"
+      ],
+      "test_anchors": [
+        "TestSecurityMiddleware"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-018",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Customer Notification for Behavior-Affecting Updates",
+      "level": "satisfied",
+      "rationale": "Trial-reminder + cancellation email + Resend transactional layer cover behaviour-change customer notifications.",
+      "modules": [
+        "app/email_service.py",
+        "app/engines/trial_reminders.py"
+      ],
+      "test_anchors": [
+        "TestCancellationEmail"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-019",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "AI/ML Model Change Tracking and Drift Detection",
+      "level": "satisfied",
+      "rationale": "continuous_compliance + drift_reassessment emit drift_bundle_staleness on Mistral / KB drift; KB version stamped on every materialisation (#525).",
+      "modules": [
+        "app/engines/continuous_compliance.py",
+        "app/engines/_drift_reassessment.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-AR-020",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Audit Trail Isolation from the Agent Runtime",
+      "level": "satisfied",
+      "rationale": "Evidence chain runs in a separate Postgres instance + R2 bucket; the agent runtime can append but cannot redact.",
+      "modules": [
+        "app/evidence/backends/r2_backend.py",
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-001",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Instruction Boundary Enforcement",
+      "level": "satisfied",
+      "rationale": "prompt_guard.sanitize_for_llm strips demarcation tags + enforces instruction boundaries on every LLM input.",
+      "modules": [
+        "app/security/prompt_guard.py"
+      ],
+      "test_anchors": [
+        "TestPromptGuard"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-002",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Response Validation & Sanitization",
+      "level": "satisfied",
+      "rationale": "Security middleware scans + sanitises responses; PII linter pass before publication.",
+      "modules": [
+        "app/security/middleware.py"
+      ],
+      "test_anchors": [
+        "TestSecurityMiddleware"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-003",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Error Message Neutrality",
+      "level": "satisfied",
+      "rationale": "Error sanitiser flattens HTTPException details; never leaks internal paths or stack traces (#427 contract).",
+      "modules": [
+        "app/security/middleware.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-004",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Configuration File Integrity Verification",
+      "level": "partial",
+      "rationale": "Pinned settings via pydantic-settings + git-tracked configs; runtime integrity check is partial.",
+      "modules": [
+        "app/config.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-005",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Authority Claim Detection & Rejection",
+      "level": "satisfied",
+      "rationale": "prompt_guard rejects authority-claim patterns (system: / admin: / developer:) in user input.",
+      "modules": [
+        "app/security/prompt_guard.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-006",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Decision Boundary Enforcement",
+      "level": "partial",
+      "rationale": "Hard tier gates + admin MFA + tenant scoping enforce decision boundaries; broader decision-boundary stress test is partial.",
+      "modules": [
+        "app/auth_jwt.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-007",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Redirect Following Policy",
+      "level": "satisfied",
+      "rationale": "SSRF helpers reject 3xx redirects to private/metadata IPs after re-resolution; no follow-redirect on the live executor path.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-008",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "DNS and Network-Level Redirect Prevention",
+      "level": "satisfied",
+      "rationale": "DNS rebinding closed via pre-send DNS re-check (#186); the validator caches the resolved IP and rejects mid-attack DNS flips.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-009",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Server-Side Request Forgery (SSRF) Prevention in Testing",
+      "level": "satisfied",
+      "rationale": "SSRF prevention end-to-end on /security-scan/scan-live; same helper applied across all outbound HTTP paths.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-010",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Scope Expansion Social Engineering Prevention",
+      "level": "satisfied",
+      "rationale": "prompt_guard + middleware reject scope-expansion social engineering attempts in attacker payloads.",
+      "modules": [
+        "app/security/prompt_guard.py",
+        "app/security/middleware.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-011",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Out-of-Band Communication Prevention",
+      "level": "satisfied",
+      "rationale": "Egress allowlist + per-tenant network boundary prevent OOB DNS / HTTP exfiltration via attack payloads.",
+      "modules": [
+        "app/routes/_security_scan_validators.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-012",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Immutable Scope Enforcement Architecture",
+      "level": "satisfied",
+      "rationale": "Attack registry + scope helpers are immutable per-deployment + signed; the LLM cannot extend scope at runtime.",
+      "modules": [
+        "antifragile-ai/src/antifragile/attacks/registry.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-013",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Adversarial Example Detection in Vulnerability Classification",
+      "level": "satisfied",
+      "rationale": "Three-agent verifier triad (Finder + Adversary + Referee) is the structured adversarial-example check on every flagged finding.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-014",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Resource Exhaustion and Tarpit Attack Prevention",
+      "level": "satisfied",
+      "rationale": "slowapi per-route limits + DailyQuotaLimiter + 5s Turnstile timeout + 250 MB upload cap prevent resource exhaustion + tarpits.",
+      "modules": [
+        "app/main.py",
+        "app/security/turnstile.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-015",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Deceptive Authentication Honeypots",
+      "level": "partial",
+      "rationale": "Canary honeytoken patterns in router_attacks; broader deceptive-auth honeypot coverage is partial.",
+      "modules": [
+        "antifragile-ai/src/antifragile/attacks/router_attacks.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-016",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Anti-Automation Defense Detection",
+      "level": "satisfied",
+      "rationale": "Cloudflare Turnstile on 5 unauth state-mutating endpoints (#228); telemetry on render failures + verified-bad tokens via #df811c4.",
+      "modules": [
+        "app/security/turnstile.py"
+      ],
+      "test_anchors": [
+        "TestTurnstileTelemetry"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-017",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Anomaly Detection in Response Patterns",
+      "level": "partial",
+      "rationale": "Wilson CI bound + fragility red flags act as response-pattern anomaly signals; full dedicated anomaly detector is partial.",
+      "modules": [
+        "app/engines/_campaign_red_flags.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-018",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "AI Model Input/Output Architectural Boundary",
+      "level": "satisfied",
+      "rationale": "prompt_guard wraps every Mistral / LLM call; the model never sees raw operator input + never returns raw output to other tools.",
+      "modules": [
+        "app/security/prompt_guard.py",
+        "app/llm/mistral_provider.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-019",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Discovered Credential Protection",
+      "level": "satisfied",
+      "rationale": "gitleaks + bandit + Fernet-encrypted token storage; GITHUB_CONNECT_ENCRYPTION_KEY supports rotation.",
+      "modules": [
+        "app/integrations/github_connect/crypto.py",
+        ".gitleaks.toml"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-020",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Adversarial Validation and Resilience Testing of Safety Controls",
+      "level": "satisfied",
+      "rationale": "campaign_history's antifragility score is the documented adversarial-validation methodology; every confirmed gap increases it.",
+      "modules": [
+        "app/engines/_campaign_antifragility.py"
+      ],
+      "test_anchors": [
+        "TestAntifragilityScore"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-021",
+      "domain": "Manipulation Resistance",
+      "tier": 3,
+      "classification": "MUST",
+      "title": "Data Isolation Adversarial Testing",
+      "level": "satisfied",
+      "rationale": "TestEvidenceTenantScoping covers cross-tenant adversarial probes + admin_can_bypass_tenant gate; per-tenant isolation pinned.",
+      "modules": [
+        "app/auth_jwt.py",
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [
+        "TestEvidenceTenantScoping"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-022",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Inter-Model Trust Boundaries and Output Validation",
+      "level": "partial",
+      "rationale": "Three-agent verifier is the inter-model trust boundary; full inter-LLM mediator is partial.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-MR-023",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Agent Runtime as an Untrusted Component",
+      "level": "satisfied",
+      "rationale": "Agent runtime is treated as untrusted: every input through middleware, every outbound through validators, evidence chain in separate process.",
+      "modules": [
+        "app/security/middleware.py",
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-001",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Third-Party Provider Selection and Vetting",
+      "level": "satisfied",
+      "rationale": "Subprocessors page lists every third-party with vetting status; sub-processor disclosure is GDPR Art. 28 compliant.",
+      "modules": [
+        "frontend/src/pages/legal/Subprocessors.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-002",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Model Version Pinning and Change Management",
+      "level": "satisfied",
+      "rationale": "Mistral model version pinning via env var; `MISTRAL_MODEL` documented; runbook covers manual rollback path.",
+      "modules": [
+        "app/llm/mistral_provider.py",
+        "docs/operations/mistral-runbook.md"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-003",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "API Security and Authentication",
+      "level": "satisfied",
+      "rationale": "Security Hub API keys + OAuth + JWT + Argon2id passwords + admin TOTP MFA cover API security baseline.",
+      "modules": [
+        "app/integrations/security_hub/auth.py",
+        "app/auth_jwt.py",
+        "app/auth_mfa.py"
+      ],
+      "test_anchors": [
+        "TestAuthLockoutMfa"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-004",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Provider Availability, SLA Management, and Failover",
+      "level": "partial",
+      "rationale": "Mistral provider has retry on 429/5xx + structured logging; formal SLA + automated failover to Anthropic is partial.",
+      "modules": [
+        "app/llm/mistral_provider.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-005",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Provider Incident Response, Breach Notification, and Mid-Engagement Compromise",
+      "level": "satisfied",
+      "rationale": "Stripe webhook DLQ pattern + alembic 008 + provider-incident runbook (`docs/security/2026-04-20-vercel-incident-response.md`) cover provider compromise.",
+      "modules": [
+        "app/db.py",
+        "docs/security/2026-04-20-vercel-incident-response.md"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-006",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Dependency Inventory, Risk Assessment, and Supply Chain Verification",
+      "level": "satisfied",
+      "rationale": "Dependabot pinned + grouped weekly + daily security; bandit + pip-audit in CI; .gitleaks.toml for secret scanning.",
+      "modules": [
+        ".github/dependabot.yml",
+        "pyproject.toml"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-007",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Data Residency and Sovereignty Requirements",
+      "level": "satisfied",
+      "rationale": "EU residency end-to-end: R2 EU jurisdiction + Mistral Paris + Supabase EU + Railway EU-West.",
+      "modules": [
+        "app/evidence/backends/r2_backend.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-008",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Cloud Security Configuration and Hardening",
+      "level": "satisfied",
+      "rationale": "Security headers middleware (CSP, HSTS, X-Frame-Options); Cloudflare front-door; Vercel security headers in `vercel.json` (#317).",
+      "modules": [
+        "app/security/headers.py",
+        "frontend/vercel.json"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-009",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Response and Service Continuity Planning",
+      "level": "partial",
+      "rationale": "Provider-incident runbook covers the rotation + disclosure flow; full BCP/DR exercise cadence is partial.",
+      "modules": [
+        "docs/security/2026-04-20-vercel-incident-response.md"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-010",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Vulnerability Feed Selection and Management",
+      "level": "partial",
+      "rationale": "MITRE ATLAS + OWASP AI Exchange catalogs vendored + pinned (#417, #485); broader vuln-feed inventory is partial.",
+      "modules": [
+        "app/data/atlas_techniques.py",
+        "app/data/owasp_aix_threats.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-011",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Feed Quality Assurance and Incident Response",
+      "level": "gap",
+      "rationale": "Feed-quality assurance + incident response on a corrupted feed is a Tier-2 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-012",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Client Data Classification Framework",
+      "level": "satisfied",
+      "rationale": "Tenant-scoped end-to-end + PII linter classifies sensitive fields before publication; canonical data classification framework documented in DPA + Privacy.",
+      "modules": [
+        "app/narratives/materialize/pii_linter.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-013",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Sensitive Data Discovery and Handling",
+      "level": "satisfied",
+      "rationale": "PII linter detects + masks 7 sensitive entity types (PERSON, EMAIL, IP, etc.); narrative layer never publishes raw PII.",
+      "modules": [
+        "app/narratives/materialize/pii_linter.py"
+      ],
+      "test_anchors": [
+        "TestNarratives"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-014",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Data Encryption and Cryptographic Controls",
+      "level": "satisfied",
+      "rationale": "TLS everywhere + Argon2id passwords + Fernet token encryption + R2 SSE-S3 at rest; security/headers HSTS preload.",
+      "modules": [
+        "app/auth_jwt.py",
+        "app/integrations/github_connect/crypto.py",
+        "app/security/headers.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-015",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Data Retention and Secure Deletion",
+      "level": "satisfied",
+      "rationale": "GDPR Art. 17 tenant-tombstone (#201/#202); R2 backend wires `delete_payload` (#434) for actual byte deletion when permitted.",
+      "modules": [
+        "app/routes/gdpr.py",
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [
+        "TestGDPRWriteRoutes"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-016",
+      "domain": "Supply Chain Trust",
+      "tier": 3,
+      "classification": "MUST",
+      "title": "Data Destruction Proof and Certification",
+      "level": "partial",
+      "rationale": "Tombstone + chain replay covers most of T3 destruction proof; cryptographic certificate-of-destruction is partial.",
+      "modules": [
+        "app/routes/gdpr.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-017",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Tenant and Engagement Isolation",
+      "level": "satisfied",
+      "rationale": "Tenant-scoping covers every read + write + delete path; admin_can_bypass_tenant requires MFA enrolment (SOC 2 Bet 1).",
+      "modules": [
+        "app/auth_jwt.py",
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [
+        "TestEvidenceTenantScoping"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-018",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Tenant Breach Notification",
+      "level": "satisfied",
+      "rationale": "Vercel-incident runbook documents tenant breach notification; Resend transactional layer is the canonical channel.",
+      "modules": [
+        "docs/security/2026-04-20-vercel-incident-response.md",
+        "app/email_service.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-019",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "AI Model Provenance and Training Data Governance",
+      "level": "satisfied",
+      "rationale": "Mistral training-data commitment surfaced in /legal/subprocessors + DPA; no customer data flows into training.",
+      "modules": [
+        "frontend/src/pages/legal/Subprocessors.tsx",
+        "frontend/src/pages/legal/DPA.tsx"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-020",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Persistent Memory and Retrieval State Governance",
+      "level": "partial",
+      "rationale": "Narrative materialise + canonical JSON `source_row_hash` give per-row state attestation; full retrieval-state governance is partial.",
+      "modules": [
+        "app/narratives/materialize/hash.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-021",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Foundation Model Disclosure and Capability Baseline",
+      "level": "satisfied",
+      "rationale": "Mistral foundation model disclosed in /legal/subprocessors + Privacy + DPA; capability baseline documented in `docs/operations/mistral-runbook.md`.",
+      "modules": [
+        "frontend/src/pages/legal/Privacy.tsx",
+        "docs/operations/mistral-runbook.md"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-TP-022",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Re-attestation on Material Foundation Model Change",
+      "level": "partial",
+      "rationale": "Mistral version pin + change-management runbook; automated re-attestation on model change is partial.",
+      "modules": [
+        "docs/operations/mistral-runbook.md"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-001",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Evidence-Based Finding Validation",
+      "level": "satisfied",
+      "rationale": "Three-agent verifier triad confirms every gap; `ComplianceGap` carries supporting evidence references end-to-end.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py",
+        "app/models.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-002",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Finding Verification and Human Review Pipeline",
+      "level": "satisfied",
+      "rationale": "Workflow Builder Gated Response nodes + Risk Register lifecycle (open → mitigated → accepted_risk) cover human review.",
+      "modules": [
+        "frontend/src/components/workflow/HITLGateNode.tsx",
+        "app/routes/governance.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-003",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Confidence Scoring with Auditable Methodology",
+      "level": "satisfied",
+      "rationale": "Wilson confidence interval bound on resilience score; Mistral request_done logs prompt + completion tokens; methodology is auditor-walkable.",
+      "modules": [
+        "app/engines/_campaign_antifragility.py",
+        "app/engines/atlas_export.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-004",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Finding Provenance Chain",
+      "level": "satisfied",
+      "rationale": "NodeProvenance enum (#524) + `EvidenceCitation` carry the full chain from regulator-authoritative text to llm_inferred proposals.",
+      "modules": [
+        "app/repositories/graph.py",
+        "app/models.py"
+      ],
+      "test_anchors": [
+        "TestNodeProvenance"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-005",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Cryptographic Evidence Chain Integrity",
+      "level": "satisfied",
+      "rationale": "SHA-256 hash chain on every evidence entry; AppendOnlyEventStore mirrors the algorithm for oversight events.",
+      "modules": [
+        "app/evidence/store.py",
+        "antifragile-ai/oversight/event_store.py"
+      ],
+      "test_anchors": [
+        "TestAuditTrail"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-006",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "False Positive Rate Disclosure",
+      "level": "partial",
+      "rationale": "Three-agent triad rejects false positives via the Adversary phase; aggregate FP-rate disclosure per-engagement is partial.",
+      "modules": [
+        "antifragile-ai/src/antifragile/agents/three_agent.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-007",
+      "domain": "Reporting",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Independent Finding Reproducibility",
+      "level": "partial",
+      "rationale": "Hash-chained evidence + canonical JSON support reproducibility; independent third-party reproduction not yet a published deliverable.",
+      "modules": [
+        "app/evidence/store.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-008",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Vulnerability Coverage Disclosure",
+      "level": "partial",
+      "rationale": "Code Scanner publishes 21 analyzer coverage; Cybersec Agents Hub catalog discloses provider coverage; per-engagement coverage disclosure is partial.",
+      "modules": [
+        "app/engines/code_scanner.py",
+        "app/integrations/security_hub/providers.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-009",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "False Negative Rate Disclosure and Methodology",
+      "level": "gap",
+      "rationale": "False-negative rate disclosure + methodology is a Tier-2 MUST; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-010",
+      "domain": "Reporting",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Detection Effectiveness Benchmarking",
+      "level": "gap",
+      "rationale": "Detection-effectiveness benchmarking is a Tier-3 SHOULD; not yet shipped.",
+      "modules": [],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-011",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Executive Summary and Risk Overview",
+      "level": "satisfied",
+      "rationale": "Compliance Gap Report PDF (Bet 4 #230) ships an executive-summary section per system; risk overview is the headline page.",
+      "modules": [
+        "app/engines/reconciliation_pdf.py"
+      ],
+      "test_anchors": [
+        "TestReconciliationPDF"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-012",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Remediation Guidance and Prioritization",
+      "level": "satisfied",
+      "rationale": "Roadmap tasks include Claude Code prompts + acceptance criteria + output files + dependencies + lifecycle phase + deadline anchors.",
+      "modules": [
+        "app/engines/roadmap/__init__.py",
+        "app/engines/roadmap_export.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-013",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Engagement SLA Compliance Reporting",
+      "level": "partial",
+      "rationale": "Engagement scheduler tracks recurring runs; SLA-compliance reporting per engagement is partial.",
+      "modules": [
+        "app/engines/campaign_scheduler.py"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-014",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Trend Analysis for Recurring Engagements",
+      "level": "satisfied",
+      "rationale": "campaign_history surfaces trend analysis with antifragility score deltas across recurring campaigns.",
+      "modules": [
+        "app/engines/campaign_history.py"
+      ],
+      "test_anchors": [
+        "TestCampaignHistory"
+      ],
+      "article_anchors": []
+    },
+    {
+      "requirement_id": "APTS-RP-015",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Downstream Finding Pipeline Integrity",
+      "level": "satisfied",
+      "rationale": "MITRE ATLAS RDF/Turtle + JSON-LD export per campaign (#485); narrative layer publishes per-system + per-obligation prose; downstream consumers can consume both.",
+      "modules": [
+        "app/engines/atlas_export.py",
+        "app/narratives/"
+      ],
+      "test_anchors": [],
+      "article_anchors": []
+    }
+  ]
+}

@@ -1,0 +1,728 @@
+@prefix : <https://w3id.org/specter#> .
+@prefix specter: <https://w3id.org/specter#> .
+@prefix airo: <https://w3id.org/airo#> .
+@prefix vair: <https://w3id.org/vair#> .
+@prefix eu-aiact: <https://w3id.org/dpv/legal/eu/aiact#> .
+@prefix dpv: <https://w3id.org/dpv#> .
+@prefix tech: <https://w3id.org/dpv/tech#> .
+@prefix risk: <https://w3id.org/dpv/risk#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix mitre-atlas: <https://atlas.mitre.org/techniques/> .
+
+# =============================================================================
+# Specter EU AI Act Compliance Implementation Ontology
+#
+# Extends:
+#   - AIRO (AI Risk Ontology) — https://w3id.org/airo
+#   - VAIR (Vocabulary of AI Risks) — https://w3id.org/vair
+#   - W3C DPV EU-AIAct Extension — https://w3id.org/dpv/legal/eu/aiact
+#
+# Purpose:
+#   The implementation layer that AIRO/VAIR/DPV-AIAct don't provide.
+#   These ontologies model WHAT the regulation says.
+#   Specter models HOW to comply: obligations, controls, evidence,
+#   gaps, migration tasks, and their dependencies.
+#
+# License: Apache 2.0
+# =============================================================================
+
+<https://w3id.org/specter> rdf:type owl:Ontology ;
+    owl:versionIRI <https://w3id.org/specter/1.0> ;
+    owl:imports <https://w3id.org/airo> ;
+    dct:title "Specter EU AI Act Compliance Implementation Ontology"@en ;
+    dct:description """
+        An ontology for operationalizing EU AI Act compliance.
+        Extends AIRO (AI Risk Ontology), VAIR (Vocabulary of AI Risks),
+        and the W3C DPV EU-AIAct extension with implementation concepts:
+        obligations, controls, evidence chains, compliance gaps,
+        migration tasks, and assessment dimensions.
+
+        While AIRO/VAIR model AI risks and the DPV extension models
+        regulatory concepts, Specter models the engineering implementation
+        path from non-compliant to compliant.
+    """@en ;
+    dct:creator "Specter contributors" ;
+    dct:created "2026-03-29"^^xsd:date ;
+    dct:license <https://www.apache.org/licenses/LICENSE-2.0> ;
+    dct:source <http://data.europa.eu/eli/reg/2024/1689/oj> ;
+    vann:preferredNamespacePrefix "specter" ;
+    vann:preferredNamespaceUri "https://w3id.org/specter#" ;
+    rdfs:label "Specter EU AI Act Compliance Implementation Ontology"@en ;
+    rdfs:seeAlso <https://w3id.org/airo> ,
+                 <https://w3id.org/vair> ,
+                 <https://w3id.org/dpv/legal/eu/aiact> ;
+    owl:versionInfo "1.0"@en .
+
+
+# =============================================================================
+# CLASSES — Compliance Implementation Layer
+# These classes DO NOT duplicate AIRO/VAIR/DPV-AIAct.
+# They extend them with operational compliance concepts.
+# =============================================================================
+
+# --- Regulatory Structure ---
+
+specter:Article rdf:type owl:Class ;
+    rdfs:label "Article"@en ;
+    rdfs:comment """A numbered article in EU Regulation 2024/1689.
+        Articles impose obligations on actors in the AI value chain.
+        This is the normative source that AIRO/VAIR reference but don't
+        model as first-class entities with obligation decomposition."""@en ;
+    skos:prefLabel "Article"@en .
+
+specter:Chapter rdf:type owl:Class ;
+    rdfs:label "Chapter"@en ;
+    rdfs:comment "A chapter grouping related articles in the AI Act."@en ;
+    skos:prefLabel "Chapter"@en .
+
+specter:Annex rdf:type owl:Class ;
+    rdfs:label "Annex"@en ;
+    rdfs:comment """An annex to the regulation (I through XIII).
+        Annex III lists high-risk AI system use cases (modeled by VAIR domains).
+        Annex IV specifies technical documentation requirements.
+        Annex XII defines post-market monitoring content."""@en ;
+    skos:prefLabel "Annex"@en .
+
+specter:Recital rdf:type owl:Class ;
+    rdfs:label "Recital"@en ;
+    rdfs:comment "Interpretive guidance for articles."@en ;
+    skos:prefLabel "Recital"@en .
+
+# --- Obligation Layer (NEW — not in AIRO/VAIR/DPV) ---
+
+specter:Obligation rdf:type owl:Class ;
+    rdfs:label "Obligation"@en ;
+    rdfs:comment """A specific legal requirement imposed by an article.
+        An article may impose multiple obligations with different scopes.
+        This is the granularity level needed for compliance engineering —
+        AIRO models risks, but not the individual obligations that must
+        be satisfied to manage those risks."""@en ;
+    skos:prefLabel "Obligation"@en .
+
+specter:Control rdf:type owl:Class ;
+    rdfs:subClassOf airo:RiskControl ;
+    rdfs:label "Control"@en ;
+    rdfs:comment """A technical or organizational measure that satisfies an obligation.
+        Extends airo:RiskControl with obligation-level traceability.
+        Example: 'Implement human-in-the-loop gate before automated decisions'
+        satisfies obligation under Art. 14."""@en ;
+    skos:prefLabel "Control"@en .
+
+specter:EvidenceType rdf:type owl:Class ;
+    rdfs:label "Evidence Type"@en ;
+    rdfs:comment """A category of evidence that demonstrates a control is implemented.
+        Examples: test report, audit log, architecture diagram,
+        bias evaluation result, data lineage record."""@en ;
+    skos:prefLabel "Evidence Type"@en .
+
+specter:Evidence rdf:type owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "Evidence"@en ;
+    rdfs:comment """A specific piece of compliance evidence produced by or about
+        an AI system. Linked to the obligation it supports, the system
+        it covers, and the tamper-evident hash chain.
+        Extends prov:Entity for W3C PROV-O provenance compatibility."""@en ;
+    skos:prefLabel "Evidence"@en .
+
+specter:ComplianceActivity rdf:type owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Compliance Activity"@en ;
+    rdfs:comment """A recorded compliance activity from the host evidence chain.
+        Extends prov:Activity for W3C PROV-O provenance compatibility.
+        Every EvidenceEntry is serialized as an instance of this class
+        (or one of its subclasses) when exported via PROV-O runtime emission."""@en ;
+    skos:prefLabel "Compliance Activity"@en .
+
+specter:LLMDecision rdf:type owl:Class ;
+    rdfs:subClassOf specter:ComplianceActivity ;
+    rdfs:label "LLM Decision"@en ;
+    rdfs:comment """An Article 14 decision intercept — the moment a governed
+        AI system evaluated a prompt and returned approve, block, or escalate.
+        Links to the prompt entity it used and the outcome it generated."""@en ;
+    skos:prefLabel "LLM Decision"@en .
+
+specter:DecisionOverride rdf:type owl:Class ;
+    rdfs:subClassOf specter:ComplianceActivity ;
+    rdfs:label "Decision Override"@en ;
+    rdfs:comment """A human override of an earlier LLM decision.
+        Informed by the original decision via prov:wasInformedBy.
+        Establishes the Article 14 human-in-the-loop audit trail."""@en ;
+    skos:prefLabel "Decision Override"@en .
+
+# --- Assessment Layer (extends the dimension catalog into ontology) ---
+
+specter:ComplianceDimension rdf:type owl:Class ;
+    rdfs:label "Compliance Dimension"@en ;
+    rdfs:comment """A measurable aspect of compliance maturity.
+        Maps to the 15 assessment dimensions in the host KB.
+        Each dimension measures conformity with one or more obligations."""@en ;
+    skos:prefLabel "Compliance Dimension"@en .
+
+specter:AssessmentQuestion rdf:type owl:Class ;
+    rdfs:label "Assessment Question"@en ;
+    rdfs:comment """A specific question used to evaluate maturity within
+        a compliance dimension. Maps to the 75 assessment questions in the host KB."""@en ;
+    skos:prefLabel "Assessment Question"@en .
+
+# --- Gap & Remediation Layer (NEW — operational compliance) ---
+
+specter:ComplianceGap rdf:type owl:Class ;
+    rdfs:label "Compliance Gap"@en ;
+    rdfs:comment """An identified deficiency where an obligation is not met.
+        Has effort estimate, priority, and dependency relationships
+        to other gaps. This is the operational output of gap analysis."""@en ;
+    skos:prefLabel "Compliance Gap"@en .
+
+specter:MigrationTask rdf:type owl:Class ;
+    rdfs:label "Migration Task"@en ;
+    rdfs:comment """An engineering task that addresses a compliance gap.
+        Part of a phased roadmap with dependency ordering.
+        Carries agent-executable I/O contracts for automation."""@en ;
+    skos:prefLabel "Migration Task"@en .
+
+# --- Conformity & Enforcement (extends DPV-AIAct) ---
+
+specter:Deadline rdf:type owl:Class ;
+    rdfs:label "Enforcement Deadline"@en ;
+    rdfs:comment """A regulatory deadline for compliance per Art. 113."""@en ;
+    skos:prefLabel "Enforcement Deadline"@en .
+
+specter:Penalty rdf:type owl:Class ;
+    rdfs:label "Penalty"@en ;
+    rdfs:comment """A penalty provision for non-compliance per Art. 99."""@en ;
+    skos:prefLabel "Penalty"@en .
+
+
+# =============================================================================
+# OBJECT PROPERTIES — Compliance Relationships
+# =============================================================================
+
+# --- Article → Obligation relationships ---
+
+specter:imposes rdf:type owl:ObjectProperty ;
+    rdfs:label "imposes"@en ;
+    rdfs:comment "An article imposes one or more obligations."@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range specter:Obligation .
+
+specter:crossReferences rdf:type owl:ObjectProperty ;
+    rdfs:label "cross-references"@en ;
+    rdfs:comment "An article references another article."@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range specter:Article .
+
+specter:belongsToChapter rdf:type owl:ObjectProperty ;
+    rdfs:label "belongs to chapter"@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range specter:Chapter .
+
+specter:detailedIn rdf:type owl:ObjectProperty ;
+    rdfs:label "detailed in"@en ;
+    rdfs:comment "Requirements detailed in an annex."@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range specter:Annex .
+
+# --- Obligation relationships ---
+
+specter:requiresControl rdf:type owl:ObjectProperty ;
+    rdfs:label "requires control"@en ;
+    rdfs:domain specter:Obligation ;
+    rdfs:range specter:Control .
+
+specter:appliesToRiskTier rdf:type owl:ObjectProperty ;
+    rdfs:label "applies to risk tier"@en ;
+    rdfs:comment "Links to eu-aiact risk level concepts."@en ;
+    rdfs:domain specter:Obligation .
+
+specter:scopedToRole rdf:type owl:ObjectProperty ;
+    rdfs:label "scoped to role"@en ;
+    rdfs:comment """Links to eu-aiact/airo role concepts:
+        eu-aiact:AIProvider, eu-aiact:AIDeployer, etc."""@en ;
+    rdfs:domain specter:Obligation .
+
+specter:dependsOn rdf:type owl:ObjectProperty ;
+    rdfs:label "depends on"@en ;
+    rdfs:comment """One obligation depends on another being satisfied first.
+        Example: Art. 10 data governance depends on Art. 9 risk management."""@en ;
+    rdfs:domain specter:Obligation ;
+    rdfs:range specter:Obligation .
+
+# --- Control and Evidence relationships ---
+
+specter:evidencedBy rdf:type owl:ObjectProperty ;
+    rdfs:label "evidenced by"@en ;
+    rdfs:domain specter:Control ;
+    rdfs:range specter:EvidenceType .
+
+specter:supportsObligation rdf:type owl:ObjectProperty ;
+    rdfs:label "supports obligation"@en ;
+    rdfs:domain specter:Evidence ;
+    rdfs:range specter:Obligation .
+
+specter:satisfiesControl rdf:type owl:ObjectProperty ;
+    rdfs:label "satisfies control"@en ;
+    rdfs:domain specter:Evidence ;
+    rdfs:range specter:Control .
+
+specter:producedBy rdf:type owl:ObjectProperty ;
+    rdfs:label "produced by"@en ;
+    rdfs:comment "Links to airo:AISystem."@en ;
+    rdfs:domain specter:Evidence ;
+    rdfs:range airo:AISystem .
+
+# --- Assessment relationships ---
+
+specter:measures rdf:type owl:ObjectProperty ;
+    rdfs:label "measures"@en ;
+    rdfs:domain specter:ComplianceDimension ;
+    rdfs:range specter:Obligation .
+
+specter:evaluates rdf:type owl:ObjectProperty ;
+    rdfs:label "evaluates"@en ;
+    rdfs:domain specter:AssessmentQuestion ;
+    rdfs:range specter:ComplianceDimension .
+
+# --- Gap and Task relationships ---
+
+specter:identifiesGapFor rdf:type owl:ObjectProperty ;
+    rdfs:label "identifies gap for"@en ;
+    rdfs:domain specter:ComplianceGap ;
+    rdfs:range specter:Obligation .
+
+specter:addressedBy rdf:type owl:ObjectProperty ;
+    rdfs:label "addressed by"@en ;
+    rdfs:domain specter:ComplianceGap ;
+    rdfs:range specter:MigrationTask .
+
+specter:blocks rdf:type owl:ObjectProperty ;
+    rdfs:label "blocks"@en ;
+    rdfs:comment "One task must be completed before another can start."@en ;
+    rdfs:domain specter:MigrationTask ;
+    rdfs:range specter:MigrationTask .
+
+specter:satisfies rdf:type owl:ObjectProperty ;
+    rdfs:label "satisfies"@en ;
+    rdfs:domain specter:MigrationTask ;
+    rdfs:range specter:Obligation .
+
+# --- System relationships (linking to AIRO) ---
+
+specter:classifiedAs rdf:type owl:ObjectProperty ;
+    rdfs:label "classified as"@en ;
+    rdfs:domain airo:AISystem .
+
+specter:operatesInDomain rdf:type owl:ObjectProperty ;
+    rdfs:label "operates in domain"@en ;
+    rdfs:comment "Links airo:AISystem to airo:Domain (Annex III sectors)."@en ;
+    rdfs:domain airo:AISystem ;
+    rdfs:range airo:Domain .
+
+# --- Enforcement relationships ---
+
+specter:enforcedBy rdf:type owl:ObjectProperty ;
+    rdfs:label "enforced by"@en ;
+    rdfs:domain specter:Obligation ;
+    rdfs:range specter:Deadline .
+
+specter:penalizedUnder rdf:type owl:ObjectProperty ;
+    rdfs:label "penalized under"@en ;
+    rdfs:domain specter:Obligation ;
+    rdfs:range specter:Penalty .
+
+# --- Standard conformity (linking to AIRO) ---
+
+specter:referencesStandard rdf:type owl:ObjectProperty ;
+    rdfs:label "references standard"@en ;
+    rdfs:comment "Links to airo:Standard."@en ;
+    rdfs:domain specter:Control ;
+    rdfs:range airo:Standard .
+
+specter:presumesConformityWith rdf:type owl:ObjectProperty ;
+    rdfs:label "presumes conformity with"@en ;
+    rdfs:domain airo:Standard ;
+    rdfs:range specter:Obligation .
+
+
+# =============================================================================
+# DATATYPE PROPERTIES
+# =============================================================================
+
+specter:articleNumber rdf:type owl:DatatypeProperty ;
+    rdfs:label "article number"@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range xsd:string .
+
+specter:articleTitle rdf:type owl:DatatypeProperty ;
+    rdfs:label "article title"@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range xsd:string .
+
+specter:obligationText rdf:type owl:DatatypeProperty ;
+    rdfs:label "obligation text"@en ;
+    rdfs:domain specter:Obligation ;
+    rdfs:range xsd:string .
+
+specter:bindingLevel rdf:type owl:DatatypeProperty ;
+    rdfs:label "binding level"@en ;
+    rdfs:comment "mandatory, conditional, or recommended"@en ;
+    rdfs:domain specter:Obligation ;
+    rdfs:range xsd:string .
+
+specter:dimensionName rdf:type owl:DatatypeProperty ;
+    rdfs:label "dimension name"@en ;
+    rdfs:domain specter:ComplianceDimension ;
+    rdfs:range xsd:string .
+
+specter:dimensionWeight rdf:type owl:DatatypeProperty ;
+    rdfs:label "dimension weight"@en ;
+    rdfs:domain specter:ComplianceDimension ;
+    rdfs:range xsd:float .
+
+specter:questionText rdf:type owl:DatatypeProperty ;
+    rdfs:label "question text"@en ;
+    rdfs:domain specter:AssessmentQuestion ;
+    rdfs:range xsd:string .
+
+specter:effortEstimate rdf:type owl:DatatypeProperty ;
+    rdfs:label "effort estimate"@en ;
+    rdfs:domain specter:ComplianceGap ;
+    rdfs:range xsd:string .
+
+specter:priority rdf:type owl:DatatypeProperty ;
+    rdfs:label "priority"@en ;
+    rdfs:comment "critical, high, medium, or low"@en ;
+    rdfs:domain specter:ComplianceGap ;
+    rdfs:range xsd:string .
+
+specter:taskPhase rdf:type owl:DatatypeProperty ;
+    rdfs:label "task phase"@en ;
+    rdfs:domain specter:MigrationTask ;
+    rdfs:range xsd:integer .
+
+specter:taskDescription rdf:type owl:DatatypeProperty ;
+    rdfs:label "task description"@en ;
+    rdfs:domain specter:MigrationTask ;
+    rdfs:range xsd:string .
+
+specter:evidenceHash rdf:type owl:DatatypeProperty ;
+    rdfs:label "evidence hash"@en ;
+    rdfs:comment "SHA-256 hash for tamper-evident chain."@en ;
+    rdfs:domain specter:Evidence ;
+    rdfs:range xsd:string .
+
+specter:createdAt rdf:type owl:DatatypeProperty ;
+    rdfs:label "created at"@en ;
+    rdfs:domain specter:Evidence ;
+    rdfs:range xsd:dateTime .
+
+specter:correlationId rdf:type owl:DatatypeProperty ;
+    rdfs:label "correlation ID"@en ;
+    rdfs:domain specter:Evidence ;
+    rdfs:range xsd:string .
+
+specter:enforcementDate rdf:type owl:DatatypeProperty ;
+    rdfs:label "enforcement date"@en ;
+    rdfs:domain specter:Deadline ;
+    rdfs:range xsd:date .
+
+specter:maxFineEuros rdf:type owl:DatatypeProperty ;
+    rdfs:label "max fine euros"@en ;
+    rdfs:domain specter:Penalty ;
+    rdfs:range xsd:integer .
+
+specter:maxFinePercentage rdf:type owl:DatatypeProperty ;
+    rdfs:label "max fine percentage"@en ;
+    rdfs:comment "Of worldwide annual turnover."@en ;
+    rdfs:domain specter:Penalty ;
+    rdfs:range xsd:float .
+
+
+# =============================================================================
+# Agentic-AI Compound-Risk Taxonomy (paper §10.4)
+#
+# Source: AI Agents Under EU Law (Working Paper, 7 April 2026), §10.4
+# lines 2227-2245. The paper observes no current EU instrument provides
+# a risk taxonomy for compound AI systems — Recital 116 only mandates
+# one for GPAI systemic risk; ISO/IEC 42005 + 23894 manage organisational
+# risk to the organisation, not Article 9's external-rights scope.
+# Specter ships the canonical reference implementation.
+#
+# Classes:
+#   - specter:CompoundRiskType     ⊆ airo:RiskConcept   (4 axes)
+#   - specter:ThreatCategory       ⊆ airo:Threat        (10 entries)
+#   - specter:AgentArchetype       ⊆ airo:AISystem      (7 entries)
+#   - specter:OperatorRole         ⊆ eu-aiact:AIRole    (9 entries)
+#
+# Properties:
+#   - specter:mitigatesRisk       Article    → CompoundRiskType
+#   - specter:exhibitsThreat      CompoundRiskType → ThreatCategory
+#   - specter:archetypeCarries    AgentArchetype  → CompoundRiskType
+#   - specter:appliesToRole       Article    → OperatorRole
+#   - specter:flipsProviderUnder  OperatorRole → Article
+# =============================================================================
+
+specter:CompoundRiskType rdf:type owl:Class ;
+    rdfs:label "Compound Risk Type"@en ;
+    rdfs:subClassOf airo:RiskConcept ;
+    rdfs:comment """
+        One axis of the four-axis agentic-AI compound-risk taxonomy
+        (cascading / emergent / attribution / temporal).
+
+        Source: AI Agents Under EU Law (Working Paper, 7 April 2026),
+        §10.4 lines 2227-2245.
+    """@en ;
+    skos:definition "An axis of compound-AI-system risk that captures cascade, emergence, attribution-mismatch, or temporal-drift dynamics not addressed by single-system risk taxonomies."@en .
+
+specter:ThreatCategory rdf:type owl:Class ;
+    rdfs:label "Threat Category"@en ;
+    rdfs:subClassOf airo:Threat ;
+    rdfs:comment """
+        A threat category cross-walked from the agentic-AI literature.
+        Sources: Kim et al. USENIX 2026 (5 categories), Hammond et al.
+        multi-agent failure modes (3), OWASP Top-10 Agentic, AEPD
+        rule-of-2 / lethal trifecta (Spanish DPA, 18 Feb 2026).
+    """@en ;
+    skos:definition "A named threat class against which a compound AI system must be defended."@en .
+
+specter:AgentArchetype rdf:type owl:Class ;
+    rdfs:label "Agent Archetype"@en ;
+    rdfs:subClassOf airo:AISystem ;
+    rdfs:comment """
+        An agent architecture archetype: single-agent, orchestrator
+        with sub-agents, multi-agent swarm, GPAI with tools, RAG-
+        grounded agent, dynamic-tool-discovery agent, or continuously-
+        learning system.
+    """@en ;
+    skos:definition "A canonical shape of agentic AI system architecture used to predict the typical compound-risk profile."@en .
+
+specter:OperatorRole rdf:type owl:Class ;
+    rdfs:label "Operator Role"@en ;
+    rdfs:subClassOf eu-aiact:AIRole ;
+    rdfs:comment """
+        An EU AI Act operator role under Art. 3 + Chapter V + Art. 22 +
+        Art. 74 + MSR Reg. (EU) 2019/1020 Art. 4. Includes the six NLF
+        roles (provider, deployer, importer, distributor, product
+        manufacturer, authorised representative), the GPAI provider,
+        the GPAI provider with systemic risk, and the
+        extraterritorial-non-EU modifier reached by Art. 2(1)(c).
+    """@en ;
+    skos:definition "An EU AI Act operator role that determines which articles a party owes."@en .
+
+# ─── Properties ──────────────────────────────────────────────────────
+
+specter:mitigatesRisk rdf:type owl:ObjectProperty ;
+    rdfs:label "mitigates compound risk"@en ;
+    rdfs:comment "Connects an AI Act article to the compound-risk axis it mitigates."@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range specter:CompoundRiskType ;
+    rdfs:subPropertyOf airo:mitigatesRiskConcept .
+
+specter:exhibitsThreat rdf:type owl:ObjectProperty ;
+    rdfs:label "exhibits threat"@en ;
+    rdfs:comment "Connects a compound-risk axis to a threat category in the cross-walk."@en ;
+    rdfs:domain specter:CompoundRiskType ;
+    rdfs:range specter:ThreatCategory .
+
+specter:archetypeCarries rdf:type owl:ObjectProperty ;
+    rdfs:label "archetype carries risk"@en ;
+    rdfs:comment "Connects an agent archetype to the compound-risk axis it typically carries."@en ;
+    rdfs:domain specter:AgentArchetype ;
+    rdfs:range specter:CompoundRiskType .
+
+specter:appliesToRole rdf:type owl:ObjectProperty ;
+    rdfs:label "applies to operator role"@en ;
+    rdfs:comment "Connects an AI Act article to the operator role(s) that owe it."@en ;
+    rdfs:domain specter:Article ;
+    rdfs:range specter:OperatorRole .
+
+specter:flipsProviderUnder rdf:type owl:ObjectProperty ;
+    rdfs:label "flips to provider under article"@en ;
+    rdfs:comment "Connects an operator role to the article(s) under which the role flips into provider status (Art. 25 substantial modification, own-name, intended-purpose change, >1/3 GPAI compute)."@en ;
+    rdfs:domain specter:OperatorRole ;
+    rdfs:range specter:Article .
+
+# ─── Compound-risk axis individuals (paper §10.4) ────────────────────
+
+specter:cascading rdf:type specter:CompoundRiskType ;
+    rdfs:label "Cascading Risk"@en ;
+    skos:definition "Error or bias in one agent's output propagates through orchestrated sub-agents, contaminating downstream actions."@en ;
+    skos:note "Paper §10.4 lines 2227-2229" .
+
+specter:emergent rdf:type specter:CompoundRiskType ;
+    rdfs:label "Emergent Risk"@en ;
+    skos:definition "Individually safe agents produce unsafe collective behaviour through interaction effects — miscoordination, conflict, collusion."@en ;
+    skos:note "Paper §10.4 lines 2229-2230; Hammond et al.; Darius et al." .
+
+specter:attribution rdf:type specter:CompoundRiskType ;
+    rdfs:label "Attribution Risk"@en ;
+    skos:definition "The multi-provider value chain obscures responsibility in ways the New Legislative Framework's role taxonomy was not designed to handle."@en ;
+    skos:note "Paper §10.4 lines 2230-2232; footnote 33." .
+
+specter:temporal rdf:type specter:CompoundRiskType ;
+    rdfs:label "Temporal Risk (Runtime Drift)"@en ;
+    skos:definition "Long-running agent processes accumulate state modifications that are individually minor but collectively constitute a shift outside the conformity-assessed envelope."@en ;
+    skos:note "Paper §10.4 lines 2232-2233; §6.4; Art. 3(23) substantial modification." .
+
+# ─── Operator-role individuals (the 9 canonical roles) ───────────────
+# Definitions abbreviated; full definitions in app/data/role_obligations.py.
+
+specter:provider rdf:type specter:OperatorRole ;
+    rdfs:label "Provider"@en ;
+    skos:definition "Develops or commissions an AI system and places it on the market or puts it into service under its own name (Art. 3(3))."@en .
+
+specter:deployer rdf:type specter:OperatorRole ;
+    rdfs:label "Deployer"@en ;
+    skos:definition "Uses an AI system under its authority (not for personal non-professional activity) (Art. 3(4))."@en .
+
+specter:importer rdf:type specter:OperatorRole ;
+    rdfs:label "Importer"@en ;
+    skos:definition "Places on the EU market an AI system bearing the name of a non-EU provider (Art. 3(7))."@en .
+
+specter:distributor rdf:type specter:OperatorRole ;
+    rdfs:label "Distributor"@en ;
+    skos:definition "Makes an AI system available on the EU market without affecting its properties (Art. 3(8))."@en .
+
+specter:productManufacturer rdf:type specter:OperatorRole ;
+    rdfs:label "Product Manufacturer"@en ;
+    skos:definition "Integrates an AI system into a product placed on the market under the manufacturer's name; treated as provider (Art. 25(1))."@en .
+
+specter:authorizedRepresentative rdf:type specter:OperatorRole ;
+    rdfs:label "Authorized Representative"@en ;
+    skos:definition "Appointed by a non-EU provider as their authorized representative in the EU under written mandate (Art. 22)."@en .
+
+specter:gpaiProvider rdf:type specter:OperatorRole ;
+    rdfs:label "GPAI Model Provider"@en ;
+    skos:definition "Provider of a general-purpose AI model placed on the market — Chapter V Art. 53 obligations."@en .
+
+specter:gpaiSystemicProvider rdf:type specter:OperatorRole ;
+    rdfs:label "GPAI Provider with Systemic Risk"@en ;
+    skos:definition "GPAI model meeting the Art. 51(2) quantitative criterion or AI-Office designation; carries Art. 55 + Art. 56 additional obligations."@en .
+
+specter:extraterritorialNonEu rdf:type specter:OperatorRole ;
+    rdfs:label "Extraterritorial (Non-EU) Entity"@en ;
+    skos:definition "Non-EU entity reached by Art. 2(1)(c) — must designate a 'responsible person' established in the EU per MSR Art. 4 / AI Act Art. 74."@en ;
+    skos:note "Most US AI agent providers have not yet addressed this (paper lines 1071-1072)." .
+
+# =============================================================================
+# MITRE ATLAS — Adversarial Threat Landscape for AI Systems
+# =============================================================================
+#
+# Models a hardening campaign (a recorded antifragile-ai security run) and
+# the per-attempt outcomes mapped onto MITRE ATLAS techniques. Used by
+# /api/v1/security-scan/campaigns/{id}/atlas-export to produce a benchmarking-
+# friendly RDF/Turtle or JSON-LD view of the campaign for downstream triple
+# stores and security-research consumers.
+#
+# Source vocabulary:
+#   - MITRE ATLAS — https://atlas.mitre.org/ (mitre-atlas: prefix)
+#   - Curated subset vendored at app/data/atlas_techniques.py
+
+specter:SecurityCampaign rdf:type owl:Class ;
+    rdfs:subClassOf airo:RiskAssessment ;
+    rdfs:label "Security Campaign"@en ;
+    skos:definition "A recorded antifragile-ai hardening campaign — a sequence of MITRE ATLAS attack attempts against an AI system, with per-attempt outcomes and an aggregate Wilson-score resilience metric."@en .
+
+specter:AttackAttempt rdf:type owl:Class ;
+    rdfs:subClassOf airo:Risk ;
+    rdfs:label "Attack Attempt"@en ;
+    skos:definition "A single execution of an ATLAS technique against the campaign target. Carries a reference to the technique (specter:carriesTechnique) and the outcome (specter:hasOutcome)."@en .
+
+specter:AtlasTechnique rdf:type owl:Class ;
+    rdfs:subClassOf airo:Threat ;
+    rdfs:label "MITRE ATLAS Technique"@en ;
+    skos:definition "A technique from the MITRE ATLAS taxonomy. Identified by AML.T#### with optional sub-technique. Inline-emitted in the export so consumers do not need to fetch from atlas.mitre.org."@en .
+
+specter:UnmappedTechnique rdf:type specter:AtlasTechnique ;
+    rdfs:label "Unmapped attack technique"@en ;
+    skos:definition "Fallback used when a registry-emitted technique string does not resolve to a curated AML.T#### entry. The original label is preserved on the AttackAttempt via specter:unmappedTechniqueLabel — never silently dropped (antifragility hygiene rule #1)."@en .
+
+specter:AttackOutcome rdf:type owl:Class ;
+    rdfs:label "Attack Outcome"@en ;
+    skos:definition "Canonical outcome of an attack attempt. Closed enumeration: success / blocked / error / timeout / pending / running."@en .
+
+specter:AttackOutcome_Success rdf:type specter:AttackOutcome ;
+    rdfs:label "Success"@en ;
+    specter:outcomeKind "success" ;
+    skos:definition "Attack succeeded — the system is vulnerable along this dimension."@en .
+
+specter:AttackOutcome_Blocked rdf:type specter:AttackOutcome ;
+    rdfs:label "Blocked"@en ;
+    specter:outcomeKind "blocked" ;
+    skos:definition "Defense intercepted the attack — capacity-building stressor per Jin & Lee."@en .
+
+specter:AttackOutcome_Error rdf:type specter:AttackOutcome ;
+    rdfs:label "Error"@en ;
+    specter:outcomeKind "error" ;
+    skos:definition "Attack execution failed for non-defensive reasons (network, target down, executor crash). Investigate before treating as evidence."@en .
+
+specter:AttackOutcome_Timeout rdf:type specter:AttackOutcome ;
+    rdfs:label "Timeout"@en ;
+    specter:outcomeKind "timeout" ;
+    skos:definition "Attack did not complete within the executor's deadline; ambiguous between blocked + slow-error."@en .
+
+specter:AttackOutcome_Pending rdf:type specter:AttackOutcome ;
+    rdfs:label "Pending"@en ;
+    specter:outcomeKind "pending" ;
+    skos:definition "Attack scheduled but not yet started."@en .
+
+specter:AttackOutcome_Running rdf:type specter:AttackOutcome ;
+    rdfs:label "Running"@en ;
+    specter:outcomeKind "running" ;
+    skos:definition "Attack in flight at snapshot time."@en .
+
+specter:carriesTechnique rdf:type owl:ObjectProperty ;
+    rdfs:label "carries technique"@en ;
+    rdfs:domain specter:AttackAttempt ;
+    rdfs:range specter:AtlasTechnique ;
+    skos:definition "Links an attempt to the MITRE ATLAS technique it executes."@en .
+
+specter:hasOutcome rdf:type owl:ObjectProperty ;
+    rdfs:label "has outcome"@en ;
+    rdfs:domain specter:AttackAttempt ;
+    rdfs:range specter:AttackOutcome ;
+    skos:definition "Links an attempt to the canonical outcome individual."@en .
+
+specter:campaign rdf:type owl:ObjectProperty ;
+    rdfs:label "campaign"@en ;
+    rdfs:domain specter:AttackAttempt ;
+    rdfs:range specter:SecurityCampaign ;
+    skos:definition "Back-reference from an attempt to the parent campaign."@en .
+
+specter:atlasId rdf:type owl:DatatypeProperty ;
+    rdfs:label "ATLAS ID"@en ;
+    rdfs:domain specter:AtlasTechnique ;
+    rdfs:range xsd:string ;
+    skos:definition "Canonical AML.T#### identifier (with optional .### sub-technique suffix)."@en .
+
+specter:atlasTactic rdf:type owl:DatatypeProperty ;
+    rdfs:label "ATLAS tactic"@en ;
+    rdfs:domain specter:AtlasTechnique ;
+    rdfs:range xsd:string ;
+    skos:definition "ATLAS kill-chain tactic the technique participates in (e.g. Initial Access, Defense Evasion)."@en .
+
+specter:outcomeKind rdf:type owl:DatatypeProperty ;
+    rdfs:label "outcome kind"@en ;
+    rdfs:domain specter:AttackOutcome ;
+    rdfs:range xsd:string .
+
+specter:resilienceScore rdf:type owl:DatatypeProperty ;
+    rdfs:label "resilience score"@en ;
+    rdfs:domain specter:SecurityCampaign ;
+    rdfs:range xsd:decimal .
+
+specter:resilienceCiLower rdf:type owl:DatatypeProperty ;
+    rdfs:label "resilience CI lower"@en ;
+    rdfs:domain specter:SecurityCampaign ;
+    rdfs:range xsd:decimal .
+
+specter:resilienceCiUpper rdf:type owl:DatatypeProperty ;
+    rdfs:label "resilience CI upper"@en ;
+    rdfs:domain specter:SecurityCampaign ;
+    rdfs:range xsd:decimal .

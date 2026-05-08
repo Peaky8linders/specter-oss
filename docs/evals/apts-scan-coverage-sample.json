@@ -1,0 +1,671 @@
+{
+  "scan_id": "scan-51d0f09908149b7a",
+  "project_name": "reference (self-scan)",
+  "apts_version": "0.1.0",
+  "headline_score": 0.5566,
+  "counts": {
+    "total": 53,
+    "satisfied": 21,
+    "partial": 17,
+    "gap": 15,
+    "not_assessed": 0
+  },
+  "domain_coverage": {
+    "Graduated Autonomy": 0.5,
+    "Auditability": 0.65,
+    "Human Oversight": 0.75,
+    "Manipulation Resistance": 0.7778,
+    "Reporting": 0.9,
+    "Safety Controls": 0.3333,
+    "Scope Enforcement": 0.125,
+    "Supply Chain Trust": 0.4545
+  },
+  "requirement_results": [
+    {
+      "requirement_id": "APTS-AL-007",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Step Technique Chaining Within Single Phase",
+      "level": "partial",
+      "contributing_analyzers": [
+        "agent_cascade"
+      ],
+      "rationale": "Average analyzer score 80/100 across agent_cascade \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-AL-013",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Complete Attack Chain Execution Within Boundaries",
+      "level": "partial",
+      "contributing_analyzers": [
+        "agent_cascade"
+      ],
+      "rationale": "Average analyzer score 80/100 across agent_cascade \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-AL-016",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Continuous Boundary Monitoring and Breach Detection",
+      "level": "partial",
+      "contributing_analyzers": [
+        "agent_cascade"
+      ],
+      "rationale": "Average analyzer score 80/100 across agent_cascade \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-AR-001",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Structured Event Logging with Schema Validation",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "logging_monitoring"
+      ],
+      "rationale": "Average analyzer score 85/100 across logging_monitoring; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-AR-002",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "State Transition Logging",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "logging_monitoring"
+      ],
+      "rationale": "Average analyzer score 85/100 across logging_monitoring; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-AR-008",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Context-Aware Decision Logging",
+      "level": "gap",
+      "contributing_analyzers": [
+        "agent_inventory"
+      ],
+      "rationale": "Average analyzer score 43/100 across agent_inventory \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-AR-009",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Transparency Report Requirements",
+      "level": "partial",
+      "contributing_analyzers": [
+        "documentation"
+      ],
+      "rationale": "Average analyzer score 75/100 across documentation \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-AR-010",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Cryptographic Hashing of All Evidence",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "logging_monitoring"
+      ],
+      "rationale": "Average analyzer score 85/100 across logging_monitoring; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-AR-012",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Tamper-Evident Logging with Hash Chains",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "logging_monitoring"
+      ],
+      "rationale": "Average analyzer score 85/100 across logging_monitoring; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-AR-015",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Evidence Classification and Sensitive Data Handling",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "data_pipeline"
+      ],
+      "rationale": "Average analyzer score 82/100 across data_pipeline; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-AR-016",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Platform Integrity and Supply Chain Attestation",
+      "level": "gap",
+      "contributing_analyzers": [
+        "cicd_dockerfile"
+      ],
+      "rationale": "Average analyzer score 0/100 across cicd_dockerfile \u2014 0 gap-level findings indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-AR-017",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Safety Control Regression Testing After Platform Updates",
+      "level": "partial",
+      "contributing_analyzers": [
+        "test_suite"
+      ],
+      "rationale": "Average analyzer score 79/100 across test_suite \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-AR-019",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "AI/ML Model Change Tracking and Drift Detection",
+      "level": "partial",
+      "contributing_analyzers": [
+        "runtime_drift"
+      ],
+      "rationale": "Average analyzer score 57/100 across runtime_drift \u2014 control is present but 2 gap-level findings need attention."
+    },
+    {
+      "requirement_id": "APTS-HO-001",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Pre-Approval Gates for Autonomy Levels L1 and L2",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "human_oversight"
+      ],
+      "rationale": "Average analyzer score 83/100 across human_oversight; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-HO-002",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Real-Time Monitoring and Intervention Capability",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "human_oversight"
+      ],
+      "rationale": "Average analyzer score 83/100 across human_oversight; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-HO-010",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Human Decision Points Before Irreversible Actions",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "human_oversight"
+      ],
+      "rationale": "Average analyzer score 83/100 across human_oversight; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-HO-014",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Legal and Compliance Escalation Triggers",
+      "level": "gap",
+      "contributing_analyzers": [
+        "regulatory_perimeter"
+      ],
+      "rationale": "Average analyzer score 40/100 across regulatory_perimeter \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-MR-001",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Instruction Boundary Enforcement",
+      "level": "partial",
+      "contributing_analyzers": [
+        "security_controls"
+      ],
+      "rationale": "Average analyzer score 77/100 across security_controls \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-MR-002",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Response Validation & Sanitization",
+      "level": "partial",
+      "contributing_analyzers": [
+        "security_controls"
+      ],
+      "rationale": "Average analyzer score 77/100 across security_controls \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-MR-004",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Configuration File Integrity Verification",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "configuration"
+      ],
+      "rationale": "Average analyzer score 84/100 across configuration; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-MR-009",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Server-Side Request Forgery (SSRF) Prevention in Testing",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "lethal_trifecta"
+      ],
+      "rationale": "Average analyzer score 85/100 across lethal_trifecta; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-MR-011",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Out-of-Band Communication Prevention",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "lethal_trifecta"
+      ],
+      "rationale": "Average analyzer score 85/100 across lethal_trifecta; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-MR-013",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Adversarial Example Detection in Vulnerability Classification",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "adversarial_robustness"
+      ],
+      "rationale": "Average analyzer score 100/100 across adversarial_robustness; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-MR-018",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "AI Model Input/Output Architectural Boundary",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "lethal_trifecta"
+      ],
+      "rationale": "Average analyzer score 85/100 across lethal_trifecta; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-MR-019",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Discovered Credential Protection",
+      "level": "gap",
+      "contributing_analyzers": [
+        "privilege_minimization"
+      ],
+      "rationale": "Average analyzer score 15/100 across privilege_minimization \u2014 6 gap-level findings indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-MR-020",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Adversarial Validation and Resilience Testing of Safety Controls",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "adversarial_robustness"
+      ],
+      "rationale": "Average analyzer score 100/100 across adversarial_robustness; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-RP-002",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Finding Verification and Human Review Pipeline",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "human_oversight"
+      ],
+      "rationale": "Average analyzer score 83/100 across human_oversight; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-RP-006",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "False Positive Rate Disclosure",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "fairness_testing"
+      ],
+      "rationale": "Average analyzer score 83/100 across fairness_testing; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-RP-007",
+      "domain": "Reporting",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Independent Finding Reproducibility",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "adversarial_robustness"
+      ],
+      "rationale": "Average analyzer score 100/100 across adversarial_robustness; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-RP-009",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "False Negative Rate Disclosure and Methodology",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "fairness_testing"
+      ],
+      "rationale": "Average analyzer score 83/100 across fairness_testing; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-RP-011",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Executive Summary and Risk Overview",
+      "level": "partial",
+      "contributing_analyzers": [
+        "documentation"
+      ],
+      "rationale": "Average analyzer score 75/100 across documentation \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-SC-001",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Impact Classification and CIA Scoring",
+      "level": "partial",
+      "contributing_analyzers": [
+        "security_controls"
+      ],
+      "rationale": "Average analyzer score 77/100 across security_controls \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-SC-004",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Rate Limiting, Bandwidth, and Payload Constraints",
+      "level": "partial",
+      "contributing_analyzers": [
+        "security_controls"
+      ],
+      "rationale": "Average analyzer score 77/100 across security_controls \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-SC-020",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Action Allowlist Enforcement External to the Model",
+      "level": "gap",
+      "contributing_analyzers": [
+        "security_controls",
+        "privilege_minimization"
+      ],
+      "rationale": "Average analyzer score 46/100 across security_controls, privilege_minimization \u2014 7 gap-level findings indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-SE-001",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Rules of Engagement (RoE) Specification and Validation",
+      "level": "gap",
+      "contributing_analyzers": [
+        "agent_inventory"
+      ],
+      "rationale": "Average analyzer score 43/100 across agent_inventory \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-SE-005",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Asset Criticality Classification and Integration",
+      "level": "gap",
+      "contributing_analyzers": [
+        "agent_inventory"
+      ],
+      "rationale": "Average analyzer score 43/100 across agent_inventory \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-SE-006",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Pre-Action Scope Validation",
+      "level": "gap",
+      "contributing_analyzers": [
+        "regulatory_perimeter"
+      ],
+      "rationale": "Average analyzer score 40/100 across regulatory_perimeter \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-SE-007",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Dynamic Scope Monitoring and Drift Detection",
+      "level": "partial",
+      "contributing_analyzers": [
+        "runtime_drift"
+      ],
+      "rationale": "Average analyzer score 57/100 across runtime_drift \u2014 control is present but 2 gap-level findings need attention."
+    },
+    {
+      "requirement_id": "APTS-SE-020",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Deployment-Triggered Testing Governance",
+      "level": "gap",
+      "contributing_analyzers": [
+        "cicd_dockerfile"
+      ],
+      "rationale": "Average analyzer score 0/100 across cicd_dockerfile \u2014 0 gap-level findings indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-SE-023",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Credential and Secret Lifecycle Governance",
+      "level": "gap",
+      "contributing_analyzers": [
+        "configuration",
+        "privilege_minimization"
+      ],
+      "rationale": "Average analyzer score 49/100 across configuration, privilege_minimization \u2014 6 gap-level findings indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-SE-024",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Cloud-Native and Ephemeral Infrastructure Governance",
+      "level": "gap",
+      "contributing_analyzers": [
+        "terraform",
+        "cloudformation_k8s",
+        "cloud_deployment"
+      ],
+      "rationale": "Average analyzer score 0/100 across terraform, cloudformation_k8s, cloud_deployment \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-SE-026",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Out-of-Distribution Action Monitoring",
+      "level": "partial",
+      "contributing_analyzers": [
+        "agent_cascade"
+      ],
+      "rationale": "Average analyzer score 80/100 across agent_cascade \u2014 control is present but 1 gap-level finding need attention."
+    },
+    {
+      "requirement_id": "APTS-TP-002",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Model Version Pinning and Change Management",
+      "level": "partial",
+      "contributing_analyzers": [
+        "ai_frameworks"
+      ],
+      "rationale": "Average analyzer score 78/100 across ai_frameworks \u2014 control is present but 3 gap-level findings need attention."
+    },
+    {
+      "requirement_id": "APTS-TP-006",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Dependency Inventory, Risk Assessment, and Supply Chain Verification",
+      "level": "gap",
+      "contributing_analyzers": [
+        "cicd_dockerfile"
+      ],
+      "rationale": "Average analyzer score 0/100 across cicd_dockerfile \u2014 0 gap-level findings indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-TP-007",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Data Residency and Sovereignty Requirements",
+      "level": "gap",
+      "contributing_analyzers": [
+        "cloud_deployment"
+      ],
+      "rationale": "Average analyzer score 0/100 across cloud_deployment \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-TP-008",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Cloud Security Configuration and Hardening",
+      "level": "gap",
+      "contributing_analyzers": [
+        "terraform",
+        "cloudformation_k8s",
+        "cloud_deployment"
+      ],
+      "rationale": "Average analyzer score 0/100 across terraform, cloudformation_k8s, cloud_deployment \u2014 1 gap-level finding indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-TP-012",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Client Data Classification Framework",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "data_pipeline"
+      ],
+      "rationale": "Average analyzer score 82/100 across data_pipeline; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-TP-013",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Sensitive Data Discovery and Handling",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "data_pipeline"
+      ],
+      "rationale": "Average analyzer score 82/100 across data_pipeline; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-TP-014",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Data Encryption and Cryptographic Controls",
+      "level": "satisfied",
+      "contributing_analyzers": [
+        "configuration"
+      ],
+      "rationale": "Average analyzer score 84/100 across configuration; no gap-level findings raised."
+    },
+    {
+      "requirement_id": "APTS-TP-017",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Tenant and Engagement Isolation",
+      "level": "gap",
+      "contributing_analyzers": [
+        "cloudformation_k8s"
+      ],
+      "rationale": "Average analyzer score 0/100 across cloudformation_k8s \u2014 0 gap-level findings indicate the control is missing or insufficient."
+    },
+    {
+      "requirement_id": "APTS-TP-019",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "AI Model Provenance and Training Data Governance",
+      "level": "partial",
+      "contributing_analyzers": [
+        "ai_frameworks",
+        "model_typology"
+      ],
+      "rationale": "Average analyzer score 75/100 across ai_frameworks, model_typology \u2014 control is present but 6 gap-level findings need attention."
+    },
+    {
+      "requirement_id": "APTS-TP-021",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Foundation Model Disclosure and Capability Baseline",
+      "level": "partial",
+      "contributing_analyzers": [
+        "ai_frameworks",
+        "documentation",
+        "model_typology"
+      ],
+      "rationale": "Average analyzer score 75/100 across ai_frameworks, documentation, model_typology \u2014 control is present but 7 gap-level findings need attention."
+    },
+    {
+      "requirement_id": "APTS-TP-022",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Re-attestation on Material Foundation Model Change",
+      "level": "partial",
+      "contributing_analyzers": [
+        "model_typology",
+        "runtime_drift"
+      ],
+      "rationale": "Average analyzer score 65/100 across model_typology, runtime_drift \u2014 control is present but 5 gap-level findings need attention."
+    }
+  ]
+}

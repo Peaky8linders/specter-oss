@@ -1,0 +1,81 @@
+[build-system]
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "specter"
+version = "0.1.0"
+description = "EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, OWASP APTS conformance, grounded Q&A."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    { name = "Andrei Bacu" },
+]
+keywords = [
+    "eu-ai-act",
+    "compliance",
+    "regulation",
+    "llm-as-judge",
+    "owasp",
+    "apts",
+    "mitre-atlas",
+    "rdf",
+    "ontology",
+    "agentic-ai",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Legal Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "pydantic>=2.6",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110",
+    "slowapi>=0.1.9",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "ruff>=0.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Peaky8linders/specter-oss"
+Repository = "https://github.com/Peaky8linders/specter-oss"
+Issues = "https://github.com/Peaky8linders/specter-oss/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specter"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/specter",
+    "/tests",
+    "/docs",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]

@@ -1,0 +1,1218 @@
+{
+  "version": "0.1.0",
+  "source": "OWASP Autonomous Penetration Testing Standard",
+  "last_updated": "2026-04-26T10:41:06Z",
+  "requirements": [
+    {
+      "id": "APTS-SE-001",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Rules of Engagement (RoE) Specification and Validation"
+    },
+    {
+      "id": "APTS-SE-002",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "IP Range Validation and RFC 1918 Awareness"
+    },
+    {
+      "id": "APTS-SE-003",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Domain Scope Validation and Wildcard Handling"
+    },
+    {
+      "id": "APTS-SE-004",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Temporal Boundary and Timezone Handling"
+    },
+    {
+      "id": "APTS-SE-005",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Asset Criticality Classification and Integration"
+    },
+    {
+      "id": "APTS-SE-006",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Pre-Action Scope Validation"
+    },
+    {
+      "id": "APTS-SE-007",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Dynamic Scope Monitoring and Drift Detection"
+    },
+    {
+      "id": "APTS-SE-008",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Temporal Scope Compliance Monitoring"
+    },
+    {
+      "id": "APTS-SE-009",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Hard Deny Lists and Critical Asset Protection"
+    },
+    {
+      "id": "APTS-SE-010",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Production Database Safeguards"
+    },
+    {
+      "id": "APTS-SE-011",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Multi-Tenant Environment Awareness"
+    },
+    {
+      "id": "APTS-SE-012",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "DNS Rebinding Attack Prevention"
+    },
+    {
+      "id": "APTS-SE-013",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Network Boundary and Lateral Movement Enforcement"
+    },
+    {
+      "id": "APTS-SE-014",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Network Topology Discovery Limitations"
+    },
+    {
+      "id": "APTS-SE-015",
+      "domain": "Scope Enforcement",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Scope Enforcement Audit and Compliance Verification"
+    },
+    {
+      "id": "APTS-SE-016",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Scope Refresh and Revalidation Cycle"
+    },
+    {
+      "id": "APTS-SE-017",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Engagement Boundary Definition for Recurring Tests"
+    },
+    {
+      "id": "APTS-SE-018",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Cross-Cycle Finding Correlation and Regression Detection"
+    },
+    {
+      "id": "APTS-SE-019",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Rate Limiting, Adaptive Backoff, and Production Impact Controls"
+    },
+    {
+      "id": "APTS-SE-020",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Deployment-Triggered Testing Governance"
+    },
+    {
+      "id": "APTS-SE-021",
+      "domain": "Scope Enforcement",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Scope Conflict Resolution for Overlapping Engagements"
+    },
+    {
+      "id": "APTS-SE-022",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Client-Side Agent Scope and Safety Boundaries"
+    },
+    {
+      "id": "APTS-SE-023",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Credential and Secret Lifecycle Governance"
+    },
+    {
+      "id": "APTS-SE-024",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Cloud-Native and Ephemeral Infrastructure Governance"
+    },
+    {
+      "id": "APTS-SE-025",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "API-First and Business Logic Testing Governance"
+    },
+    {
+      "id": "APTS-SE-026",
+      "domain": "Scope Enforcement",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Out-of-Distribution Action Monitoring"
+    },
+    {
+      "id": "APTS-SC-001",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Impact Classification and CIA Scoring"
+    },
+    {
+      "id": "APTS-SC-002",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Industry-Specific Impact Considerations"
+    },
+    {
+      "id": "APTS-SC-003",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Real-World Impact Classification Examples"
+    },
+    {
+      "id": "APTS-SC-004",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Rate Limiting, Bandwidth, and Payload Constraints"
+    },
+    {
+      "id": "APTS-SC-005",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Cascading Failure Prevention in Interconnected Systems"
+    },
+    {
+      "id": "APTS-SC-006",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Threshold Escalation Workflow (Automated \u2192 Approval \u2192 Prohibited)"
+    },
+    {
+      "id": "APTS-SC-007",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Cumulative Risk Scoring with Time-Based Decay"
+    },
+    {
+      "id": "APTS-SC-008",
+      "domain": "Safety Controls",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Threshold Configuration with Schema Validation"
+    },
+    {
+      "id": "APTS-SC-009",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Kill Switch"
+    },
+    {
+      "id": "APTS-SC-010",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Health Check Monitoring, Threshold Adjustment, and Automatic Halt"
+    },
+    {
+      "id": "APTS-SC-011",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Condition-Based Automated Termination"
+    },
+    {
+      "id": "APTS-SC-012",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Network-Level Circuit Breaker"
+    },
+    {
+      "id": "APTS-SC-013",
+      "domain": "Safety Controls",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Time-Based Automatic Termination with Operator Override"
+    },
+    {
+      "id": "APTS-SC-014",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Reversible Action Tracking and Rollback"
+    },
+    {
+      "id": "APTS-SC-015",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Post-Test System Integrity Validation"
+    },
+    {
+      "id": "APTS-SC-016",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Evidence Preservation and Automated Cleanup"
+    },
+    {
+      "id": "APTS-SC-017",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "External Watchdog and Operator Notification"
+    },
+    {
+      "id": "APTS-SC-018",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Containment and Recovery"
+    },
+    {
+      "id": "APTS-SC-019",
+      "domain": "Safety Controls",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Execution Sandbox and Containment Boundary Integrity"
+    },
+    {
+      "id": "APTS-SC-020",
+      "domain": "Safety Controls",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Action Allowlist Enforcement External to the Model"
+    },
+    {
+      "id": "APTS-HO-001",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Pre-Approval Gates for Autonomy Levels L1 and L2"
+    },
+    {
+      "id": "APTS-HO-002",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Real-Time Monitoring and Intervention Capability"
+    },
+    {
+      "id": "APTS-HO-003",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Decision Timeout and Default-Safe Behavior"
+    },
+    {
+      "id": "APTS-HO-004",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Authority Delegation Matrix"
+    },
+    {
+      "id": "APTS-HO-005",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Delegation Chain-of-Custody and Decision Audit Trail"
+    },
+    {
+      "id": "APTS-HO-006",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Graceful Pause Mechanism with State Preservation"
+    },
+    {
+      "id": "APTS-HO-007",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mid-Engagement Redirect Capability"
+    },
+    {
+      "id": "APTS-HO-008",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Immediate Kill Switch with State Dump"
+    },
+    {
+      "id": "APTS-HO-009",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Operator Kill Switch Authority and Handoff"
+    },
+    {
+      "id": "APTS-HO-010",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Human Decision Points Before Irreversible Actions"
+    },
+    {
+      "id": "APTS-HO-011",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Unexpected Findings Escalation Framework"
+    },
+    {
+      "id": "APTS-HO-012",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Impact Threshold Breach Escalation"
+    },
+    {
+      "id": "APTS-HO-013",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Confidence-Based Escalation (Scope Uncertainty)"
+    },
+    {
+      "id": "APTS-HO-014",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Legal and Compliance Escalation Triggers"
+    },
+    {
+      "id": "APTS-HO-015",
+      "domain": "Human Oversight",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Real-Time Activity Monitoring and Multi-Channel Notification"
+    },
+    {
+      "id": "APTS-HO-016",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Alert Fatigue Mitigation and Smart Aggregation"
+    },
+    {
+      "id": "APTS-HO-017",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Stakeholder Notification and Engagement Closure"
+    },
+    {
+      "id": "APTS-HO-018",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Operator Qualification, Training, and Competency Governance"
+    },
+    {
+      "id": "APTS-HO-019",
+      "domain": "Human Oversight",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "24/7 Operational Continuity and Shift Handoff"
+    },
+    {
+      "id": "APTS-AL-001",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Single Technique Execution"
+    },
+    {
+      "id": "APTS-AL-002",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Human-Directed Target and Technique Selection"
+    },
+    {
+      "id": "APTS-AL-003",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Parameter Configuration by Human Operator"
+    },
+    {
+      "id": "APTS-AL-004",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "No Automated Chaining or Sequential Decision-Making"
+    },
+    {
+      "id": "APTS-AL-005",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Mandatory Logging and Human-Reviewable Audit Trail"
+    },
+    {
+      "id": "APTS-AL-006",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Basic Scope Validation and Policy Enforcement"
+    },
+    {
+      "id": "APTS-AL-007",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Step Technique Chaining Within Single Phase"
+    },
+    {
+      "id": "APTS-AL-008",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Real-Time Human Monitoring and Approval Gates"
+    },
+    {
+      "id": "APTS-AL-009",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Tool-Proposed Actions with Operator Modification Capability"
+    },
+    {
+      "id": "APTS-AL-010",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Step-by-Step Audit Log with Phase Transitions"
+    },
+    {
+      "id": "APTS-AL-011",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Escalation Triggers and Exception Handling"
+    },
+    {
+      "id": "APTS-AL-012",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Kill Switch and Pause Capability"
+    },
+    {
+      "id": "APTS-AL-013",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Complete Attack Chain Execution Within Boundaries"
+    },
+    {
+      "id": "APTS-AL-014",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Boundary Definition and Enforcement Framework"
+    },
+    {
+      "id": "APTS-AL-015",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Pre-Approved Action Categories and Decision Trees"
+    },
+    {
+      "id": "APTS-AL-016",
+      "domain": "Graduated Autonomy",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Continuous Boundary Monitoring and Breach Detection"
+    },
+    {
+      "id": "APTS-AL-017",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Target Assessment Management"
+    },
+    {
+      "id": "APTS-AL-018",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Response During Autonomous Testing"
+    },
+    {
+      "id": "APTS-AL-019",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Multi-Target Campaign Management Without Intervention"
+    },
+    {
+      "id": "APTS-AL-020",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Dynamic Scope Adjustment and Target Discovery"
+    },
+    {
+      "id": "APTS-AL-021",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Adaptive Testing Strategy and Resource Reallocation"
+    },
+    {
+      "id": "APTS-AL-022",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Continuous Risk Assessment and Automated Escalation"
+    },
+    {
+      "id": "APTS-AL-023",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Complete Audit Trail and Forensic Reconstruction"
+    },
+    {
+      "id": "APTS-AL-024",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Periodic Autonomous Review Cycles"
+    },
+    {
+      "id": "APTS-AL-025",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Autonomy Level Authorization, Transition, and Reauthorization"
+    },
+    {
+      "id": "APTS-AL-026",
+      "domain": "Graduated Autonomy",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Investigation and Autonomy Level Adjustment"
+    },
+    {
+      "id": "APTS-AL-027",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Evasion and Stealth Mode Governance"
+    },
+    {
+      "id": "APTS-AL-028",
+      "domain": "Graduated Autonomy",
+      "tier": 3,
+      "classification": "MUST",
+      "title": "Containment Verification for L3 and L4 Autonomy"
+    },
+    {
+      "id": "APTS-AR-001",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Structured Event Logging with Schema Validation"
+    },
+    {
+      "id": "APTS-AR-002",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "State Transition Logging"
+    },
+    {
+      "id": "APTS-AR-003",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Resource Utilization Metrics Logging"
+    },
+    {
+      "id": "APTS-AR-004",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Decision Point Logging and Confidence Scoring"
+    },
+    {
+      "id": "APTS-AR-005",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Log Retention and Archival Requirements"
+    },
+    {
+      "id": "APTS-AR-006",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Decision Chain of Reasoning and Alternative Evaluation"
+    },
+    {
+      "id": "APTS-AR-007",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Risk Assessment Documentation Before Action Execution"
+    },
+    {
+      "id": "APTS-AR-008",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Context-Aware Decision Logging"
+    },
+    {
+      "id": "APTS-AR-009",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Transparency Report Requirements"
+    },
+    {
+      "id": "APTS-AR-010",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Cryptographic Hashing of All Evidence"
+    },
+    {
+      "id": "APTS-AR-011",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Chain of Custody for Evidence"
+    },
+    {
+      "id": "APTS-AR-012",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Tamper-Evident Logging with Hash Chains"
+    },
+    {
+      "id": "APTS-AR-013",
+      "domain": "Auditability",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "RFC 3161 Trusted Timestamp Integration"
+    },
+    {
+      "id": "APTS-AR-014",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Screenshot and Packet Capture Evidence Standards"
+    },
+    {
+      "id": "APTS-AR-015",
+      "domain": "Auditability",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Evidence Classification and Sensitive Data Handling"
+    },
+    {
+      "id": "APTS-AR-016",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Platform Integrity and Supply Chain Attestation"
+    },
+    {
+      "id": "APTS-AR-017",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Safety Control Regression Testing After Platform Updates"
+    },
+    {
+      "id": "APTS-AR-018",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Customer Notification for Behavior-Affecting Updates"
+    },
+    {
+      "id": "APTS-AR-019",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "AI/ML Model Change Tracking and Drift Detection"
+    },
+    {
+      "id": "APTS-AR-020",
+      "domain": "Auditability",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Audit Trail Isolation from the Agent Runtime"
+    },
+    {
+      "id": "APTS-MR-001",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Instruction Boundary Enforcement"
+    },
+    {
+      "id": "APTS-MR-002",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Response Validation & Sanitization"
+    },
+    {
+      "id": "APTS-MR-003",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Error Message Neutrality"
+    },
+    {
+      "id": "APTS-MR-004",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Configuration File Integrity Verification"
+    },
+    {
+      "id": "APTS-MR-005",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Authority Claim Detection & Rejection"
+    },
+    {
+      "id": "APTS-MR-006",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Decision Boundary Enforcement"
+    },
+    {
+      "id": "APTS-MR-007",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Redirect Following Policy"
+    },
+    {
+      "id": "APTS-MR-008",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "DNS and Network-Level Redirect Prevention"
+    },
+    {
+      "id": "APTS-MR-009",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Server-Side Request Forgery (SSRF) Prevention in Testing"
+    },
+    {
+      "id": "APTS-MR-010",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Scope Expansion Social Engineering Prevention"
+    },
+    {
+      "id": "APTS-MR-011",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Out-of-Band Communication Prevention"
+    },
+    {
+      "id": "APTS-MR-012",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Immutable Scope Enforcement Architecture"
+    },
+    {
+      "id": "APTS-MR-013",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Adversarial Example Detection in Vulnerability Classification"
+    },
+    {
+      "id": "APTS-MR-014",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Resource Exhaustion and Tarpit Attack Prevention"
+    },
+    {
+      "id": "APTS-MR-015",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Deceptive Authentication Honeypots"
+    },
+    {
+      "id": "APTS-MR-016",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Anti-Automation Defense Detection"
+    },
+    {
+      "id": "APTS-MR-017",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Anomaly Detection in Response Patterns"
+    },
+    {
+      "id": "APTS-MR-018",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "AI Model Input/Output Architectural Boundary"
+    },
+    {
+      "id": "APTS-MR-019",
+      "domain": "Manipulation Resistance",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Discovered Credential Protection"
+    },
+    {
+      "id": "APTS-MR-020",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Adversarial Validation and Resilience Testing of Safety Controls"
+    },
+    {
+      "id": "APTS-MR-021",
+      "domain": "Manipulation Resistance",
+      "tier": 3,
+      "classification": "MUST",
+      "title": "Data Isolation Adversarial Testing"
+    },
+    {
+      "id": "APTS-MR-022",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Inter-Model Trust Boundaries and Output Validation"
+    },
+    {
+      "id": "APTS-MR-023",
+      "domain": "Manipulation Resistance",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Agent Runtime as an Untrusted Component"
+    },
+    {
+      "id": "APTS-TP-001",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Third-Party Provider Selection and Vetting"
+    },
+    {
+      "id": "APTS-TP-002",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Model Version Pinning and Change Management"
+    },
+    {
+      "id": "APTS-TP-003",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "API Security and Authentication"
+    },
+    {
+      "id": "APTS-TP-004",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Provider Availability, SLA Management, and Failover"
+    },
+    {
+      "id": "APTS-TP-005",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Provider Incident Response, Breach Notification, and Mid-Engagement Compromise"
+    },
+    {
+      "id": "APTS-TP-006",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Dependency Inventory, Risk Assessment, and Supply Chain Verification"
+    },
+    {
+      "id": "APTS-TP-007",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Data Residency and Sovereignty Requirements"
+    },
+    {
+      "id": "APTS-TP-008",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Cloud Security Configuration and Hardening"
+    },
+    {
+      "id": "APTS-TP-009",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Incident Response and Service Continuity Planning"
+    },
+    {
+      "id": "APTS-TP-010",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Vulnerability Feed Selection and Management"
+    },
+    {
+      "id": "APTS-TP-011",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Feed Quality Assurance and Incident Response"
+    },
+    {
+      "id": "APTS-TP-012",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Client Data Classification Framework"
+    },
+    {
+      "id": "APTS-TP-013",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Sensitive Data Discovery and Handling"
+    },
+    {
+      "id": "APTS-TP-014",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Data Encryption and Cryptographic Controls"
+    },
+    {
+      "id": "APTS-TP-015",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Data Retention and Secure Deletion"
+    },
+    {
+      "id": "APTS-TP-016",
+      "domain": "Supply Chain Trust",
+      "tier": 3,
+      "classification": "MUST",
+      "title": "Data Destruction Proof and Certification"
+    },
+    {
+      "id": "APTS-TP-017",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Multi-Tenant and Engagement Isolation"
+    },
+    {
+      "id": "APTS-TP-018",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Tenant Breach Notification"
+    },
+    {
+      "id": "APTS-TP-019",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "AI Model Provenance and Training Data Governance"
+    },
+    {
+      "id": "APTS-TP-020",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Persistent Memory and Retrieval State Governance"
+    },
+    {
+      "id": "APTS-TP-021",
+      "domain": "Supply Chain Trust",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Foundation Model Disclosure and Capability Baseline"
+    },
+    {
+      "id": "APTS-TP-022",
+      "domain": "Supply Chain Trust",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Re-attestation on Material Foundation Model Change"
+    },
+    {
+      "id": "APTS-RP-001",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Evidence-Based Finding Validation"
+    },
+    {
+      "id": "APTS-RP-002",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Finding Verification and Human Review Pipeline"
+    },
+    {
+      "id": "APTS-RP-003",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Confidence Scoring with Auditable Methodology"
+    },
+    {
+      "id": "APTS-RP-004",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Finding Provenance Chain"
+    },
+    {
+      "id": "APTS-RP-005",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Cryptographic Evidence Chain Integrity"
+    },
+    {
+      "id": "APTS-RP-006",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "False Positive Rate Disclosure"
+    },
+    {
+      "id": "APTS-RP-007",
+      "domain": "Reporting",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Independent Finding Reproducibility"
+    },
+    {
+      "id": "APTS-RP-008",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Vulnerability Coverage Disclosure"
+    },
+    {
+      "id": "APTS-RP-009",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "False Negative Rate Disclosure and Methodology"
+    },
+    {
+      "id": "APTS-RP-010",
+      "domain": "Reporting",
+      "tier": 3,
+      "classification": "SHOULD",
+      "title": "Detection Effectiveness Benchmarking"
+    },
+    {
+      "id": "APTS-RP-011",
+      "domain": "Reporting",
+      "tier": 1,
+      "classification": "MUST",
+      "title": "Executive Summary and Risk Overview"
+    },
+    {
+      "id": "APTS-RP-012",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Remediation Guidance and Prioritization"
+    },
+    {
+      "id": "APTS-RP-013",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "MUST",
+      "title": "Engagement SLA Compliance Reporting"
+    },
+    {
+      "id": "APTS-RP-014",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Trend Analysis for Recurring Engagements"
+    },
+    {
+      "id": "APTS-RP-015",
+      "domain": "Reporting",
+      "tier": 2,
+      "classification": "SHOULD",
+      "title": "Downstream Finding Pipeline Integrity"
+    }
+  ]
+}
