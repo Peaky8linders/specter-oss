@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "specter"
-version = "0.1.0"
+version = "0.1.1"
 description = "EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, OWASP APTS conformance, grounded Q&A."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -44,10 +44,14 @@ api = [
     "fastapi>=0.110",
     "slowapi>=0.1.9",
 ]
+plugin = [
+    "mcp>=1.0",
+]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=4.1",
     "ruff>=0.5.0",
+    "mcp>=1.0",
 ]
 
 [project.urls]
@@ -63,6 +67,7 @@ include = [
     "/specter",
     "/tests",
     "/docs",
+    "/claude-plugin",
     "/README.md",
     "/LICENSE",
     "/pyproject.toml",

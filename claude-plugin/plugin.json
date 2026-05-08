@@ -1,0 +1,33 @@
+{
+  "name": "specter",
+  "version": "0.1.1",
+  "description": "EU AI Act compliance toolkit for Claude Code — validate citations against the canonical 113-article + 13-annex catalog, query the four-axis agentic compound-risk taxonomy, look up role obligations, run the LLM-as-Judge reward-hack detector on proposed remediation tasks, and fetch OWASP APTS v0.1.0 self-conformance scorecards. Wraps the `specter` Python package as a local stdio MCP server + slash-command set; no hosted backend required.",
+  "author": "Specter contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/Peaky8linders/specter-oss",
+  "repository": "https://github.com/Peaky8linders/specter-oss",
+  "regulation": "EU Regulation 2024/1689",
+  "tags": [
+    "eu-ai-act",
+    "compliance",
+    "regulation",
+    "owasp-apts",
+    "mitre-atlas",
+    "llm-as-judge",
+    "agentic-ai"
+  ],
+  "commands": [
+    "check-article",
+    "format-citation",
+    "list-articles",
+    "apts-conformance",
+    "apts-requirement",
+    "taxonomy",
+    "role-obligations",
+    "judge-proposal"
+  ],
+  "requirements": {
+    "python": ">=3.11",
+    "pip_install": "specter[plugin]>=0.1.1"
+  }
+}

@@ -1,15 +1,83 @@
 # Specter
 
-> EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, OWASP APTS conformance, grounded Q&A.
-
-**Specter** is a Python library that ships the load-bearing data + verification primitives behind a real-world EU AI Act compliance product, extracted as a standalone reference implementation.
-
-It is the open-source slice of a larger commercial platform — kept narrow on purpose so you can vendor it, extend it, or use its frozen ontology + taxonomy + eval results as a starting point for your own EU AI Act tooling.
+> EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, OWASP APTS conformance, grounded Q&A. Ships as a Python library and a Claude Code plugin.
 
 ```bash
-pip install specter         # core: data + LLM-as-Judge + APTS conformance
-pip install 'specter[api]'  # adds FastAPI router for grounded Q&A
+pip install specter                # core: data + LLM-as-Judge + APTS conformance
+pip install 'specter[api]'         # adds FastAPI router for grounded Q&A
+pip install 'specter[plugin]'      # adds MCP SDK for the Claude Code plugin
 ```
+
+## Why this exists
+
+- **Ground LLM output against the regulation.** Every reference is validated against a frozen 113-article + 13-annex catalog of Regulation (EU) 2024/1689 — hallucinated articles never reach the wire.
+- **Catch reward-hacking in compliance roadmaps.** Six-check `ComplianceRewardHackDetector` (LLM-as-Judge) screens proposed remediation tasks for plagiarism, KB-reality violations, coverage-plausibility breaks, contract-completeness gaps, and rebutted-excuse matches. The detector OWNS the `origin` label — an agent that lies and self-labels as `agent_novel` when it actually plagiarised a prior task is caught by SequenceMatcher, not trusted on its self-report.
+- **Re-derive a public OWASP APTS scorecard.** Frozen 73.5% headline self-conformance baseline, 173 requirements × 8 domains × 3 tiers, deterministic given the same evidence map.
+
+## Two ways to use it
+
+### 1. Python library
+
+```python
+from specter.data.articles_existence import ARTICLE_EXISTENCE
+from specter.judge.reward_hack import (
+    ComplianceRewardHackDetector,
+    RawProposal,
+    ResearchGoal,
+    make_eu_ai_act_policy,
+)
+
+policy = make_eu_ai_act_policy(
+    article_existence=ARTICLE_EXISTENCE,
+    valid_dimensions=frozenset(["risk_management", "transparency"]),
+)
+detector = ComplianceRewardHackDetector(
+    accepted_proposals=[],
+    answers={},
+    goal=ResearchGoal(target_value=0.8),
+    policy=policy,
+)
+
+flags = detector.check(RawProposal(
+    task_id="t1", task_title="Establish risk management",
+    description="Document Art. 9 risk-management process",
+    agent="compliance_officer", priority="P1", effort_hours=8.0,
+    dimension_id="risk_management",
+    prompt="Set up an Art. 9 risk-management workflow + RAID log",
+    acceptance_criteria=["RAID log exists", "Workflow documented"],
+    output_files=["docs/risk-management.md"],
+    article_paragraphs=["Art. 9", "Art. 999"],   # Art. 999 is hallucinated
+    contract_verification=[{"cmd": "pytest"}],
+))
+
+print(flags.blocked, flags.reasons)
+# True, ["kb_reality: article_paragraphs ['Art. 999'] not found in the regulation catalog"]
+```
+
+### 2. Claude Code plugin
+
+The same surface is shipped as a Claude Code plugin. Install once,
+then use slash commands directly in your Claude Code session:
+
+```bash
+pip install 'specter[plugin]>=0.1.1'
+
+# From a checkout of the repo:
+claude plugins install ./claude-plugin
+
+# Or from the public GitHub:
+claude plugins install github:Peaky8linders/specter-oss/claude-plugin
+```
+
+Restart Claude Code, then in any session:
+
+```
+/specter:check-article ref="Art. 13(1)(a)"
+/specter:apts-conformance
+/specter:taxonomy
+```
+
+8 slash commands, 8 MCP tools. Full docs in [claude-plugin/README.md](claude-plugin/README.md).
 
 ## What's inside
 
@@ -26,63 +94,25 @@ specter/
 │                 pluggable retriever
 ├── apts/         OWASP APTS (Autonomous Penetration Testing Standard)
 │                 v0.1.0 conformance engine + curated evidence map
+├── mcp_server.py stdio MCP server — Claude Code plugin backend
 └── ontology/     RDF/Turtle OWL ontology aligning EU AI Act with AIRO + DPV
+
+claude-plugin/    Claude Code plugin manifest + slash commands + MCP config
 ```
 
 ## Quickstart — three core surfaces
 
-### 1. Article catalog + taxonomy (data layer)
+### Article catalog + taxonomy
 
 ```python
 from specter.data.articles_existence import ARTICLE_EXISTENCE
-from specter.data.taxonomy import CompoundRiskType, ThreatCategory, AgentArchetype
-from specter.data.roles import OperatorRole, applies_to_role
+from specter.data.roles import articles_for_role
 
-# Validate a citation against the canonical EU AI Act catalog
-"Art. 13(1)(a)" in ARTICLE_EXISTENCE  # → True (after prefix-fallback to "Art. 13")
-
-# Project obligations to a specific operator role
-applies_to_role(article_ref="Art. 26", role=OperatorRole.deployer)  # → True
+"Art. 13(1)(a)" in ARTICLE_EXISTENCE  # → True (prefix-fallback to "Art. 13")
+articles_for_role("deployer")          # → ["Art. 26", "Art. 27", "Art. 29", ...]
 ```
 
-### 2. LLM-as-Judge — ComplianceRewardHackDetector
-
-Six checks — plagiarism + origin detection, KB reality, coverage plausibility, effort sanity, contract completeness, rebutted-excuse match. The detector OWNS the `origin` label: an agent that lies and self-labels as `agent_novel` when it actually plagiarised a prior task is caught by SequenceMatcher, not trusted on its self-report.
-
-```python
-from specter.data.articles_existence import ARTICLE_EXISTENCE
-from specter.judge.reward_hack import (
-    ComplianceRewardHackDetector,
-    RawProposal,
-    ResearchGoal,
-    make_eu_ai_act_policy,
-)
-
-policy = make_eu_ai_act_policy(
-    article_existence=ARTICLE_EXISTENCE,
-    valid_dimensions=frozenset(["risk_management", "transparency", "data_governance"]),
-)
-goal = ResearchGoal(target_value=0.8)
-detector = ComplianceRewardHackDetector(
-    accepted_proposals=[], answers={}, goal=goal, policy=policy,
-)
-
-raw = RawProposal(
-    task_id="t1", task_title="Demo", description="…",
-    agent="compliance_officer", priority="P1", effort_hours=4.0,
-    dimension_id="risk_management", prompt="Run risk assessment",
-    acceptance_criteria=["ac1", "ac2"], output_files=["out.md"],
-    article_paragraphs=["Art. 9", "Art. 999"],   # Art. 999 is hallucinated
-    contract_verification=[{"cmd": "pytest"}],
-)
-flags = detector.check(raw)
-print(flags.blocked, flags.reasons, flags.origin)
-# → True, ["kb_reality: article_paragraphs ['Art. 999'] not found in the regulation catalog"], "agent_novel"
-```
-
-### 3. Three-agent adversarial verifier
-
-Sycophancy-weaponisation: three agents with asymmetric incentives. Finder maximises discovery (over-reports), Adversary destroys false positives, Referee arbitrates. Only findings that survive all three modes are treated as confirmed.
+### Three-agent adversarial verifier
 
 ```python
 from specter.judge.three_agent import ThreeAgentVerifier
@@ -91,35 +121,33 @@ from specter.judge.models import (
 )
 
 verifier = ThreeAgentVerifier()
-techniques = {
-    "AML.T0051": AttackTechnique(
-        id="AML.T0051", name="LLM Prompt Injection",
-        phase=AttackPhase.INITIAL_ACCESS, severity=Severity.HIGH,
-    ),
-}
-results = [
-    AttackResult(
-        technique_id="AML.T0051", target_id="my-system",
-        status=AttackStatus.SUCCESS, severity=Severity.HIGH,
-        response_raw="Confirmed: model leaked system prompt",
-    ),
-]
+techniques = {"AML.T0051": AttackTechnique(
+    id="AML.T0051", name="LLM Prompt Injection",
+    phase=AttackPhase.INITIAL_ACCESS, severity=Severity.HIGH,
+)}
+results = [AttackResult(
+    technique_id="AML.T0051", target_id="my-system",
+    status=AttackStatus.SUCCESS, severity=Severity.HIGH,
+    response_raw="Confirmed: model leaked system prompt",
+)]
 
 findings = verifier.finder_report(results, techniques)
-reviews = verifier.adversary_review(findings, results, techniques)
+reviews  = verifier.adversary_review(findings, results, techniques)
 verified = verifier.referee_rule(findings, reviews)
 ```
 
-### 4. Grounded Q&A endpoint (FastAPI)
+### Grounded Q&A endpoint (FastAPI)
 
 ```python
 from fastapi import FastAPI
-from specter.api.qa_route import make_qa_router, RetrieverRequest, RetrieverResponse, Citation
+from specter.api.qa_route import (
+    Citation, RetrieverRequest, RetrieverResponse, make_qa_router,
+)
 
 def my_retriever(req: RetrieverRequest) -> RetrieverResponse:
     # Wire your real Graph RAG / vector DB here.
     return RetrieverResponse(
-        answer="Under Art. 13(1)(a), providers must…",
+        answer="Under Art. 13(1)(a), providers must …",
         citations=[Citation(article_ref="Art. 13(1)(a)")],
         confidence=0.83,
         graph_stats={"nodes_traversed": 14, "obligations_found": 6},
@@ -132,11 +160,11 @@ app.include_router(make_qa_router(retriever=my_retriever))
 
 The router enforces:
 
-- **Closed-world refusal** — when retrieval finds no match (`confidence < 0.5` AND no references), the answer is replaced with a deterministic refusal string and `retrieval_path` becomes `"no_match"`. LLM prose grounded in nothing never reaches the wire.
+- **Closed-world refusal** — when retrieval finds no match (`confidence < 0.5` AND no references), the answer is replaced with a deterministic refusal string. LLM prose grounded in nothing never reaches the wire.
 - **Reference validation** — every citation passes through `ARTICLE_EXISTENCE`; hallucinated articles drop silently before serialisation.
-- **Optional API-key auth** — set `SPECTER_API_KEY` to unlock a 60/min privileged tier; anonymous traffic is capped at 30/min per IP-hash. Header present but invalid still 403s (silent downgrade would mask consumer-side bugs).
+- **Optional API-key auth** — set `SPECTER_API_KEY` to unlock a 60/min privileged tier; anonymous traffic is capped at 30/min per IP-hash.
 
-### 5. OWASP APTS conformance
+### OWASP APTS conformance
 
 ```python
 from specter.apts import assess_self
@@ -164,19 +192,17 @@ The slice you have here is what you need to **verify regulator-grounded outputs*
 
 ## Provenance
 
-Specter is extracted from a private compliance product. The provenance trail per module:
-
 - **`data/articles_existence`** + **`data/articles_requirements`** — original work; canonical EU AI Act catalog
 - **`data/taxonomy`** — original implementation of the four-axis compound-risk taxonomy from *AI Agents Under EU Law* (working paper, 7 April 2026, §10.4)
-- **`data/atlas`** + **`data/owasp_aix`** + **`data/crosswalk`** — vendored snapshots of MITRE ATLAS (Apache 2.0) and OWASP AI Exchange (CC0); see [LICENSE](LICENSE) for attribution
+- **`data/atlas`** + **`data/owasp_aix`** + **`data/crosswalk`** — vendored snapshots of MITRE ATLAS (Apache 2.0) and OWASP AI Exchange (CC0); see [LICENSE](LICENSE)
 - **`apts/`** — original conformance engine over the vendored OWASP APTS v0.1.0 catalog (CC BY-SA 4.0)
-- **`judge/reward_hack`** — original `ComplianceRewardHackDetector` adapted from upstream `app/engines/roadmap_refiner/models.py`
-- **`judge/three_agent`** — adapted from the upstream `antifragile-ai` core package
+- **`judge/reward_hack`** — original `ComplianceRewardHackDetector` adapted from the upstream Karpathy-style autoresearch loop
+- **`judge/three_agent`** — adapted from the upstream sycophancy-weaponization architecture
 - **`qa/`** + **`api/qa_route`** — Q&A endpoint adapted from the upstream public-tier partner integration; rate-limit semantics and closed-world refusal preserved verbatim
 
 ## Status
 
-`v0.1.0` — the public surface is stable and end-to-end-verified against the upstream test suite. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
+`v0.1.1` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
 
 ## License
 

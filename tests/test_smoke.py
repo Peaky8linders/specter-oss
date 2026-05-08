@@ -195,6 +195,61 @@ def test_apts_three_tiers() -> None:
 # ─── 3-agent verifier ──────────────────────────────────────────────────────
 
 
+# ─── MCP server (Claude Code plugin) ───────────────────────────────────────
+
+
+def test_mcp_server_exports_eight_tools() -> None:
+    """Pin the public MCP tool surface — change here only when also
+    bumping the plugin manifest."""
+    pytest.importorskip("mcp")
+    from specter.mcp_server import _TOOLS
+
+    names = {t.name for t in _TOOLS}
+    assert names == {
+        "specter_check_article",
+        "specter_format_citation",
+        "specter_list_articles",
+        "specter_apts_self_conformance",
+        "specter_apts_requirement",
+        "specter_get_taxonomy",
+        "specter_role_obligations",
+        "specter_judge_proposal",
+    }
+
+
+def test_mcp_check_article_handler_resolves_prefix_fallback() -> None:
+    pytest.importorskip("mcp")
+    from specter.mcp_server import _check_article
+
+    out = _check_article("Art. 13(1)(a)")
+    assert out["valid"] is True
+    assert out["resolved"] == "Art. 13"
+    assert out["exact_match"] is False
+
+
+def test_mcp_judge_proposal_handler_blocks_hallucination() -> None:
+    pytest.importorskip("mcp")
+    from specter.mcp_server import _judge_proposal
+
+    proposal = {
+        "task_id": "t1",
+        "task_title": "Risk Mgmt System",
+        "description": "Establish Art. 9 system",
+        "agent": "compliance_officer",
+        "priority": "P1",
+        "effort_hours": 4.0,
+        "dimension_id": "risk_management",
+        "prompt": "Build out an Article 9 risk-management workflow + RAID log",
+        "acceptance_criteria": ["raid log created", "workflow documented"],
+        "output_files": ["docs/raid.md"],
+        "article_paragraphs": ["Art. 9", "Art. 999"],
+        "contract_verification": [{"cmd": "pytest"}],
+    }
+    out = _judge_proposal(proposal, ["risk_management"])
+    assert out["blocked"] is True
+    assert any("Art. 999" in r for r in out["reasons"])
+
+
 def test_three_agent_finder_reports_successful_attacks() -> None:
     from specter.judge.models import (
         AttackPhase,

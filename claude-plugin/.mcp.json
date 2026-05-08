@@ -1,0 +1,80 @@
+{
+  "mcpServers": {
+    "specter": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "specter.mcp_server"],
+      "description": "EU AI Act compliance toolkit — local stdio server. Exposes 8 read tools: article validation, citation formatting, agentic-AI taxonomy, role obligations, OWASP APTS conformance, and the ComplianceRewardHackDetector LLM-as-Judge.",
+      "tools": {
+        "specter_check_article": {
+          "description": "Validate an EU AI Act article reference against the canonical 113-article + 13-annex catalog. Accepts internal form (`Art. 13(1)(a)`, `Annex IV(2)`) with prefix-fallback semantics.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "ref": {"type": "string", "description": "Citation to validate."}
+            },
+            "required": ["ref"]
+          }
+        },
+        "specter_format_citation": {
+          "description": "Convert internal-form `Art. X(Y)(Z)` / `Annex IV(N)` references into publication form `Article X.Y.Z` / `Annex IV.N`. Returns null when the reference is hallucinated.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "ref": {"type": "string", "description": "Internal-form reference."}
+            },
+            "required": ["ref"]
+          }
+        },
+        "specter_list_articles": {
+          "description": "Return the canonical EU AI Act surface — 113 articles + 13 annexes from Regulation (EU) 2024/1689.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "kind": {"type": "string", "enum": ["all", "articles", "annexes"]}
+            }
+          }
+        },
+        "specter_apts_self_conformance": {
+          "description": "Return the OWASP APTS v0.1.0 self-conformance scorecard — headline %, tier achievement, per-domain breakdown across the 8 conformance domains.",
+          "input_schema": {"type": "object", "properties": {}}
+        },
+        "specter_apts_requirement": {
+          "description": "Look up a single OWASP APTS requirement by id (e.g. APTS-SE-001).",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "requirement_id": {"type": "string"}
+            },
+            "required": ["requirement_id"]
+          }
+        },
+        "specter_get_taxonomy": {
+          "description": "Return the four-axis agentic-AI compound-risk taxonomy (cascading / emergent / attribution / temporal) with article anchors + KB dimensions + threat-category cross-walks.",
+          "input_schema": {"type": "object", "properties": {}}
+        },
+        "specter_role_obligations": {
+          "description": "Return EU AI Act articles that apply to a given operator role.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "role": {"type": "string"}
+            },
+            "required": ["role"]
+          }
+        },
+        "specter_judge_proposal": {
+          "description": "Run a roadmap-task proposal through the ComplianceRewardHackDetector. Six checks: plagiarism + origin, KB reality, coverage plausibility, effort sanity, contract completeness, rebutted-excuse match.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "proposal": {"type": "object"},
+              "valid_dimensions": {"type": "array", "items": {"type": "string"}}
+            },
+            "required": ["proposal", "valid_dimensions"]
+          }
+        }
+      }
+    }
+  }
+}
