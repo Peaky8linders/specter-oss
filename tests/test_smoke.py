@@ -154,6 +154,60 @@ def test_judge_blocks_under_floor_effort(policy, goal) -> None:
     assert any("effort_sanity" in r for r in flags.reasons)
 
 
+def test_raw_proposal_rejects_oversized_prompt() -> None:
+    """Regression guard for security/PENTEST-REPORT.md P1.1 — `prompt` field
+    must be capped to prevent O(n*m) DoS in `_check_plagiarism`."""
+    from pydantic import ValidationError
+
+    base = dict(
+        task_id="t1", task_title="x", description="x",
+        agent="x", priority="P1", effort_hours=1.0,
+        dimension_id="risk_management",
+        prompt="x" * 16_001,  # one over cap
+        acceptance_criteria=["a", "b"], output_files=["o"],
+        article_paragraphs=["Art. 9"],
+        contract_verification=[{"cmd": "pytest"}],
+    )
+    with pytest.raises(ValidationError):
+        RawProposal(**base)
+
+
+def test_raw_proposal_rejects_oversized_list_item() -> None:
+    """Per-item 1KB cap on string-list elements."""
+    from pydantic import ValidationError
+
+    base = dict(
+        task_id="t1", task_title="x", description="x",
+        agent="x", priority="P1", effort_hours=1.0,
+        dimension_id="risk_management",
+        prompt="ok",
+        acceptance_criteria=["x" * 1_001, "b"],  # one over cap
+        output_files=["o"],
+        article_paragraphs=["Art. 9"],
+        contract_verification=[{"cmd": "pytest"}],
+    )
+    with pytest.raises(ValidationError):
+        RawProposal(**base)
+
+
+def test_raw_proposal_rejects_oversized_list_length() -> None:
+    """List-length cap (32 items) on each string-list field."""
+    from pydantic import ValidationError
+
+    base = dict(
+        task_id="t1", task_title="x", description="x",
+        agent="x", priority="P1", effort_hours=1.0,
+        dimension_id="risk_management",
+        prompt="ok",
+        acceptance_criteria=["a"] * 33,  # one over cap
+        output_files=["o"],
+        article_paragraphs=["Art. 9"],
+        contract_verification=[{"cmd": "pytest"}],
+    )
+    with pytest.raises(ValidationError):
+        RawProposal(**base)
+
+
 def test_judge_blocks_over_cap_effort(policy, goal) -> None:
     detector = ComplianceRewardHackDetector(
         accepted_proposals=[], answers={}, goal=goal, policy=policy,

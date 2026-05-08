@@ -52,7 +52,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal, Self
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 # ─── Origin label ──────────────────────────────────────────────────────────
 
@@ -69,25 +69,51 @@ class RawProposal(BaseModel):
     The agent is allowed to return extra fields; they are ignored. The
     ``origin`` field, if present, is ALSO ignored — the detector sets
     it deterministically from similarity measurements.
+
+    Field-level length caps protect ``_check_plagiarism`` from
+    pathological inputs. ``SequenceMatcher`` is O(n·m); a 1 MB ``prompt``
+    against a 100-entry registry of 10 KB prompts triggers ~10 GB of
+    comparison work. The bounds below comfortably exceed any realistic
+    LLM-emitted task while preventing pathological inputs.
+
+    See ``security/PENTEST-REPORT.md`` finding P1.1 for context.
     """
 
     model_config = ConfigDict(extra="allow")
 
-    task_id: str
-    task_title: str = Field(..., description="Short action-phrase")
-    description: str
-    agent: str = Field(..., description="One of host's agent-role values")
-    priority: str = Field(..., description="P0 | P1 | P2")
+    task_id: str = Field(..., min_length=1, max_length=256)
+    task_title: str = Field(..., min_length=1, max_length=200, description="Short action-phrase")
+    description: str = Field(..., min_length=1, max_length=4_000)
+    agent: str = Field(..., min_length=1, max_length=128, description="One of host's agent-role values")
+    priority: str = Field(..., min_length=1, max_length=8, description="P0 | P1 | P2")
     effort_hours: float = Field(ge=0)
-    dimension_id: str
-    prompt: str
-    acceptance_criteria: list[str] = Field(default_factory=list)
-    output_files: list[str] = Field(default_factory=list)
-    article_paragraphs: list[str] = Field(default_factory=list)
-    contract_verification: list[dict[str, str]] = Field(default_factory=list)
+    dimension_id: str = Field(..., min_length=1, max_length=128)
+    prompt: str = Field(..., min_length=1, max_length=16_000)
+    acceptance_criteria: list[str] = Field(default_factory=list, max_length=32)
+    output_files: list[str] = Field(default_factory=list, max_length=32)
+    article_paragraphs: list[str] = Field(default_factory=list, max_length=32)
+    contract_verification: list[dict[str, str]] = Field(default_factory=list, max_length=16)
     predicted_coverage_gain: dict[str, float] = Field(default_factory=dict)
-    design_rationale: str = ""
-    lifecycle_phase: str = "govern"
+    design_rationale: str = Field(default="", max_length=4_000)
+    lifecycle_phase: str = Field(default="govern", max_length=64)
+
+    @field_validator("acceptance_criteria", "output_files", "article_paragraphs")
+    @classmethod
+    def _bound_string_list_items(cls, v: list[str]) -> list[str]:
+        """Per-item 1 KB cap on string-list elements.
+
+        Pydantic's field-level ``max_length`` constrains the LIST length,
+        not individual elements, so enforce here. 1 KB is generous for
+        every realistic case (an article paragraph ref like
+        ``"Annex IV(2)(a)"`` is ~16 chars; an acceptance-criterion full
+        sentence is < 500 chars; a file path is < 256 chars).
+        """
+        for s in v:
+            if not isinstance(s, str):
+                raise ValueError("list items must be strings")
+            if len(s) > 1_000:
+                raise ValueError(f"list item exceeds 1000-char cap (got {len(s)})")
+        return v
 
 
 # ─── Research goal ──────────────────────────────────────────────────────────
