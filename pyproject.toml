@@ -45,13 +45,13 @@ api = [
     "slowapi>=0.1.9",
 ]
 plugin = [
-    "mcp>=1.0",
+    "mcp>=1.27.0",
 ]
 dev = [
     "pytest>=9.0.3",
     "pytest-cov>=4.1",
     "ruff>=0.15.12",
-    "mcp>=1.0",
+    "mcp>=1.27.0",
 ]
 
 [project.urls]
