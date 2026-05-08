@@ -34,3 +34,12 @@ The Regulation (EU) 2024/1689 (EU AI Act) text references throughout
 this package are public-domain regulatory text. Citation references
 (``Art. 13(1)(a)``, ``Annex IV(2)``, etc.) follow the canonical EUR-Lex
 pagination.
+
+The Article 15 control structure shipped under
+specter/data/article_15_controls.py — the C.1.1 / C.1.2 / … control-id
+slugs, control names, and the risk-and-control row decomposition —
+follows the LatticeFlow ATLAS EU AI Act Article 15 framework
+(https://atlas.latticeflow.ai/framework/eu_ai_act_article_15). The
+underlying regulation citation text is public-domain EU AI Act
+content; the framework structuring it into operationalisable control
+rows is attributed to LatticeFlow ATLAS.

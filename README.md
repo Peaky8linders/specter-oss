@@ -1,11 +1,15 @@
 # Specter
 
-> EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, grounded Q&A. Ships as a Python library and a Claude Code plugin.
+> EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, grounded Q&A. Ships as a Claude Code plugin and a Python library.
 
 ```bash
+# Claude Code plugin (recommended) — get 6 slash commands + 6 MCP tools
+pip install 'specter[plugin]>=0.1.3'
+claude plugins install github:Peaky8linders/specter-oss/claude-plugin
+
+# Python library — for direct programmatic access
 pip install specter                # core: data + LLM-as-Judge
 pip install 'specter[api]'         # adds FastAPI router for grounded Q&A
-pip install 'specter[plugin]'      # adds MCP SDK for the Claude Code plugin
 pip install 'specter[mistral]'     # adds Mistral-backed retriever for the Q&A endpoint
 ```
 
@@ -17,7 +21,34 @@ pip install 'specter[mistral]'     # adds Mistral-backed retriever for the Q&A e
 
 ## Two ways to use it
 
-### 1. Python library
+### 1. Claude Code plugin
+
+Specter ships as a Claude Code plugin so you can drive it from your
+editor / agent session with slash commands. No hosted backend
+required — the MCP server runs locally against the bundled article
+catalog.
+
+```bash
+pip install 'specter[plugin]>=0.1.3'
+
+# From a checkout of the repo:
+claude plugins install ./claude-plugin
+
+# Or from the public GitHub (recommended):
+claude plugins install github:Peaky8linders/specter-oss/claude-plugin
+```
+
+Restart Claude Code, then in any session:
+
+```
+/specter:check-article ref="Art. 13(1)(a)"
+/specter:taxonomy
+/specter:role-obligations role="deployer"
+```
+
+6 slash commands, 6 MCP tools. Full docs in [claude-plugin/README.md](claude-plugin/README.md).
+
+### 2. Python library
 
 ```python
 from specter.data.articles_existence import ARTICLE_EXISTENCE
@@ -54,31 +85,6 @@ flags = detector.check(RawProposal(
 print(flags.blocked, flags.reasons)
 # True, ["kb_reality: article_paragraphs ['Art. 999'] not found in the regulation catalog"]
 ```
-
-### 2. Claude Code plugin
-
-The same surface is shipped as a Claude Code plugin. Install once,
-then use slash commands directly in your Claude Code session:
-
-```bash
-pip install 'specter[plugin]>=0.1.2'
-
-# From a checkout of the repo:
-claude plugins install ./claude-plugin
-
-# Or from the public GitHub:
-claude plugins install github:Peaky8linders/specter-oss/claude-plugin
-```
-
-Restart Claude Code, then in any session:
-
-```
-/specter:check-article ref="Art. 13(1)(a)"
-/specter:taxonomy
-/specter:role-obligations role="deployer"
-```
-
-6 slash commands, 6 MCP tools. Full docs in [claude-plugin/README.md](claude-plugin/README.md).
 
 ## What's inside
 
@@ -211,7 +217,10 @@ refusal string.
 
 For consumers building Article 15 (accuracy / robustness / cybersecurity)
 compliance flows, the package ships the 8 canonical controls
-(C.1.1–C.1.8) anchored to their sub-paragraphs:
+(C.1.1–C.1.8) anchored to their sub-paragraphs. The control structure
+follows the [LatticeFlow ATLAS EU AI Act Article 15 framework](https://atlas.latticeflow.ai/framework/eu_ai_act_article_15);
+the underlying regulation citation text is public-domain EU AI Act
+content (see [LICENSE](LICENSE) for full attribution).
 
 ```python
 from specter.data.article_15_controls import (

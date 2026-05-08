@@ -12,8 +12,21 @@ regulator-grounded citation text. Controls are read-only data — engines
 that need to ground LLM output against Article 15 import these
 constants directly.
 
-Source: Regulation (EU) 2024/1689 (EU AI Act), 13 June 2024.
-        https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689#art_15
+Sources:
+
+* **Regulation text** — Regulation (EU) 2024/1689 (EU AI Act),
+  13 June 2024. ``citation`` fields verbatim from EUR-Lex:
+  https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689#art_15
+  EU regulation text is in the public domain.
+
+* **Risk / control framework structure** — LatticeFlow ATLAS
+  EU AI Act Article 15 framework, downloaded from
+  https://atlas.latticeflow.ai/framework/eu_ai_act_article_15/download.
+  The ``control_id`` slugs (``C.1.1`` … ``C.1.8``), control names
+  (``Accuracy``, ``Robustness``, …), and the risk-control row
+  decomposition follow the LatticeFlow ATLAS framework convention.
+  The verbatim regulation text underlying each control is
+  public-domain EU AI Act content.
 """
 
 from __future__ import annotations
