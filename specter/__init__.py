@@ -20,4 +20,4 @@ ontology layer is deterministic for the same inputs, no I/O, no
 mutable state.
 """
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"

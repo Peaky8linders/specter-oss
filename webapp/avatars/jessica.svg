@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 240 240"
+     role="img"
+     aria-label="Jessica Pearson — managing partner, the final ruling">
+  <title>Jessica Pearson — managing partner</title>
+  <desc>Pop-art portrait: sharp dark bob, statement-collar blazer, single bold bead necklace, gavel hint. Jet and emerald ray-burst.</desc>
+
+  <defs>
+    <style>
+      .ink   { fill: none; stroke: #0E0F12; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+      .ink-2 { fill: none; stroke: #0E0F12; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+      .ink-thick { fill: none; stroke: #0E0F12; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+      .skin  { fill: #C58A5C; }
+      .skin-shade { fill: #8E5A30; }
+      .hair  { fill: #0E0F12; }
+      .hair-hi { fill: #2A2024; }
+      .blazer { fill: #0E0F12; }
+      .blazer-edge { fill: #1F8A4C; }
+      .shirt { fill: #1F8A4C; }
+      .shirt-shade { fill: #135C30; }
+      .blush { fill: #E8341E; opacity: 0.5; }
+      .lip { fill: #C92A40; }
+    </style>
+
+    <pattern id="jp-halftone" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.1" fill="#FBFAF4" opacity="0.7"/>
+    </pattern>
+
+    <clipPath id="jp-circle">
+      <circle cx="120" cy="120" r="116"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#jp-circle)">
+    <rect x="0" y="0" width="240" height="240" fill="#0E0F12"/>
+
+    <g transform="translate(120 120)">
+      <polygon points="0,0 -260,-90 -260,-30"  fill="#1F8A4C"/>
+      <polygon points="0,0 -260,-30 -260,30"   fill="#0E0F12"/>
+      <polygon points="0,0 -260,30  -260,90"   fill="#1F8A4C"/>
+      <polygon points="0,0 -260,90  -90,260"   fill="#F2C531"/>
+      <polygon points="0,0  90,260  260,90"    fill="#1F8A4C"/>
+      <polygon points="0,0  260,90  260,30"    fill="#0E0F12"/>
+      <polygon points="0,0  260,30  260,-30"   fill="#1F8A4C"/>
+      <polygon points="0,0  260,-30 260,-90"   fill="#0E0F12"/>
+      <polygon points="0,0  260,-90 90,-260"   fill="#F2C531"/>
+      <polygon points="0,0  90,-260 -90,-260"  fill="#1F8A4C"/>
+      <polygon points="0,0 -90,-260 -260,-90"  fill="#D33682"/>
+    </g>
+
+    <circle cx="120" cy="118" r="84" fill="#1F8A4C" opacity="0.65"/>
+    <rect x="0" y="0" width="240" height="240" fill="url(#jp-halftone)" opacity="0.22"/>
+
+    <!-- gavel hint, top-right -->
+    <g transform="translate(192 50) rotate(20)">
+      <rect x="-2" y="0" width="22" height="10" fill="#C58A5C" stroke="#0E0F12" stroke-width="2"/>
+      <rect x="-12" y="3" width="14" height="4" fill="#8E5A30" stroke="#0E0F12" stroke-width="1.5"/>
+      <line x1="20" y1="5" x2="34" y2="5" stroke="#0E0F12" stroke-width="2"/>
+    </g>
+
+    <!-- single star sparkle -->
+    <g transform="translate(40 200)">
+      <path d="M 0 -8 L 2 -2 L 8 0 L 2 2 L 0 8 L -2 2 L -8 0 L -2 -2 Z"
+            fill="#F2C531" stroke="#0E0F12" stroke-width="2"/>
+    </g>
+  </g>
+
+  <circle cx="120" cy="120" r="116" fill="none" stroke="#0E0F12" stroke-width="6"/>
+
+  <g>
+    <!-- blazer (jet) with emerald notched lapels -->
+    <path class="blazer" d="M 30 240 L 30 200 C 38 180, 62 168, 80 164 L 102 158 L 138 158 L 160 164 C 178 168, 202 180, 210 200 L 210 240 Z"/>
+
+    <!-- statement-collar shirt (emerald) -->
+    <path class="shirt" d="M 96 162 L 120 200 L 144 162 L 144 240 L 96 240 Z"/>
+    <path class="shirt-shade" d="M 100 184 L 120 200 L 140 184 L 140 220 L 100 220 Z"/>
+    <path class="ink-2" d="M 96 162 L 120 200 L 144 162"/>
+
+    <!-- statement collar wings -->
+    <path class="blazer-edge" d="M 96 162 L 86 188 L 102 178 Z"/>
+    <path class="blazer-edge" d="M 144 162 L 154 188 L 138 178 Z"/>
+    <path class="ink-thick" d="M 96 162 L 86 188 L 102 178"/>
+    <path class="ink-thick" d="M 144 162 L 154 188 L 138 178"/>
+
+    <!-- single bold bead necklace -->
+    <path class="ink-2" d="M 100 174 C 110 184, 130 184, 140 174"/>
+    <circle cx="120" cy="186" r="6" fill="#F2C531" stroke="#0E0F12" stroke-width="2"/>
+    <circle cx="118" cy="184" r="1.5" fill="#FBFAF4" opacity="0.7"/>
+
+    <!-- lapels -->
+    <path class="ink-thick" d="M 96 162 L 76 178"/>
+    <path class="ink-thick" d="M 144 162 L 164 178"/>
+
+    <!-- neck -->
+    <path class="skin" d="M 110 144 L 130 144 L 132 162 L 108 162 Z"/>
+    <path class="skin-shade" d="M 110 154 L 130 154 L 130 162 L 110 162 Z"/>
+    <path class="ink-2" d="M 110 144 L 108 162"/>
+    <path class="ink-2" d="M 130 144 L 132 162"/>
+
+    <!-- face -->
+    <path class="skin" d="M 90 96 C 90 74, 104 60, 120 60 C 136 60, 150 74, 150 96 L 150 124 C 150 140, 136 152, 120 152 C 104 152, 90 140, 90 124 Z"/>
+
+    <!-- sharp dark bob: angular cut, strong silhouette -->
+    <path class="hair" d="
+      M 80 92
+      C 76 64, 96 44, 122 44
+      C 152 44, 168 64, 166 96
+      L 162 110
+      C 158 96, 148 84, 134 80
+      C 122 78, 112 80, 104 86
+      L 98 96
+      L 94 110
+      L 80 110 Z"/>
+    <!-- bob sweep along jaw, viewer-left -->
+    <path class="hair" d="
+      M 80 110
+      C 76 130, 78 152, 86 168
+      C 78 152, 76 134, 80 110 Z"/>
+    <path class="hair" d="
+      M 162 110
+      C 168 132, 166 154, 158 168
+      C 168 152, 170 134, 166 112 Z"/>
+
+    <!-- forehead bang sweep -->
+    <path class="hair-hi" d="M 100 60 C 122 56, 144 60, 156 76 C 138 64, 116 66, 102 76 Z"/>
+    <path class="ink-thick" d="M 98 70 C 122 84, 148 84, 162 76"/>
+    <path class="ink-2" d="M 90 96 C 96 86, 110 80, 124 80"/>
+
+    <!-- earring -->
+    <circle cx="86" cy="124" r="2.6" fill="#F2C531" stroke="#0E0F12" stroke-width="1.5"/>
+
+    <!-- eyebrows: precise, level, slightly arched -->
+    <path class="ink-thick" d="M 98 100 C 104 97, 114 97, 118 100"/>
+    <path class="ink-thick" d="M 122 100 C 126 97, 136 97, 142 100"/>
+
+    <!-- eyes -->
+    <ellipse cx="106" cy="112" rx="4" ry="3" fill="#FBFAF4" stroke="#0E0F12" stroke-width="1.5"/>
+    <ellipse cx="134" cy="112" rx="4" ry="3" fill="#FBFAF4" stroke="#0E0F12" stroke-width="1.5"/>
+    <circle cx="106" cy="112" r="1.7" fill="#0E0F12"/>
+    <circle cx="134" cy="112" r="1.7" fill="#0E0F12"/>
+    <!-- lashes -->
+    <path class="ink-2" d="M 102 110 L 100 108"/>
+    <path class="ink-2" d="M 110 110 L 112 108"/>
+    <path class="ink-2" d="M 130 110 L 128 108"/>
+    <path class="ink-2" d="M 138 110 L 140 108"/>
+
+    <!-- nose -->
+    <path class="ink-2" d="M 120 114 L 117 126 L 123 128"/>
+
+    <!-- mouth: decisive, lipstick -->
+    <path class="lip" d="M 108 134 C 116 138, 124 138, 132 134 C 124 142, 116 142, 108 134 Z"/>
+    <path class="ink-thick" d="M 108 134 C 116 142, 124 142, 132 134"/>
+
+    <!-- cheekbone shading -->
+    <path class="skin-shade" d="M 96 124 C 102 132, 100 138, 96 138 Z"/>
+    <path class="skin-shade" d="M 144 124 C 138 132, 140 138, 144 138 Z"/>
+
+    <!-- face outline -->
+    <path class="ink-thick" d="M 90 96 C 90 74, 104 60, 120 60 C 136 60, 150 74, 150 96 L 150 124 C 150 140, 136 152, 120 152 C 104 152, 90 140, 90 124 Z"/>
+    <path class="ink-thick" d="M 80 92 C 76 64, 96 44, 122 44 C 152 44, 168 64, 166 96"/>
+
+    <!-- jacket bottom seam -->
+    <path class="ink-thick" d="M 30 240 C 70 222, 170 222, 210 240"/>
+  </g>
+</svg>

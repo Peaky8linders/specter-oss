@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 240 240"
+     role="img"
+     aria-label="Louis Litt — adversarial scrutiny">
+  <title>Louis Litt — the anti-Specter</title>
+  <desc>Pop-art portrait: bald with arched eyebrow, bow-tie, smug half-smile, lightning bolt accent. Royal purple and gold ray-burst.</desc>
+
+  <defs>
+    <style>
+      .ink   { fill: none; stroke: #0E0F12; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+      .ink-2 { fill: none; stroke: #0E0F12; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+      .ink-thick { fill: none; stroke: #0E0F12; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+      .skin  { fill: #EFC4A0; }
+      .skin-shade { fill: #C9956A; }
+      .suit  { fill: #5C2A86; }
+      .suit-shade { fill: #3F1A60; }
+      .shirt { fill: #FBFAF4; }
+      .bow   { fill: #D4A017; }
+      .bow-shade { fill: #A07B0A; }
+      .blush { fill: #E8341E; opacity: 0.5; }
+    </style>
+
+    <pattern id="ll-halftone" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.1" fill="#0E0F12" opacity="0.85"/>
+    </pattern>
+
+    <clipPath id="ll-circle">
+      <circle cx="120" cy="120" r="116"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#ll-circle)">
+    <rect x="0" y="0" width="240" height="240" fill="#E8DCF2"/>
+
+    <g transform="translate(120 120)">
+      <polygon points="0,0 -260,-90 -260,-30"  fill="#5C2A86"/>
+      <polygon points="0,0 -260,-30 -260,30"   fill="#D4A017"/>
+      <polygon points="0,0 -260,30  -260,90"   fill="#5C2A86"/>
+      <polygon points="0,0 -260,90  -90,260"   fill="#D33682"/>
+      <polygon points="0,0  90,260  260,90"    fill="#5C2A86"/>
+      <polygon points="0,0  260,90  260,30"    fill="#D4A017"/>
+      <polygon points="0,0  260,30  260,-30"   fill="#F2C531"/>
+      <polygon points="0,0  260,-30 260,-90"   fill="#5C2A86"/>
+      <polygon points="0,0  260,-90 90,-260"   fill="#D4A017"/>
+      <polygon points="0,0  90,-260 -90,-260"  fill="#5C2A86"/>
+      <polygon points="0,0 -90,-260 -260,-90"  fill="#D33682"/>
+    </g>
+
+    <circle cx="120" cy="118" r="84" fill="#FBE9C5" opacity="0.7"/>
+    <rect x="0" y="0" width="240" height="240" fill="url(#ll-halftone)" opacity="0.16"/>
+
+    <!-- lightning bolt accent in upper-left -->
+    <g transform="translate(40 50)">
+      <path d="M 0 0 L 14 0 L 6 14 L 18 14 L 2 36 L 8 20 L -4 20 Z"
+            fill="#F2C531" stroke="#0E0F12" stroke-width="2"/>
+    </g>
+  </g>
+
+  <circle cx="120" cy="120" r="116" fill="none" stroke="#0E0F12" stroke-width="6"/>
+
+  <g>
+    <!-- jacket -->
+    <path class="suit" d="M 30 240 L 30 200 C 38 180, 62 168, 80 164 L 102 158 L 138 158 L 160 164 C 178 168, 202 180, 210 200 L 210 240 Z"/>
+    <path class="suit-shade" d="M 30 240 L 30 200 C 38 180, 56 170, 70 168 L 70 240 Z"/>
+
+    <!-- shirt -->
+    <path class="shirt" d="M 100 162 L 120 200 L 140 162 L 144 240 L 96 240 Z"/>
+    <path class="ink-2" d="M 100 162 L 120 200 L 140 162"/>
+
+    <!-- bow tie -->
+    <g>
+      <path class="bow" d="M 120 174 L 102 168 L 100 188 L 120 184 Z"/>
+      <path class="bow" d="M 120 174 L 138 168 L 140 188 L 120 184 Z"/>
+      <rect x="116" y="172" width="8" height="14" fill="#A07B0A"/>
+      <path class="bow-shade" d="M 102 168 L 108 178 L 100 188 Z"/>
+      <path class="bow-shade" d="M 138 168 L 132 178 L 140 188 Z"/>
+      <path class="ink-thick" d="M 120 174 L 102 168 L 100 188 L 120 184 L 138 188 L 140 168 Z"/>
+      <rect x="116" y="172" width="8" height="14" fill="none" stroke="#0E0F12" stroke-width="2"/>
+    </g>
+
+    <!-- lapels -->
+    <path class="ink-thick" d="M 100 162 L 80 178"/>
+    <path class="ink-thick" d="M 140 162 L 160 178"/>
+
+    <!-- pocket square -->
+    <path d="M 76 178 L 90 176 L 86 190 L 80 188 Z" fill="#D4A017"/>
+    <path class="ink-2" d="M 76 178 L 90 176 L 86 190 L 80 188 Z"/>
+
+    <!-- neck -->
+    <path class="skin" d="M 110 144 L 130 144 L 132 162 L 108 162 Z"/>
+    <path class="skin-shade" d="M 110 154 L 130 154 L 130 162 L 110 162 Z"/>
+    <path class="ink-2" d="M 110 144 L 108 162"/>
+    <path class="ink-2" d="M 130 144 L 132 162"/>
+
+    <!-- bald head -->
+    <path class="skin" d="M 84 88 C 84 60, 100 44, 120 44 C 140 44, 156 60, 156 88 L 156 124 C 156 140, 140 152, 120 152 C 100 152, 84 140, 84 124 Z"/>
+
+    <!-- forehead shading wedge -->
+    <path class="skin-shade" d="M 96 64 C 110 56, 132 56, 144 66 C 132 60, 110 60, 98 70 Z"/>
+
+    <!-- ear -->
+    <path class="skin" d="M 82 100 C 78 102, 76 114, 80 120 L 86 116 Z"/>
+    <path class="ink-2" d="M 82 100 C 78 102, 76 114, 80 120"/>
+    <path class="skin" d="M 158 100 C 162 102, 164 114, 160 120 L 154 116 Z"/>
+    <path class="ink-2" d="M 158 100 C 162 102, 164 114, 160 120"/>
+
+    <!-- eyebrows: ONE arched, ONE level (the arched-brow signature) -->
+    <path class="ink-thick" d="M 98 100 C 104 92, 112 92, 116 100"/>   <!-- arched, viewer-left -->
+    <path class="ink-thick" d="M 124 102 L 142 102"/>                    <!-- level, viewer-right -->
+
+    <!-- eyes: narrowed, scrutinizing -->
+    <ellipse cx="106" cy="112" rx="3.5" ry="2.5" fill="#FBFAF4" stroke="#0E0F12" stroke-width="1.5"/>
+    <ellipse cx="134" cy="112" rx="3.5" ry="2.5" fill="#FBFAF4" stroke="#0E0F12" stroke-width="1.5"/>
+    <circle cx="106" cy="112" r="1.5" fill="#0E0F12"/>
+    <circle cx="134" cy="112" r="1.5" fill="#0E0F12"/>
+
+    <!-- nose -->
+    <path class="ink-2" d="M 120 114 L 116 126 L 124 128"/>
+
+    <!-- smug half-smile -->
+    <path class="ink-thick" d="M 108 134 C 118 140, 130 138, 134 132"/>
+    <path class="ink-2" d="M 134 132 L 138 130"/>
+
+    <!-- chin shadow -->
+    <path class="skin-shade" d="M 100 138 C 110 148, 130 148, 140 138 L 138 144 C 130 152, 110 152, 102 144 Z"/>
+
+    <!-- subtle stubble dots -->
+    <circle cx="105" cy="142" r="0.6" fill="#0E0F12"/>
+    <circle cx="115" cy="146" r="0.6" fill="#0E0F12"/>
+    <circle cx="125" cy="146" r="0.6" fill="#0E0F12"/>
+    <circle cx="135" cy="142" r="0.6" fill="#0E0F12"/>
+    <circle cx="120" cy="148" r="0.6" fill="#0E0F12"/>
+
+    <!-- blush -->
+    <ellipse class="blush" cx="100" cy="128" rx="5" ry="2.6"/>
+    <ellipse class="blush" cx="140" cy="128" rx="5" ry="2.6"/>
+
+    <!-- head outline -->
+    <path class="ink-thick" d="M 84 88 C 84 60, 100 44, 120 44 C 140 44, 156 60, 156 88 L 156 124 C 156 140, 140 152, 120 152 C 100 152, 84 140, 84 124 Z"/>
+
+    <!-- jacket bottom seam -->
+    <path class="ink-thick" d="M 30 240 C 70 222, 170 222, 210 240"/>
+  </g>
+</svg>

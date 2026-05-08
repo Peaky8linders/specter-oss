@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>SPECTER &amp; ASSOCIATES — The Compliance Casebook · Issue #1</title>
+  <meta name="description" content="Pop-art comic-book casebook for the EU AI Act. Mike, Rachel, Louis &amp; Jessica work the case. Harvey closes."/>
+
+  <!-- Google Fonts: Bangers (display), Bowlby One (callouts), Permanent Marker (handwriting), Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Bowlby+One&amp;family=Permanent+Marker&amp;family=Inter:wght@400;500;600;700;900&amp;display=swap"/>
+
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <!--  Inline SVG defs: reusable ray-burst symbols + halftone     -->
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <pattern id="page-halftone" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+        <circle cx="4" cy="4" r="1.2" fill="#0E0F12"/>
+      </pattern>
+
+      <!-- Reusable ray bursts per voice -->
+      <symbol id="ray-burst-harvey" viewBox="-260 -260 520 520">
+        <polygon points="0,0 -520,-180 -520,-60"  fill="#E8341E"/>
+        <polygon points="0,0 -520,-60  -520,60"   fill="#F08C2A"/>
+        <polygon points="0,0 -520,60   -520,180"  fill="#F2C531"/>
+        <polygon points="0,0 -520,180  -180,520"  fill="#D33682"/>
+        <polygon points="0,0  180,520  520,180"   fill="#A03A2C"/>
+        <polygon points="0,0  520,180  520,60"    fill="#F08C2A"/>
+        <polygon points="0,0  520,60   520,-60"   fill="#F2C531"/>
+        <polygon points="0,0  520,-60  520,-180"  fill="#E8341E"/>
+        <polygon points="0,0  520,-180 180,-520"  fill="#D33682"/>
+        <polygon points="0,0  180,-520 -180,-520" fill="#22A4D4"/>
+        <polygon points="0,0 -180,-520 -520,-180" fill="#A03A2C"/>
+      </symbol>
+
+      <symbol id="ray-burst-mike" viewBox="-260 -260 520 520">
+        <polygon points="0,0 -520,-180 -520,-60"  fill="#22A4D4"/>
+        <polygon points="0,0 -520,-60  -520,60"   fill="#6CB4EE"/>
+        <polygon points="0,0 -520,60   -520,180"  fill="#1B3A6B"/>
+        <polygon points="0,0 -520,180  -180,520"  fill="#22A4D4"/>
+        <polygon points="0,0  180,520  520,180"   fill="#1B3A6B"/>
+        <polygon points="0,0  520,180  520,60"    fill="#6CB4EE"/>
+        <polygon points="0,0  520,60   520,-60"   fill="#F2C531"/>
+        <polygon points="0,0  520,-60  520,-180"  fill="#22A4D4"/>
+        <polygon points="0,0  520,-180 180,-520"  fill="#6CB4EE"/>
+        <polygon points="0,0  180,-520 -180,-520" fill="#1B3A6B"/>
+        <polygon points="0,0 -180,-520 -520,-180" fill="#6CB4EE"/>
+      </symbol>
+
+      <symbol id="ray-burst-rachel" viewBox="-260 -260 520 520">
+        <polygon points="0,0 -520,-180 -520,-60"  fill="#A8324A"/>
+        <polygon points="0,0 -520,-60  -520,60"   fill="#F5E6E0"/>
+        <polygon points="0,0 -520,60   -520,180"  fill="#A8324A"/>
+        <polygon points="0,0 -520,180  -180,520"  fill="#E8341E"/>
+        <polygon points="0,0  180,520  520,180"   fill="#A8324A"/>
+        <polygon points="0,0  520,180  520,60"    fill="#F5E6E0"/>
+        <polygon points="0,0  520,60   520,-60"   fill="#F08C2A"/>
+        <polygon points="0,0  520,-60  520,-180"  fill="#E8341E"/>
+        <polygon points="0,0  520,-180 180,-520"  fill="#F5E6E0"/>
+        <polygon points="0,0  180,-520 -180,-520" fill="#A8324A"/>
+        <polygon points="0,0 -180,-520 -520,-180" fill="#F5E6E0"/>
+      </symbol>
+
+      <symbol id="ray-burst-louis" viewBox="-260 -260 520 520">
+        <polygon points="0,0 -520,-180 -520,-60"  fill="#5C2A86"/>
+        <polygon points="0,0 -520,-60  -520,60"   fill="#D4A017"/>
+        <polygon points="0,0 -520,60   -520,180"  fill="#5C2A86"/>
+        <polygon points="0,0 -520,180  -180,520"  fill="#D33682"/>
+        <polygon points="0,0  180,520  520,180"   fill="#5C2A86"/>
+        <polygon points="0,0  520,180  520,60"    fill="#D4A017"/>
+        <polygon points="0,0  520,60   520,-60"   fill="#F2C531"/>
+        <polygon points="0,0  520,-60  520,-180"  fill="#5C2A86"/>
+        <polygon points="0,0  520,-180 180,-520"  fill="#D4A017"/>
+        <polygon points="0,0  180,-520 -180,-520" fill="#5C2A86"/>
+        <polygon points="0,0 -180,-520 -520,-180" fill="#D33682"/>
+      </symbol>
+
+      <symbol id="ray-burst-jessica" viewBox="-260 -260 520 520">
+        <polygon points="0,0 -520,-180 -520,-60"  fill="#1F8A4C"/>
+        <polygon points="0,0 -520,-60  -520,60"   fill="#0E0F12"/>
+        <polygon points="0,0 -520,60   -520,180"  fill="#1F8A4C"/>
+        <polygon points="0,0 -520,180  -180,520"  fill="#F2C531"/>
+        <polygon points="0,0  180,520  520,180"   fill="#1F8A4C"/>
+        <polygon points="0,0  520,180  520,60"    fill="#0E0F12"/>
+        <polygon points="0,0  520,60   520,-60"   fill="#1F8A4C"/>
+        <polygon points="0,0  520,-60  520,-180"  fill="#0E0F12"/>
+        <polygon points="0,0  520,-180 180,-520"  fill="#F2C531"/>
+        <polygon points="0,0  180,-520 -180,-520" fill="#1F8A4C"/>
+        <polygon points="0,0 -180,-520 -520,-180" fill="#D33682"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Halftone overlay (fixed) -->
+  <div class="page-halftone" aria-hidden="true"></div>
+
+  <main class="page">
+
+    <!-- ─── Hero — HARVEY leads ─── -->
+    <header class="hero" id="hero">
+      <article class="hero__portrait" aria-label="Harvey Specter — cover star">
+        <svg class="hero__burst" viewBox="-260 -260 520 520" aria-hidden="true">
+          <use href="#ray-burst-harvey"/>
+        </svg>
+        <div class="hero__halftone" aria-hidden="true"></div>
+        <span class="hero__avatar hero__avatar--initials avatar-initials" data-voice="harvey" aria-hidden="true">HS</span>
+        <span class="hero__nameplate">HARVEY SPECTER</span>
+        <span class="hero__signature">— He closes.</span>
+      </article>
+
+      <div class="hero__copy">
+        <p class="hero__kicker">SPECTER OSS PRESENTS</p>
+        <h1 class="hero__title">SPECTER<br/>&amp; ASSOCIATES</h1>
+        <p class="hero__subtitle">THE COMPLIANCE CASEBOOK · ISSUE #1</p>
+        <p class="hero__strapline">
+          MIKE, RACHEL, LOUIS &amp; JESSICA WORK THE EU AI ACT.<br/>
+          <strong>HARVEY CLOSES.</strong>
+        </p>
+        <div class="hero__badge" aria-hidden="true">
+          <span class="hero__badge-stars">★★★★★</span>
+          <span class="hero__badge-text">5-PANEL DELIBERATION · CITES INCLUDED</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── Roster strip ─── -->
+    <section class="roster" id="roster" aria-label="The associates">
+      <h2 class="roster__heading">THE ASSOCIATES</h2>
+      <ul class="roster__list" id="roster-list"></ul>
+    </section>
+
+    <!-- ─── Case input panel ─── -->
+    <section class="case-form-wrap" id="case-form-wrap" aria-label="Open a case">
+      <form class="case-form" id="case-form">
+        <span class="case-form__tape case-form__tape--left" aria-hidden="true"></span>
+        <span class="case-form__tape case-form__tape--right" aria-hidden="true"></span>
+
+        <h2 class="case-form__heading">WHAT'S THE CASE, COUNSELOR?</h2>
+
+        <label class="case-form__label" for="case-question">
+          <span>YOUR FACTS</span>
+        </label>
+        <textarea id="case-question" name="question" class="case-form__textarea"
+                  rows="4" required maxlength="10000"
+                  placeholder="Describe the deployment, the data, the obligation you're worried about…"></textarea>
+
+        <label class="case-form__label" for="case-role">
+          <span>YOUR ROLE UNDER THE ACT</span>
+        </label>
+        <select id="case-role" name="role" class="case-form__select">
+          <option value="">— no role —</option>
+          <option value="provider">provider</option>
+          <option value="deployer">deployer</option>
+          <option value="importer">importer</option>
+          <option value="distributor">distributor</option>
+          <option value="authorised representative">authorised representative</option>
+          <option value="product manufacturer">product manufacturer</option>
+          <option value="general-purpose AI provider">general-purpose AI provider</option>
+          <option value="general-purpose AI deployer">general-purpose AI deployer</option>
+          <option value="notified body">notified body</option>
+        </select>
+
+        <div class="case-form__actions">
+          <button type="submit" class="stamp-btn" id="open-case-btn">
+            <span class="stamp-btn__inner">OPEN THE CASE</span>
+          </button>
+          <p class="case-form__hint">Try it — Cmd/Ctrl + Enter to submit.</p>
+        </div>
+
+        <div class="case-form__error" id="case-form-error" role="alert" hidden></div>
+      </form>
+    </section>
+
+    <!-- ─── Comic page (rendered after submit) ─── -->
+    <section class="comic-page" id="comic-page" aria-live="polite" aria-label="Case dialogue" hidden>
+      <header class="comic-page__head">
+        <h2 class="comic-page__title" id="comic-page-title">THE CASE</h2>
+        <p class="comic-page__sub" id="comic-page-sub"></p>
+      </header>
+
+      <div class="comic-grid" id="comic-grid"></div>
+
+      <aside class="conflicts" id="conflicts" hidden>
+        <h3 class="conflicts__heading">ON THE RECORD —</h3>
+        <ul class="conflicts__list" id="conflicts-list"></ul>
+      </aside>
+
+      <div class="verdict-banner" id="verdict-banner" hidden>
+        <span class="verdict-banner__label">JESSICA RULES:</span>
+        <p class="verdict-banner__text" id="verdict-text"></p>
+        <p class="verdict-banner__refs" id="verdict-refs"></p>
+      </div>
+
+      <div class="comic-page__actions">
+        <button type="button" class="stamp-btn stamp-btn--alt" id="new-case-btn">
+          <span class="stamp-btn__inner">NEW CASE</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ─── Footer ─── -->
+    <footer class="colophon">
+      <span class="colophon__star" aria-hidden="true">★</span>
+      <span>MADE WITH SPECTER · v0.1</span>
+      <span class="colophon__star" aria-hidden="true">★</span>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,10 +1,16 @@
-# Specter
+<h1 align="center">Specter</h1>
 
-> EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, grounded Q&A. Ships as a Claude Code plugin and a Python library.
+<p align="center">
+  <em>EU AI Act compliance, with five characters working the case.</em><br/>
+  Ontology · taxonomy · LLM-as-Judge · grounded Q&amp;A · five-voice agent overlay · comic-book SPA.<br/>
+  Ships as a Claude Code plugin, a Python library, and a local web app.
+</p>
+
+---
 
 ```bash
 # Claude Code plugin (recommended) — get 6 slash commands + 6 MCP tools
-pip install 'specter[plugin]>=0.1.3'
+pip install 'specter[plugin]>=0.1.4'
 claude plugins install github:Peaky8linders/specter-oss/claude-plugin
 
 # Python library — for direct programmatic access
@@ -19,7 +25,7 @@ pip install 'specter[mistral]'     # adds Mistral-backed retriever for the Q&A e
 - **Catch reward-hacking in compliance roadmaps.** Six-check `ComplianceRewardHackDetector` (LLM-as-Judge) screens proposed remediation tasks for plagiarism, KB-reality violations, coverage-plausibility breaks, contract-completeness gaps, and rebutted-excuse matches. The detector OWNS the `origin` label — an agent that lies and self-labels as `agent_novel` when it actually plagiarised a prior task is caught by SequenceMatcher, not trusted on its self-report.
 - **Surface a regulator-defensible taxonomy.** Four-axis agentic-AI compound-risk classification (cascading / emergent / attribution / temporal) anchored to EU AI Act articles + KB maturity dimensions, grounded in *AI Agents Under EU Law* (working paper, 7 April 2026).
 
-## Two ways to use it
+## Three ways to use it
 
 ### 1. Claude Code plugin
 
@@ -29,7 +35,7 @@ required — the MCP server runs locally against the bundled article
 catalog.
 
 ```bash
-pip install 'specter[plugin]>=0.1.3'
+pip install 'specter[plugin]>=0.1.4'
 
 # From a checkout of the repo:
 claude plugins install ./claude-plugin
@@ -86,6 +92,37 @@ print(flags.blocked, flags.reasons)
 # True, ["kb_reality: article_paragraphs ['Art. 999'] not found in the regulation catalog"]
 ```
 
+### 3. Comic-book SPA + Suits-themed agent overlay
+
+A local web app turns the same compliance question into a five-panel
+"case" worked by five characters loosely inspired by *Suits* and the
+local-first OSS legal-AI fork
+[mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss)
+(itself a fork of Will Chen's
+[`willchen96/mike`](https://github.com/willchen96/mike)).
+
+| Voice | Character | Role in the case |
+|---|---|---|
+| `harvey`  | **Harvey Specter** — senior partner | Project mascot. The cover star. |
+| `mike`    | **Mike Ross** — photographic-memory associate | Pulls articles + role obligations from the catalog. Citation-first. |
+| `rachel`  | **Rachel Zane** — paralegal | Frames the question, mediates Mike↔Louis. |
+| `louis`   | **Louis Litt** — the anti-Specter | Adversarial scrutiny. Fires `OBJECTION!` when Mike misses or hallucinates. |
+| `jessica` | **Jessica Pearson** — managing partner | Final ruling. One line. Move on. |
+
+Run it locally:
+
+```bash
+pip install -e '.[api]'
+uvicorn specter.api.dev_app:app --reload
+# then open http://127.0.0.1:8000/  →  redirects to /webapp/
+```
+
+The dev app mounts the comic-book SPA at `/webapp/`, the Suits agent
+route at `POST /v1/case`, and the grounded Q&A route at
+`POST /v1/eu-ai-act/ask`. The whole agent layer is **deterministic**
+(rule-based personalities; no LLM call required) so the test suite
+pins behavior end-to-end.
+
 ## What's inside
 
 ```
@@ -97,12 +134,16 @@ specter/
 │                 (Finder / Adversary / Referee) adversarial verifier
 ├── qa/           Grounded Q&A models with closed-world refusal + reference
 │                 validation against the article catalog
-├── api/          FastAPI router exposing POST /v1/eu-ai-act/ask with
-│                 pluggable retriever
+├── api/          FastAPI: /v1/eu-ai-act/ask (Q&A) + /v1/case (Suits overlay)
+│                 + dev_app.py mounting the comic-book SPA at /webapp/
+├── agents/       Suits-themed five-voice overlay (Harvey/Mike/Rachel/Louis/Jessica)
+│                 — deterministic, rule-based, with optional mike-oss bridge
 ├── mcp_server.py stdio MCP server — Claude Code plugin backend
 └── ontology/     RDF/Turtle OWL ontology aligning EU AI Act with AIRO + DPV
 
 claude-plugin/    Claude Code plugin manifest + slash commands + MCP config
+webapp/           Pop-art comic-book SPA — vanilla ES2022, no build step,
+                  five hand-authored SVG avatars (Harvey leads the hero)
 ```
 
 ## Quickstart — three core surfaces
