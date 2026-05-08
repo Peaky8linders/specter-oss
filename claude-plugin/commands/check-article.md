@@ -1,3 +1,8 @@
+---
+description: Validate an EU AI Act article reference against the canonical 113-article + 13-annex catalog
+argument-hint: ref="Art. 13(1)(a)"
+---
+
 # /specter:check-article
 
 Validate an EU AI Act article reference against the canonical

@@ -1,3 +1,7 @@
+---
+description: Return the four-axis agentic-AI compound-risk taxonomy (cascading / emergent / attribution / temporal)
+---
+
 # /specter:taxonomy
 
 Return the four-axis **agentic-AI compound-risk taxonomy** grounded

@@ -1,3 +1,8 @@
+---
+description: Return EU AI Act articles applicable to an operator role (provider / deployer / importer / distributor / etc.)
+argument-hint: role="deployer"
+---
+
 # /specter:role-obligations
 
 Return the EU AI Act articles that apply to a given operator role.

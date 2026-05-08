@@ -1,3 +1,8 @@
+---
+description: Convert internal `Art. X(Y)(Z)` / `Annex IV(N)` into publication form `Article X.Y.Z` / `Annex IV.N`
+argument-hint: ref="Art. 13(1)(a)"
+---
+
 # /specter:format-citation
 
 Convert internal-form EU AI Act references (`Art. X(Y)(Z)`,

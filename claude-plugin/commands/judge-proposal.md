@@ -1,3 +1,8 @@
+---
+description: Run a proposal through the LLM-as-Judge ComplianceRewardHackDetector (6 checks)
+argument-hint: proposal=<json> valid_dimensions=<array>
+---
+
 # /specter:judge-proposal
 
 Run a roadmap-task proposal through the **ComplianceRewardHackDetector**

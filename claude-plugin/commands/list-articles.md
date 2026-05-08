@@ -1,3 +1,8 @@
+---
+description: Return the canonical EU AI Act surface — 113 articles + 13 annexes
+argument-hint: '[kind="all"|"articles"|"annexes"]'
+---
+
 # /specter:list-articles
 
 Return the canonical EU AI Act surface — 113 articles + 13 annexes
