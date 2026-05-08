@@ -209,9 +209,13 @@ button { font-family: inherit; cursor: pointer; }
 .avatar-initials[data-voice="louis"]   { background: var(--louis);   color: var(--louis-accent); }
 .avatar-initials[data-voice="jessica"] { background: var(--jessica); color: var(--jessica-accent); }
 
-/* The hero spot is large and dominates the cover panel. */
+/* The hero spot is large and dominates the cover panel.
+   `cqi` keeps the initials proportional to the portrait card itself, not
+   the viewport — the card is the container query context, so HS scales
+   gracefully when the hero stacks 1-column on narrow widths. */
+.hero__portrait { container-type: inline-size; }
 .hero__avatar--initials {
-  font-size: clamp(64px, 9vw, 120px);
+  font-size: clamp(36px, 32cqi, 120px);
   letter-spacing: 0.06em;
   text-shadow: 4px 4px 0 var(--ink);
   box-shadow: inset 0 0 0 4px var(--paper-2), 6px 6px 0 var(--ink);
@@ -1044,7 +1048,7 @@ button { font-family: inherit; cursor: pointer; }
     gap: 24px;
     text-align: center;
   }
-  .hero__portrait { max-width: 320px; margin: 0 auto; }
+  .hero__portrait { width: 100%; max-width: 320px; margin: 0 auto; }
   .hero__copy { text-align: left; }
   .hero__title { font-size: clamp(40px, 12vw, 80px); }
 
