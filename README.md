@@ -162,27 +162,6 @@ The router enforces:
 - **Reference validation** — every citation passes through `ARTICLE_EXISTENCE`; hallucinated articles drop silently before serialisation.
 - **Optional API-key auth** — set `SPECTER_API_KEY` to unlock a 60/min privileged tier; anonymous traffic is capped at 30/min per IP-hash.
 
-## What's intentionally *not* here
-
-This is the **slice** that ports cleanly. The full commercial platform also ships:
-
-- A 24-dimension × 139-question maturity-assessment knowledge base
-- A roadmap-task registry + autoresearch refinement loop (the `ComplianceRewardHackDetector` is the judge; the loop itself stays proprietary)
-- A Neo4j-backed Graph RAG retriever (this OSS package ships a stub; you bring your own)
-- An evidence chain with WORM/Object Lock semantics
-- Stripe billing, multi-tenant auth, audit reports, scanner agents
-
-The slice you have here is what you need to **verify regulator-grounded outputs** in your own pipeline.
-
-## Provenance
-
-- **`data/articles_existence`** + **`data/articles_requirements`** — original work; canonical EU AI Act catalog
-- **`data/taxonomy`** — original implementation of the four-axis compound-risk taxonomy from *AI Agents Under EU Law* (working paper, 7 April 2026, §10.4)
-- **`data/roles`** + **`data/rationalizations`** — original work; 9-role obligation registry + rebutted-excuse registry
-- **`judge/reward_hack`** — original `ComplianceRewardHackDetector` adapted from the upstream Karpathy-style autoresearch loop
-- **`judge/three_agent`** — adapted from the upstream sycophancy-weaponization architecture
-- **`qa/`** + **`api/qa_route`** — Q&A endpoint adapted from the upstream public-tier partner integration; rate-limit semantics and closed-world refusal preserved verbatim
-
 ## Status
 
 `v0.1.2` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
