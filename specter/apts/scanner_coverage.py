@@ -27,8 +27,9 @@ report. Covered by ``tests/test_apts_scanner_coverage.py``.
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable, Literal
+from typing import Literal
 
 from specter.apts.requirements import requirement_by_id
 from specter.apts.scanner_mapping import (

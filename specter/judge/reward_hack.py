@@ -47,13 +47,12 @@ from __future__ import annotations
 
 import difflib
 import re
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
-from enum import Enum, unique
-from typing import Any, Callable, Iterable, Literal, Optional, Self
+from typing import Any, Literal, Self
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 # ─── Origin label ──────────────────────────────────────────────────────────
 
@@ -103,7 +102,7 @@ class ResearchGoal(BaseModel):
     early_stop_no_improvement: int = Field(default=5, ge=1)
     improvement_floor: float = Field(default=0.015, ge=0.0, le=1.0)
     kb_dimensions_in_scope: list[str] | None = Field(default=None)
-    operator_role: Optional[str] = Field(default=None)
+    operator_role: str | None = Field(default=None)
     constraints: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
@@ -190,7 +189,7 @@ class CompliancePolicy:
 
     article_exists: Callable[[str], bool]
     dimension_exists: Callable[[str], bool]
-    dimension_open_ratio: Callable[[str], Optional[float]]
+    dimension_open_ratio: Callable[[str], float | None]
     """Returns ``open_questions / total_questions`` for the dimension,
     or None if the dimension has no questions / is unknown."""
     registry_prompts: Callable[[], Iterable[str]] = field(
@@ -445,11 +444,9 @@ def make_eu_ai_act_policy(
     *,
     article_existence: frozenset[str],
     valid_dimensions: frozenset[str],
-    open_ratio: Optional[Callable[[str], Optional[float]]] = None,
-    registry_prompts: Optional[Callable[[], Iterable[str]]] = None,
-    rationalization_entries: Optional[
-        Callable[[list[str], str], list[RationalizationEntry]]
-    ] = None,
+    open_ratio: Callable[[str], float | None] | None = None,
+    registry_prompts: Callable[[], Iterable[str]] | None = None,
+    rationalization_entries: Callable[[list[str], str], list[RationalizationEntry]] | None = None,
 ) -> CompliancePolicy:
     """Build a :class:`CompliancePolicy` wired to EU AI Act defaults.
 
@@ -488,7 +485,7 @@ def make_eu_ai_act_policy(
     def _dimension_exists(dim_id: str) -> bool:
         return dim_id in valid_dimensions
 
-    def _open_ratio(dim_id: str) -> Optional[float]:
+    def _open_ratio(dim_id: str) -> float | None:
         return open_ratio(dim_id) if open_ratio else None
 
     return CompliancePolicy(

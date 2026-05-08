@@ -26,7 +26,6 @@ from typing import Final
 
 from pydantic import BaseModel, Field, HttpUrl
 
-
 LAST_SYNCED: Final[str] = "2026-04-27"
 """ISO date of the last manual review against https://owaspai.org/."""
 

@@ -17,12 +17,10 @@ from specter.judge.reward_hack import (
     make_eu_ai_act_policy,
 )
 from specter.qa.models import (
-    AskRequest,
     AskResponse,
     ChatMessage,
     reference_from_article_ref,
 )
-
 
 # ─── Article catalog ────────────────────────────────────────────────────────
 
@@ -64,7 +62,9 @@ def test_reference_formatter_rejects_hallucinations(raw: str) -> None:
 
 
 def test_chat_message_caps_content_at_4k() -> None:
-    with pytest.raises(Exception):  # ValidationError
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
         ChatMessage(role="user", content="x" * 4001)
 
 

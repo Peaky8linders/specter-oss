@@ -17,7 +17,7 @@ audit-chain persistence can wrap ``conformance_for_system`` with their
 own dependency-injection layer.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
 
@@ -33,9 +33,11 @@ from specter.apts.models import APTSDomain
 from specter.apts.requirements import (
     list_domains,
     load_requirements,
-    manifest as apts_manifest,
     requirement_by_id,
     requirements_by_domain,
+)
+from specter.apts.requirements import (
+    manifest as apts_manifest,
 )
 
 apts_router = APIRouter(tags=["apts"])
@@ -58,12 +60,12 @@ async def get_manifest(request: Request) -> dict[str, Any]:
 )
 async def list_requirements(
     request: Request,
-    domain: Optional[APTSDomain] = Query(
+    domain: APTSDomain | None = Query(
         default=None,
         description="Filter by canonical domain label.",
     ),
-    tier: Optional[int] = Query(default=None, ge=1, le=3, description="Filter by tier 1/2/3."),
-    classification: Optional[str] = Query(
+    tier: int | None = Query(default=None, ge=1, le=3, description="Filter by tier 1/2/3."),
+    classification: str | None = Query(
         default=None,
         pattern="^(MUST|SHOULD)$",
         description="Filter by classification; MUST or SHOULD.",

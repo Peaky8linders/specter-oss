@@ -78,4 +78,8 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
-ignore = ["E501"]
+ignore = [
+    "E501",  # line length — managed by formatter
+    "B008",  # FastAPI's Depends/Body/Query are intentionally called in defaults
+    "UP042", # str+Enum is intentionally compatible with stdlib enum.Enum
+]

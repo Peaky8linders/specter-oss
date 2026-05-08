@@ -33,7 +33,6 @@ from typing import Final
 from specter.data.atlas import ATLAS_BY_ID
 from specter.data.owasp_aix import OWASP_AIX_BY_ID
 
-
 TECHNIQUE_TO_ATLAS: Final[dict[str, str]] = {
     # antifragile-ai internal id  → MITRE ATLAS technique id
     "prompt-injection": "AML.T0051",

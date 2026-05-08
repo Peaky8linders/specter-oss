@@ -21,9 +21,10 @@ target system (e.g. an external pentesting platform claiming APTS conformance).
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Iterable, Literal
+from datetime import UTC, datetime
+from typing import Literal
 
 from specter.apts.evidence_map import EvidenceClaim, get_evidence_map
 from specter.apts.models import APTSDomain, APTSRequirement, APTSTier
@@ -200,7 +201,7 @@ def _build_report(
         target_id=target_id,
         target_label=target_label,
         apts_version=APTS_VERSION,
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
         requirement_results=results,
         domain_summaries=domain_summaries,
         tier_status=tier_status,

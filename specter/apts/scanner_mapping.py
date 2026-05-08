@@ -27,7 +27,6 @@ from __future__ import annotations
 
 from types import MappingProxyType
 
-
 # Per-analyzer list of APTS requirement IDs the analyzer's findings illuminate.
 # IDs follow the canonical APTS-XX-NNN form; the unit test
 # ``TestScannerMappingIntegrity`` asserts every id resolves through

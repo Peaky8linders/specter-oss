@@ -36,7 +36,8 @@ Hallucination-reduction guards (preserved from upstream):
 from __future__ import annotations
 
 import hashlib
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field, ValidationError
@@ -50,10 +51,9 @@ from specter.qa.auth import (
 from specter.qa.models import (
     AskRequest,
     AskResponse,
-    reference_from_article_ref,
     question_hash,
+    reference_from_article_ref,
 )
-
 
 # ─── KB version pin ─────────────────────────────────────────────────────────
 # Stamped on every response so a regulator amendment can be traced through
@@ -72,12 +72,12 @@ class RetrieverRequest(BaseModel):
     """
 
     question: str = Field(min_length=1, max_length=2_000)
-    system_description: Optional[str] = Field(default=None, max_length=1_000)
+    system_description: str | None = Field(default=None, max_length=1_000)
 
 
 class Citation(BaseModel):
     article_ref: str = Field(default="")
-    snippet: Optional[str] = Field(default=None)
+    snippet: str | None = Field(default=None)
 
 
 class RetrieverResponse(BaseModel):
@@ -202,7 +202,7 @@ def _build_reasoning(
 def make_qa_router(
     *,
     retriever: RetrieverFn = _stub_retriever,
-    limiter: Optional[Limiter] = None,
+    limiter: Limiter | None = None,
     kb_version: str = KB_VERSION,
 ) -> APIRouter:
     """Build the Specter EU AI Act Q&A router.

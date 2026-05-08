@@ -68,7 +68,7 @@ class AuditMeta(BaseModel):
     schema_version: str = "0.1.0"
     input_hash: str = ""
 
-    def with_input_hash(self, data: str) -> "AuditMeta":
+    def with_input_hash(self, data: str) -> AuditMeta:
         self.input_hash = hashlib.sha256(data.encode()).hexdigest()[:16]
         return self
 

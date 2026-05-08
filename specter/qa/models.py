@@ -129,7 +129,7 @@ def question_hash(question: str) -> str:
     consumer that grepped a 16-char prefix of an old hash still
     matches the same prefix of the new full digest.
     """
-    payload = f"{_QUESTION_HASH_SALT}:{question.strip()}".encode("utf-8")
+    payload = f"{_QUESTION_HASH_SALT}:{question.strip()}".encode()
     return hashlib.sha256(payload).hexdigest()
 
 
