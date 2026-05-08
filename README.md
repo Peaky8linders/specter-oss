@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="webapp/avatars/harvey.svg" width="260" alt="Harvey Specter — pop-art portrait, the project mascot"/>
-</p>
-
 <h1 align="center">Specter</h1>
 
 <p align="center">

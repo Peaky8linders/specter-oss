@@ -183,9 +183,7 @@ async function renderRoster() {
     li.style.setProperty("--card-color", p.color);
     li.style.setProperty("--card-accent", p.accent_color);
     li.innerHTML = `
-      <span class="roster__avatar" aria-hidden="true">
-        <img src="avatars/${escAttr(p.voice)}.svg" alt="" width="96" height="96"/>
-      </span>
+      <span class="roster__avatar avatar-initials" data-voice="${escAttr(p.voice)}" aria-hidden="true">${escHtml(PERSONA_INITIALS[p.voice] || initialsFromName(p.name))}</span>
       <span class="roster__meta">
         <span class="roster__name">${escHtml(p.name)}</span>
         <span class="roster__title">${escHtml(p.title)}</span>
@@ -320,6 +318,17 @@ const PERSONA_TITLES = {
   jessica: "Managing partner",
 };
 
+// Two-letter initials per voice — used as the typographic placeholder while
+// avatar artwork is paused. Picked from the persona name (Harvey Specter → HS,
+// Mike Ross → MR, Rachel Zane → RZ, Louis Litt → LL, Jessica Pearson → JP).
+const PERSONA_INITIALS = {
+  harvey:  "HS",
+  mike:    "MR",
+  rachel:  "RZ",
+  louis:   "LL",
+  jessica: "JP",
+};
+
 /**
  * Render a single Turn as a `.panel` article.
  * @param {object} turn
@@ -341,9 +350,7 @@ function renderPanel(turn, idx) {
   const head = document.createElement("div");
   head.className = "panel__head";
   head.innerHTML = `
-    <span class="panel__avatar" aria-hidden="true">
-      <img src="avatars/${escAttr(turn.speaker)}.svg" alt="" width="96" height="96"/>
-    </span>
+    <span class="panel__avatar avatar-initials" data-voice="${escAttr(turn.speaker)}" aria-hidden="true">${escHtml(PERSONA_INITIALS[turn.speaker] || initialsFromName(turn.name))}</span>
     <span class="panel__who">
       <span class="panel__name">${escHtml(turn.name || titleCase(turn.speaker))}</span>
       <span class="panel__role">${escHtml(PERSONA_TITLES[turn.speaker] || "")}</span>
@@ -503,4 +510,12 @@ function escAttr(s) {
 
 function titleCase(s) {
   return String(s || "").charAt(0).toUpperCase() + String(s || "").slice(1);
+}
+
+/** Fallback two-letter initials when a voice isn't in PERSONA_INITIALS. */
+function initialsFromName(name) {
+  const parts = String(name || "").trim().split(/\s+/);
+  if (parts.length === 0) return "??";
+  if (parts.length === 1) return (parts[0].slice(0, 2) || "??").toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }

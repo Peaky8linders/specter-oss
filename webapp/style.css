@@ -179,6 +179,51 @@ button { font-family: inherit; cursor: pointer; }
   filter: drop-shadow(4px 4px 0 var(--ink));
 }
 
+
+/* ─── Typographic initials placeholder (avatars on hold) ──────────────
+   Used wherever a character avatar would be: hero portrait, roster cards,
+   panel heads. Renders as a coloured circle filled with the character's
+   two-letter initials, with the persona's primary colour as background and
+   the accent colour as the text. The `data-voice="…"` attribute drives the
+   colour mapping so adding a new voice in the future is one CSS rule.
+   ──────────────────────────────────────────────────────────────────────── */
+
+.avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-align: center;
+  background: var(--ink);          /* default fallback */
+  color: var(--paper);
+  border-radius: 50%;
+  user-select: none;
+  text-transform: uppercase;
+}
+
+.avatar-initials[data-voice="harvey"]  { background: var(--harvey);  color: var(--harvey-accent); }
+.avatar-initials[data-voice="mike"]    { background: var(--mike);    color: var(--mike-accent);   }
+.avatar-initials[data-voice="rachel"]  { background: var(--rachel);  color: var(--rachel-accent);}
+.avatar-initials[data-voice="louis"]   { background: var(--louis);   color: var(--louis-accent); }
+.avatar-initials[data-voice="jessica"] { background: var(--jessica); color: var(--jessica-accent); }
+
+/* The hero spot is large and dominates the cover panel. */
+.hero__avatar--initials {
+  font-size: clamp(64px, 9vw, 120px);
+  letter-spacing: 0.06em;
+  text-shadow: 4px 4px 0 var(--ink);
+  box-shadow: inset 0 0 0 4px var(--paper-2), 6px 6px 0 var(--ink);
+}
+
+/* Roster + panel circles inherit their dimensions from the parent rule
+   (.roster__avatar / .panel__avatar) so we only set typography here. */
+.roster__avatar.avatar-initials,
+.panel__avatar.avatar-initials {
+  font-size: 28px;
+}
+
 .hero__nameplate {
   position: absolute;
   z-index: 4;
