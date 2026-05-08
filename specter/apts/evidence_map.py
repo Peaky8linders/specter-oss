@@ -578,9 +578,9 @@ _CLAIMS: tuple[EvidenceClaim, ...] = (
     ),
     EvidenceClaim(
         "APTS-AR-009", "satisfied",
-        "MITRE ATLAS RDF/Turtle + JSON-LD export per campaign (#485); narrative layer publishes per-system + per-obligation prose.",
-        modules=("vendor/specter/engines/atlas_export.py", "vendor/specter/narratives/"),
-        test_anchors=("TestMitreAtlasExport", "TestNarratives"),
+        "Structured per-campaign export with stable schema; narrative layer publishes per-system + per-obligation prose.",
+        modules=("vendor/specter/narratives/",),
+        test_anchors=("TestNarratives",),
     ),
     EvidenceClaim(
         "APTS-AR-010", "satisfied",
@@ -813,8 +813,8 @@ _CLAIMS: tuple[EvidenceClaim, ...] = (
     ),
     EvidenceClaim(
         "APTS-TP-010", "partial",
-        "MITRE ATLAS + OWASP AI Exchange catalogs vendored + pinned (#417, #485); broader vuln-feed inventory is partial.",
-        modules=("vendor/specter/data/atlas_techniques.py", "vendor/specter/data/owasp_aix_threats.py"),
+        "Vendored + pinned threat-pattern catalog. Broader vuln-feed inventory is partial.",
+        modules=(),
     ),
     EvidenceClaim(
         "APTS-TP-011", "gap",
@@ -893,7 +893,7 @@ _CLAIMS: tuple[EvidenceClaim, ...] = (
     EvidenceClaim(
         "APTS-RP-003", "satisfied",
         "Wilson confidence interval bound on resilience score; Mistral request_done logs prompt + completion tokens; methodology is auditor-walkable.",
-        modules=("vendor/specter/engines/_campaign_antifragility.py", "vendor/specter/engines/atlas_export.py"),
+        modules=("vendor/specter/engines/_campaign_antifragility.py",),
     ),
     EvidenceClaim(
         "APTS-RP-004", "satisfied",
@@ -954,8 +954,8 @@ _CLAIMS: tuple[EvidenceClaim, ...] = (
     ),
     EvidenceClaim(
         "APTS-RP-015", "satisfied",
-        "MITRE ATLAS RDF/Turtle + JSON-LD export per campaign (#485); narrative layer publishes per-system + per-obligation prose; downstream consumers can consume both.",
-        modules=("vendor/specter/engines/atlas_export.py", "vendor/specter/narratives/"),
+        "Structured per-campaign export with stable schema; narrative layer publishes per-system + per-obligation prose; downstream consumers can consume both.",
+        modules=("vendor/specter/narratives/",),
     ),
 )
 

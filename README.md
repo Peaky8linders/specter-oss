@@ -1,9 +1,9 @@
 # Specter
 
-> EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, OWASP APTS conformance, grounded Q&A. Ships as a Python library and a Claude Code plugin.
+> EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, grounded Q&A. Ships as a Python library and a Claude Code plugin.
 
 ```bash
-pip install specter                # core: data + LLM-as-Judge + APTS conformance
+pip install specter                # core: data + LLM-as-Judge
 pip install 'specter[api]'         # adds FastAPI router for grounded Q&A
 pip install 'specter[plugin]'      # adds MCP SDK for the Claude Code plugin
 ```
@@ -12,7 +12,7 @@ pip install 'specter[plugin]'      # adds MCP SDK for the Claude Code plugin
 
 - **Ground LLM output against the regulation.** Every reference is validated against a frozen 113-article + 13-annex catalog of Regulation (EU) 2024/1689 — hallucinated articles never reach the wire.
 - **Catch reward-hacking in compliance roadmaps.** Six-check `ComplianceRewardHackDetector` (LLM-as-Judge) screens proposed remediation tasks for plagiarism, KB-reality violations, coverage-plausibility breaks, contract-completeness gaps, and rebutted-excuse matches. The detector OWNS the `origin` label — an agent that lies and self-labels as `agent_novel` when it actually plagiarised a prior task is caught by SequenceMatcher, not trusted on its self-report.
-- **Re-derive a public OWASP APTS scorecard.** Frozen 73.5% headline self-conformance baseline, 173 requirements × 8 domains × 3 tiers, deterministic given the same evidence map.
+- **Surface a regulator-defensible taxonomy.** Four-axis agentic-AI compound-risk classification (cascading / emergent / attribution / temporal) anchored to EU AI Act articles + KB maturity dimensions, grounded in *AI Agents Under EU Law* (working paper, 7 April 2026).
 
 ## Two ways to use it
 
@@ -60,7 +60,7 @@ The same surface is shipped as a Claude Code plugin. Install once,
 then use slash commands directly in your Claude Code session:
 
 ```bash
-pip install 'specter[plugin]>=0.1.1'
+pip install 'specter[plugin]>=0.1.2'
 
 # From a checkout of the repo:
 claude plugins install ./claude-plugin
@@ -73,27 +73,25 @@ Restart Claude Code, then in any session:
 
 ```
 /specter:check-article ref="Art. 13(1)(a)"
-/specter:apts-conformance
 /specter:taxonomy
+/specter:role-obligations role="deployer"
 ```
 
-8 slash commands, 8 MCP tools. Full docs in [claude-plugin/README.md](claude-plugin/README.md).
+6 slash commands, 6 MCP tools. Full docs in [claude-plugin/README.md](claude-plugin/README.md).
 
 ## What's inside
 
 ```
 specter/
 ├── data/         EU AI Act article catalog, agentic compound-risk taxonomy,
-│                 9-role obligation registry, MITRE ATLAS + OWASP AI Exchange
-│                 crosswalks, rationalization (rebutted-excuse) registry
+│                 9-role obligation registry, rationalization (rebutted-excuse)
+│                 registry, ontology mapping
 ├── judge/        LLM-as-Judge: ComplianceRewardHackDetector + 3-agent
 │                 (Finder / Adversary / Referee) adversarial verifier
 ├── qa/           Grounded Q&A models with closed-world refusal + reference
 │                 validation against the article catalog
 ├── api/          FastAPI router exposing POST /v1/eu-ai-act/ask with
 │                 pluggable retriever
-├── apts/         OWASP APTS (Autonomous Penetration Testing Standard)
-│                 v0.1.0 conformance engine + curated evidence map
 ├── mcp_server.py stdio MCP server — Claude Code plugin backend
 └── ontology/     RDF/Turtle OWL ontology aligning EU AI Act with AIRO + DPV
 
@@ -164,20 +162,6 @@ The router enforces:
 - **Reference validation** — every citation passes through `ARTICLE_EXISTENCE`; hallucinated articles drop silently before serialisation.
 - **Optional API-key auth** — set `SPECTER_API_KEY` to unlock a 60/min privileged tier; anonymous traffic is capped at 30/min per IP-hash.
 
-### OWASP APTS conformance
-
-```python
-from specter.apts import assess_self
-
-report = assess_self()
-print(f"Headline: {report.headline_score:.1%}  Tier: {report.headline_tier}")
-print(f"Counts: {report.counts}")
-# → Headline: 73.5%  Tier: None
-# → {'total': 173, 'satisfied': 95, 'partial': 52, 'gap': 26, ...}
-```
-
-A frozen [self-conformance report](docs/evals/apts-self-conformance.md) is shipped as a reference baseline.
-
 ## What's intentionally *not* here
 
 This is the **slice** that ports cleanly. The full commercial platform also ships:
@@ -188,22 +172,21 @@ This is the **slice** that ports cleanly. The full commercial platform also ship
 - An evidence chain with WORM/Object Lock semantics
 - Stripe billing, multi-tenant auth, audit reports, scanner agents
 
-The slice you have here is what you need to **verify regulator-grounded outputs** and **evaluate your own pipeline against a reproducible baseline**.
+The slice you have here is what you need to **verify regulator-grounded outputs** in your own pipeline.
 
 ## Provenance
 
 - **`data/articles_existence`** + **`data/articles_requirements`** — original work; canonical EU AI Act catalog
 - **`data/taxonomy`** — original implementation of the four-axis compound-risk taxonomy from *AI Agents Under EU Law* (working paper, 7 April 2026, §10.4)
-- **`data/atlas`** + **`data/owasp_aix`** + **`data/crosswalk`** — vendored snapshots of MITRE ATLAS (Apache 2.0) and OWASP AI Exchange (CC0); see [LICENSE](LICENSE)
-- **`apts/`** — original conformance engine over the vendored OWASP APTS v0.1.0 catalog (CC BY-SA 4.0)
+- **`data/roles`** + **`data/rationalizations`** — original work; 9-role obligation registry + rebutted-excuse registry
 - **`judge/reward_hack`** — original `ComplianceRewardHackDetector` adapted from the upstream Karpathy-style autoresearch loop
 - **`judge/three_agent`** — adapted from the upstream sycophancy-weaponization architecture
 - **`qa/`** + **`api/qa_route`** — Q&A endpoint adapted from the upstream public-tier partner integration; rate-limit semantics and closed-world refusal preserved verbatim
 
 ## Status
 
-`v0.1.1` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
+`v0.1.2` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
 
 ## License
 
-MIT for original code; vendored standards keep their upstream licenses (see [LICENSE](LICENSE)).
+MIT (see [LICENSE](LICENSE)).

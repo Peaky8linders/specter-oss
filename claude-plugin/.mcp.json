@@ -4,7 +4,7 @@
       "type": "stdio",
       "command": "python",
       "args": ["-m", "specter.mcp_server"],
-      "description": "EU AI Act compliance toolkit — local stdio server. Exposes 8 read tools: article validation, citation formatting, agentic-AI taxonomy, role obligations, OWASP APTS conformance, and the ComplianceRewardHackDetector LLM-as-Judge.",
+      "description": "EU AI Act compliance toolkit — local stdio server. Exposes 6 read tools: article validation, citation formatting, agentic-AI taxonomy, role obligations, and the ComplianceRewardHackDetector LLM-as-Judge.",
       "tools": {
         "specter_check_article": {
           "description": "Validate an EU AI Act article reference against the canonical 113-article + 13-annex catalog. Accepts internal form (`Art. 13(1)(a)`, `Annex IV(2)`) with prefix-fallback semantics.",
@@ -33,20 +33,6 @@
             "properties": {
               "kind": {"type": "string", "enum": ["all", "articles", "annexes"]}
             }
-          }
-        },
-        "specter_apts_self_conformance": {
-          "description": "Return the OWASP APTS v0.1.0 self-conformance scorecard — headline %, tier achievement, per-domain breakdown across the 8 conformance domains.",
-          "input_schema": {"type": "object", "properties": {}}
-        },
-        "specter_apts_requirement": {
-          "description": "Look up a single OWASP APTS requirement by id (e.g. APTS-SE-001).",
-          "input_schema": {
-            "type": "object",
-            "properties": {
-              "requirement_id": {"type": "string"}
-            },
-            "required": ["requirement_id"]
           }
         },
         "specter_get_taxonomy": {

@@ -5,14 +5,14 @@ Python package as a local stdio MCP server + slash-command set.
 
 **No hosted backend required.** The MCP server runs locally, in your
 Claude Code session, against the canonical EU AI Act article catalog
-+ taxonomy + APTS conformance map shipped in the `specter` Python
-package.
++ agentic taxonomy + role-obligation registry shipped in the
+`specter` Python package.
 
 ## Install
 
 ```bash
 # 1. Install the Python package + plugin extra
-pip install 'specter[plugin]>=0.1.1'
+pip install 'specter[plugin]>=0.1.2'
 
 # 2. Install the plugin into Claude Code
 claude plugins install ./claude-plugin
@@ -23,10 +23,10 @@ claude plugins install ./claude-plugin
 After install, restart Claude Code to load the plugin. Verify with:
 
 ```
-/specter:apts-conformance
+/specter:list-articles kind="annexes"
 ```
 
-You should see a JSON scorecard with `headline_score: 0.735`.
+You should see a JSON list of the 13 EU AI Act annexes.
 
 ## Slash commands
 
@@ -35,22 +35,19 @@ You should see a JSON scorecard with `headline_score: 0.735`.
 | [`/specter:check-article`](commands/check-article.md) | Validate a citation against the canonical 113-article + 13-annex catalog |
 | [`/specter:format-citation`](commands/format-citation.md) | Convert internal `Art. X(Y)(Z)` into publication `Article X.Y.Z` |
 | [`/specter:list-articles`](commands/list-articles.md) | Return the full EU AI Act surface (113 articles + 13 annexes) |
-| [`/specter:apts-conformance`](commands/apts-conformance.md) | OWASP APTS v0.1.0 self-conformance scorecard (~73.5% headline) |
-| [`/specter:apts-requirement`](commands/apts-requirement.md) | Look up a single APTS requirement by id (`APTS-SE-001`) |
 | [`/specter:taxonomy`](commands/taxonomy.md) | Four-axis agentic-AI compound-risk taxonomy (cascading / emergent / attribution / temporal) |
 | [`/specter:role-obligations`](commands/role-obligations.md) | List EU AI Act articles applicable to a given operator role |
 | [`/specter:judge-proposal`](commands/judge-proposal.md) | Run a roadmap-task proposal through the LLM-as-Judge reward-hack detector |
 
 ## MCP tools
 
-The same surface is exposed as 8 MCP tools so any LLM agent in your
+The same surface is exposed as 6 MCP tools so any LLM agent in your
 Claude Code session can call them programmatically:
 
 ```
-specter_check_article          specter_apts_self_conformance
-specter_format_citation        specter_apts_requirement
-specter_list_articles          specter_get_taxonomy
-specter_role_obligations       specter_judge_proposal
+specter_check_article          specter_get_taxonomy
+specter_format_citation        specter_role_obligations
+specter_list_articles          specter_judge_proposal
 ```
 
 See `.mcp.json` for the full input-schema definitions.
@@ -109,7 +106,7 @@ Code uses, edit `.mcp.json` and pin the absolute path:
 which is pulled in by the `[plugin]` extra:
 
 ```bash
-pip install 'specter[plugin]>=0.1.1'
+pip install 'specter[plugin]>=0.1.2'
 ```
 
 ## License

@@ -30,16 +30,6 @@ shipped under specter/apts/data/ is © OWASP Foundation and licensed under
 CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/). Source:
 https://github.com/OWASP/APTS
 
-The MITRE ATLAS technique catalog snippets shipped under
-specter/data/atlas.py are © The MITRE Corporation and licensed under
-Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0). Source:
-https://atlas.mitre.org/
-
-The OWASP AI Exchange threat catalog snippets shipped under
-specter/data/owasp_aix.py are © OWASP Foundation and licensed under
-CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/).
-Source: https://owaspai.org/
-
 The Regulation (EU) 2024/1689 (EU AI Act) text references throughout
 this package are public-domain regulatory text. Citation references
 (``Art. 13(1)(a)``, ``Annex IV(2)``, etc.) follow the canonical EUR-Lex

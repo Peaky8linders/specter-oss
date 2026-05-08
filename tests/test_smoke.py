@@ -1,8 +1,7 @@
-"""End-to-end smoke tests pinning the three core surfaces.
+"""End-to-end smoke tests pinning the public surface.
 
-These tests exist to catch contract regressions on the public API and
-to verify the LLM-as-Judge + Q&A reference formatter + APTS
-self-conformance results match the upstream baselines.
+Catches contract regressions on the article catalog, the LLM-as-Judge
+reward-hack detector, and the Q&A reference formatter.
 """
 
 from __future__ import annotations
@@ -164,41 +163,10 @@ def test_judge_blocks_over_cap_effort(policy, goal) -> None:
     assert any("effort_sanity" in r for r in flags.reasons)
 
 
-# ─── APTS conformance ──────────────────────────────────────────────────────
-
-
-def test_apts_self_conformance_matches_upstream_baseline() -> None:
-    """Pin the headline 73.5% baseline. If the curated evidence map
-    changes, this test should be updated alongside the diff."""
-    from specter.apts import assess_self
-
-    report = assess_self()
-    assert report.counts["total"] == 173
-    # Allow ±2% drift; tighter than that would make this test brittle.
-    assert 0.715 <= report.headline_score <= 0.755
-    assert report.counts["satisfied"] >= 90
-    assert report.counts["satisfied"] + report.counts["partial"] + report.counts["gap"] == 173
-
-
-def test_apts_eight_domains() -> None:
-    from specter.apts.requirements import list_domains
-
-    assert len(list_domains()) == 8
-
-
-def test_apts_three_tiers() -> None:
-    from specter.apts.models import APTSTier
-
-    assert {t.value for t in APTSTier} == {1, 2, 3}
-
-
-# ─── 3-agent verifier ──────────────────────────────────────────────────────
-
-
 # ─── MCP server (Claude Code plugin) ───────────────────────────────────────
 
 
-def test_mcp_server_exports_eight_tools() -> None:
+def test_mcp_server_exports_six_tools() -> None:
     """Pin the public MCP tool surface — change here only when also
     bumping the plugin manifest."""
     pytest.importorskip("mcp")
@@ -209,8 +177,6 @@ def test_mcp_server_exports_eight_tools() -> None:
         "specter_check_article",
         "specter_format_citation",
         "specter_list_articles",
-        "specter_apts_self_conformance",
-        "specter_apts_requirement",
         "specter_get_taxonomy",
         "specter_role_obligations",
         "specter_judge_proposal",

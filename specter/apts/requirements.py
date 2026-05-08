@@ -4,8 +4,7 @@ Reads ``data/apts_requirements.json`` (CC BY-SA 4.0, OWASP Foundation 2026)
 into typed ``APTSRequirement`` records and exposes the standard accessor
 patterns: by-id lookup, per-domain index, per-tier index, and the eight
 canonical domain labels. The cache is process-lifetime; the file is
-immutable in-process and a refresh requires a redeploy (matches the
-ATLAS / AIX vendored-snapshot pattern from #417).
+immutable in-process and a refresh requires a redeploy.
 """
 
 from __future__ import annotations

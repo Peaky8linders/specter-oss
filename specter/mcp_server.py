@@ -94,34 +94,6 @@ _TOOLS: list[Tool] = [
         },
     ),
     Tool(
-        name="specter_apts_self_conformance",
-        description=(
-            "Return the OWASP APTS v0.1.0 self-conformance scorecard for the reference "
-            "platform — headline %, tier achievement (Foundation / Verified / Comprehensive), "
-            "per-domain breakdown across the 8 conformance domains, and counts. "
-            "Frozen baseline at ~73.5%."
-        ),
-        inputSchema={"type": "object", "properties": {}},
-    ),
-    Tool(
-        name="specter_apts_requirement",
-        description=(
-            "Look up a single OWASP APTS requirement by id (e.g. APTS-SE-001). "
-            "Returns the full requirement record including domain, tier, classification "
-            "(MUST/SHOULD), title, and statement text."
-        ),
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "requirement_id": {
-                    "type": "string",
-                    "description": "APTS requirement id, e.g. 'APTS-SE-001'.",
-                },
-            },
-            "required": ["requirement_id"],
-        },
-    ),
-    Tool(
         name="specter_get_taxonomy",
         description=(
             "Return the four-axis agentic-AI compound-risk taxonomy (cascading / "
@@ -254,51 +226,6 @@ def _list_articles(kind: str = "all") -> dict[str, Any]:
     }
 
 
-def _apts_self_conformance() -> dict[str, Any]:
-    from specter.apts import assess_self
-
-    report = assess_self()
-    return {
-        "apts_version": report.apts_version,
-        "headline_score": round(report.headline_score, 3),
-        "headline_tier": report.headline_tier.value if report.headline_tier else None,
-        "counts": report.counts,
-        "tier_status": [
-            {
-                "tier": t.tier.value,
-                "label": t.label,
-                "achieved": t.achieved,
-                "must_satisfied": t.must_satisfied,
-                "must_total": t.must_total,
-                "coverage_score": round(t.coverage_score, 3),
-            }
-            for t in report.tier_status
-        ],
-        "domain_summaries": [
-            {
-                "domain": d.domain.value,
-                "total": d.total,
-                "satisfied": d.satisfied,
-                "partial": d.partial,
-                "gap": d.gap,
-                "coverage_score": round(d.coverage_score, 3),
-            }
-            for d in report.domain_summaries
-        ],
-    }
-
-
-def _apts_requirement(requirement_id: str) -> dict[str, Any]:
-    from specter.apts.requirements import requirement_by_id
-
-    req = requirement_by_id(requirement_id)
-    if req is None:
-        return {"found": False, "requirement_id": requirement_id}
-    payload = req.model_dump(mode="json")
-    payload["found"] = True
-    return payload
-
-
 def _get_taxonomy() -> dict[str, Any]:
     from specter.data.taxonomy import (
         AGENT_ARCHETYPES,
@@ -398,10 +325,6 @@ async def call_tool(name: str, arguments: dict[str, Any] | None) -> list[TextCon
             return _wrap(_format_citation(args.get("ref", "")))
         if name == "specter_list_articles":
             return _wrap(_list_articles(args.get("kind", "all")))
-        if name == "specter_apts_self_conformance":
-            return _wrap(_apts_self_conformance())
-        if name == "specter_apts_requirement":
-            return _wrap(_apts_requirement(args.get("requirement_id", "")))
         if name == "specter_get_taxonomy":
             return _wrap(_get_taxonomy())
         if name == "specter_role_obligations":
