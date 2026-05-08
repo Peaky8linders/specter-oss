@@ -1,0 +1,49 @@
+# Dependabot — dependency security alerts + grouped version bumps.
+#
+# Security updates land automatically (Dependabot's default behaviour for
+# advisories on the GitHub Security tab — no extra config needed beyond
+# this file existing). Version updates are batched weekly so the PR queue
+# stays signal-rich.
+#
+# Scope:
+#   - pip                — Python package + optional [api,plugin,dev] extras
+#   - github-actions     — CI workflow
+
+version: 2
+updates:
+  # ── Python: specter package (pyproject.toml) ─────────────────────────────
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - python
+    groups:
+      patch-and-minor:
+        update-types:
+          - patch
+          - minor
+    commit-message:
+      prefix: "chore(deps)"
+      include: scope
+
+  # ── GitHub Actions: ci.yml ───────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:15"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "chore(ci)"
+      include: scope
