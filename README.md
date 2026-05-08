@@ -6,6 +6,7 @@
 pip install specter                # core: data + LLM-as-Judge
 pip install 'specter[api]'         # adds FastAPI router for grounded Q&A
 pip install 'specter[plugin]'      # adds MCP SDK for the Claude Code plugin
+pip install 'specter[mistral]'     # adds Mistral-backed retriever for the Q&A endpoint
 ```
 
 ## Why this exists
@@ -162,9 +163,72 @@ The router enforces:
 - **Reference validation** — every citation passes through `ARTICLE_EXISTENCE`; hallucinated articles drop silently before serialisation.
 - **Optional API-key auth** — set `SPECTER_API_KEY` to unlock a 60/min privileged tier; anonymous traffic is capped at 30/min per IP-hash.
 
+### Mistral-backed retriever (optional)
+
+The package ships a ready-to-use Mistral La Plateforme retriever
+that turns the QA endpoint from a closed-world stub into a real
+grounded Q&A surface. Two ways to configure the API key:
+
+```bash
+pip install 'specter[mistral]'
+
+# Path 1 — environment variable (recommended for deployment)
+export MISTRAL_API_KEY=your-key-here
+```
+
+```python
+from fastapi import FastAPI
+from specter.api.qa_route import make_qa_router
+from specter.qa.mistral_retriever import make_mistral_retriever
+
+# Path 1 — reads MISTRAL_API_KEY from env
+retriever = make_mistral_retriever()
+
+# Path 2 — pass key explicitly (multi-tenant, rotating credentials, …)
+retriever = make_mistral_retriever(api_key="your-key-here")
+
+# Optional: pin a smaller model for cheaper / faster operation
+retriever = make_mistral_retriever(
+    api_key="your-key-here",
+    model="mistral-small-latest",  # default: mistral-large-latest
+    temperature=0.2,
+    max_tokens=1024,
+)
+
+app = FastAPI()
+app.include_router(make_qa_router(retriever=retriever))
+```
+
+The retriever inherits all hallucination guards from the route layer —
+Mistral citations pass through `reference_from_article_ref` before
+serialisation, so a model-emitted `Art. 999` never reaches the wire.
+The system prompt grounds the model on the canonical EU AI Act article
+catalog and instructs it to emit a `NO_MATCH` token when no obligation
+is on point, which lands the route's deterministic closed-world
+refusal string.
+
+### EU AI Act Article 15 catalog
+
+For consumers building Article 15 (accuracy / robustness / cybersecurity)
+compliance flows, the package ships the 8 canonical controls
+(C.1.1–C.1.8) anchored to their sub-paragraphs:
+
+```python
+from specter.data.article_15_controls import (
+    ARTICLE_15_CONTROLS,
+    controls_for_paragraph,
+    get_control,
+)
+
+len(ARTICLE_15_CONTROLS)              # 8
+controls_for_paragraph("4")           # [C.1.6 Resiliency, C.1.7 Biased Feedback Loops]
+get_control("C.1.8").name             # "Malicious actors"
+get_control("C.1.8").citation         # verbatim regulation text
+```
+
 ## Status
 
-`v0.1.2` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
+`v0.1.3` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
 
 ## License
 
