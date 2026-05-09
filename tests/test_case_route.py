@@ -132,6 +132,61 @@ def test_post_case_truncates_long_question() -> None:
     assert len(question_value) <= 2_000
 
 
+# ─── /v1/case (persona overrides) ───────────────────────────────────────────
+
+
+def test_post_case_rejects_unknown_voice() -> None:
+    """A persona_overrides entry with an unknown voice returns a structured 422."""
+    client = TestClient(_make_app())
+    res = client.post(
+        "/v1/case",
+        json={
+            "question": "anything",
+            "persona_overrides": [
+                {"voice": "harvey_jr", "system_prompt": "..."},
+            ],
+        },
+    )
+    assert res.status_code == 422, res.text
+    assert res.json()["detail"]["code"] == "specter_invalid_voice"
+
+
+def test_post_case_rejects_unknown_provider() -> None:
+    """A persona_overrides entry with a non-allow-listed provider → 422."""
+    client = TestClient(_make_app())
+    res = client.post(
+        "/v1/case",
+        json={
+            "question": "anything",
+            "persona_overrides": [
+                {"voice": "mike", "provider": "gemini", "api_key": "x"},
+            ],
+        },
+    )
+    assert res.status_code == 422, res.text
+    assert res.json()["detail"]["code"] == "specter_invalid_provider"
+
+
+def test_post_case_persona_override_without_key_falls_through() -> None:
+    """Override with system_prompt but no key → request still succeeds; the
+    deterministic claim wins (we just confirm the route accepted the override
+    shape and produced a 5-turn dialogue)."""
+    client = TestClient(_make_app())
+    res = client.post(
+        "/v1/case",
+        json={
+            "question": "What does Article 13 require?",
+            "role": "provider",
+            "persona_overrides": [
+                {"voice": "mike", "system_prompt": "You are a haiku poet."},
+            ],
+        },
+    )
+    assert res.status_code == 200, res.text
+    payload = res.json()
+    assert len(payload["turns"]) == 5
+
+
 # ─── /v1/case (error path) ──────────────────────────────────────────────────
 
 

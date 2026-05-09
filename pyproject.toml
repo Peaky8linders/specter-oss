@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "specter"
-version = "0.1.4"
+version = "0.1.6"
 description = "EU AI Act compliance toolkit — ontology, taxonomy, LLM-as-Judge, grounded Q&A. Python library + Claude Code plugin."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -47,6 +47,12 @@ plugin = [
 ]
 mistral = [
     "mistralai>=1.0",
+]
+anthropic = [
+    "anthropic>=0.39",
+]
+openai = [
+    "openai>=1.50",
 ]
 dev = [
     "pytest>=9.0.3",

@@ -10,13 +10,15 @@
 
 ```bash
 # Claude Code plugin (recommended) — get 6 slash commands + 6 MCP tools
-pip install 'specter[plugin]>=0.1.4'
+pip install 'specter[plugin]>=0.1.6'
 claude plugins install github:Peaky8linders/specter-oss/claude-plugin
 
 # Python library — for direct programmatic access
 pip install specter                # core: data + LLM-as-Judge
 pip install 'specter[api]'         # adds FastAPI router for grounded Q&A
-pip install 'specter[mistral]'     # adds Mistral-backed retriever for the Q&A endpoint
+pip install 'specter[mistral]'     # adds Mistral-backed retriever
+pip install 'specter[anthropic]'   # adds Anthropic Claude-backed retriever
+pip install 'specter[openai]'      # adds OpenAI ChatGPT-backed retriever
 ```
 
 ## Why this exists
@@ -35,7 +37,7 @@ required — the MCP server runs locally against the bundled article
 catalog.
 
 ```bash
-pip install 'specter[plugin]>=0.1.4'
+pip install 'specter[plugin]>=0.1.6'
 
 # From a checkout of the repo:
 claude plugins install ./claude-plugin
@@ -103,6 +105,35 @@ two-pane ChatGPT-style workspace — recent cases live in a left
 sidebar (persisted to your browser's localStorage), and the right pane
 shows the selected case as a 5-message stream with citations,
 confidence dots, and Jessica's final ruling.
+
+The webapp ships a **Settings drawer** (sidebar bottom or `,` key) with
+two tabs:
+
+* **Provider** — bring your own API key for Mistral, Anthropic Claude,
+  or OpenAI ChatGPT. The key stays in `localStorage` on your device and
+  flows to the backend only on the request itself, via two headers
+  (`X-Specter-LLM-Provider`, `X-Specter-LLM-Key`). The server uses the
+  key for that one call and never persists it.
+* **Your Suits team** — customise each character independently. Toggle
+  any of the four working voices (Mike, Rachel, Louis, Jessica) into
+  LLM mode, swap the underlying model (e.g. Mike on Claude Opus, Louis
+  on GPT-4o-mini, Jessica on Mistral Large), and rewrite their system
+  prompts to change personality / style / output language. The
+  deterministic citation pass stays — Mike still finds the right
+  articles — only the *wording* becomes LLM-driven for the personas
+  you've enabled. Customisations live in `localStorage` only; nothing
+  is shared between machines.
+
+Mike's article recall is also enriched by an optional, default-on
+adapter to a locally-running [`willchen96/mike`](https://github.com/willchen96/mike)
+(or [mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss))
+instance on `http://127.0.0.1:3000`. The bridge is fail-soft — if
+nothing is listening on that port, Mike's panel still ships with the
+canonical-catalog citations. Disable with `SPECTER_MIKE_BRIDGE=off`.
+
+Keyboard shortcuts: <kbd>?</kbd> for the cheat sheet, <kbd>,</kbd> for
+settings, <kbd>n</kbd> for a new case,
+<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Enter</kbd> to submit.
 
 | Voice | Character | Role in the case |
 |---|---|---|
@@ -213,49 +244,65 @@ The router enforces:
 - **Reference validation** — every citation passes through `ARTICLE_EXISTENCE`; hallucinated articles drop silently before serialisation.
 - **Optional API-key auth** — set `SPECTER_API_KEY` to unlock a 60/min privileged tier; anonymous traffic is capped at 30/min per IP-hash.
 
-### Mistral-backed retriever (optional)
+### LLM-backed retrievers (Mistral · Claude · ChatGPT)
 
-The package ships a ready-to-use Mistral La Plateforme retriever
-that turns the QA endpoint from a closed-world stub into a real
-grounded Q&A surface. Two ways to configure the API key:
+The package ships three pluggable retrievers — pick one (or roll your
+own) and the QA endpoint goes from closed-world stub to a real grounded
+Q&A surface. All three share the same fail-soft contract: the provider
+never raises, and on error the route falls through to the deterministic
+no-match refusal so LLM prose grounded in nothing never reaches the wire.
 
 ```bash
-pip install 'specter[mistral]'
+pip install 'specter[mistral]'      # or [anthropic], or [openai]
 
-# Path 1 — environment variable (recommended for deployment)
-export MISTRAL_API_KEY=your-key-here
+# Server-side env-var configuration (recommended for single-tenant deploys)
+export MISTRAL_API_KEY=...
+export ANTHROPIC_API_KEY=sk-ant-...
+export OPENAI_API_KEY=sk-...
 ```
 
 ```python
 from fastapi import FastAPI
 from specter.api.qa_route import make_qa_router
+
+# Pick the provider that matches your account
 from specter.qa.mistral_retriever import make_mistral_retriever
+from specter.qa.claude_retriever  import make_claude_retriever
+from specter.qa.openai_retriever  import make_openai_retriever
 
-# Path 1 — reads MISTRAL_API_KEY from env
-retriever = make_mistral_retriever()
-
-# Path 2 — pass key explicitly (multi-tenant, rotating credentials, …)
-retriever = make_mistral_retriever(api_key="your-key-here")
-
-# Optional: pin a smaller model for cheaper / faster operation
-retriever = make_mistral_retriever(
-    api_key="your-key-here",
-    model="mistral-small-latest",  # default: mistral-large-latest
-    temperature=0.2,
-    max_tokens=1024,
-)
+retriever = make_claude_retriever()                           # reads ANTHROPIC_API_KEY from env
+retriever = make_claude_retriever(api_key="sk-ant-...")       # explicit key (multi-tenant)
+retriever = make_openai_retriever(model="gpt-4o-mini")        # cheaper / faster
+retriever = make_mistral_retriever(model="mistral-small-latest")
 
 app = FastAPI()
 app.include_router(make_qa_router(retriever=retriever))
 ```
 
-The retriever inherits all hallucination guards from the route layer —
-Mistral citations pass through `reference_from_article_ref` before
-serialisation, so a model-emitted `Art. 999` never reaches the wire.
-The system prompt grounds the model on the canonical EU AI Act article
-catalog and instructs it to emit a `NO_MATCH` token when no obligation
-is on point, which lands the route's deterministic closed-world
-refusal string.
+Hallucination posture is identical across all three: the system prompt
+grounds the model on the canonical EU AI Act article catalog and
+instructs it to emit a `NO_MATCH` token when no obligation is on point;
+emitted citations pass through `reference_from_article_ref` before
+serialisation, so a model-emitted `Art. 999` drops silently.
+
+#### Bring your own key (BYOK)
+
+Hosts that want a multi-tenant deployment — every user pays for their
+own LLM usage — can let the QA route accept BYOK headers on every
+request:
+
+```
+POST /v1/eu-ai-act/ask
+X-Specter-LLM-Provider: claude        # one of: mistral / claude / openai
+X-Specter-LLM-Key: sk-ant-...         # the user's own key, never persisted
+```
+
+The route builds a per-request retriever bound to that key, runs the
+single call, and lets the retriever go out of scope. The key is never
+logged, never persisted, never echoed back. When no headers are
+present the request falls through to the route's configured default
+(typically the env-var-backed retriever) — so anonymous traffic on a
+shared deploy still works.
 
 ### EU AI Act Article 15 catalog
 
@@ -281,7 +328,7 @@ get_control("C.1.8").citation         # verbatim regulation text
 
 ## Status
 
-`v0.1.3` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
+`v0.1.6` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
 
 ## License
 

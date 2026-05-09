@@ -454,3 +454,219 @@ def test_mistral_retriever_handles_no_match_token(monkeypatch) -> None:
     assert res.answer == ""
     assert res.confidence == 0.0
     assert res.citations == []
+
+
+# ─── Claude provider + retriever ───────────────────────────────────────────
+
+
+def test_claude_provider_no_key_returns_soft_error(monkeypatch) -> None:
+    """No env var, no kwarg → ClaudeResponse.error populated, no exception."""
+    from specter.llm import ClaudeProvider, ClaudeRequest
+
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    p = ClaudeProvider()
+    res = p.complete(ClaudeRequest(system="s", user="u"))
+    assert res.error is not None
+    assert "ANTHROPIC_API_KEY is not set" in res.error
+    assert res.text == ""
+
+
+def test_is_claude_enabled_with_kwarg(monkeypatch) -> None:
+    from specter.llm import is_claude_enabled
+
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    assert is_claude_enabled() is False
+    assert is_claude_enabled(api_key="x") is True
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    assert is_claude_enabled() is True
+
+
+def test_claude_retriever_drops_hallucinated_citations(monkeypatch) -> None:
+    """Stub Claude returns citations including a hallucination; retriever drops it."""
+    from specter.api.qa_route import RetrieverRequest
+    from specter.llm import ClaudeProvider, ClaudeResponse
+    from specter.qa.claude_retriever import make_claude_retriever
+
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    canned = (
+        '{"answer": "Article 15 requires accuracy and robustness.",'
+        ' "citations": ["Art. 15(1)", "Art. 15(4)", "Art. 999"],'
+        ' "confidence": 0.85}'
+    )
+
+    class StubProvider(ClaudeProvider):
+        def __init__(self):
+            super().__init__(api_key="stub")
+
+        def complete(self, req):  # type: ignore[override]
+            return ClaudeResponse(text=canned, model="stub")
+
+    retriever = make_claude_retriever(api_key="stub", provider=StubProvider())
+    res = retriever(RetrieverRequest(question="What does Article 15 require?"))
+    refs = [c.article_ref for c in res.citations]
+    assert "Art. 15(1)" in refs
+    assert "Art. 15(4)" in refs
+    assert "Art. 999" not in refs
+    assert res.confidence == 0.85
+
+
+def test_claude_retriever_falls_back_when_no_key(monkeypatch) -> None:
+    from specter.api.qa_route import RetrieverRequest
+    from specter.qa.claude_retriever import make_claude_retriever
+
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    retriever = make_claude_retriever()
+    res = retriever(RetrieverRequest(question="anything"))
+    assert res.answer == ""
+    assert res.confidence == 0.0
+    assert res.citations == []
+
+
+# ─── OpenAI provider + retriever ──────────────────────────────────────────
+
+
+def test_openai_provider_no_key_returns_soft_error(monkeypatch) -> None:
+    """No env var, no kwarg → OpenAIResponse.error populated, no exception."""
+    from specter.llm import OpenAIProvider, OpenAIRequest
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    p = OpenAIProvider()
+    res = p.complete(OpenAIRequest(system="s", user="u"))
+    assert res.error is not None
+    assert "OPENAI_API_KEY is not set" in res.error
+    assert res.text == ""
+
+
+def test_is_openai_enabled_with_kwarg(monkeypatch) -> None:
+    from specter.llm import is_openai_enabled
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    assert is_openai_enabled() is False
+    assert is_openai_enabled(api_key="x") is True
+
+    monkeypatch.setenv("OPENAI_API_KEY", "x")
+    assert is_openai_enabled() is True
+
+
+def test_openai_retriever_drops_hallucinated_citations(monkeypatch) -> None:
+    """Stub OpenAI returns citations including a hallucination; retriever drops it."""
+    from specter.api.qa_route import RetrieverRequest
+    from specter.llm import OpenAIProvider, OpenAIResponse
+    from specter.qa.openai_retriever import make_openai_retriever
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    canned = (
+        '{"answer": "Article 13 requires transparency.",'
+        ' "citations": ["Art. 13(1)", "Art. 999"],'
+        ' "confidence": 0.7}'
+    )
+
+    class StubProvider(OpenAIProvider):
+        def __init__(self):
+            super().__init__(api_key="stub")
+
+        def complete(self, req):  # type: ignore[override]
+            return OpenAIResponse(text=canned, model="stub")
+
+    retriever = make_openai_retriever(api_key="stub", provider=StubProvider())
+    res = retriever(RetrieverRequest(question="What does Art 13 require?"))
+    refs = [c.article_ref for c in res.citations]
+    assert "Art. 13(1)" in refs
+    assert "Art. 999" not in refs
+    assert res.confidence == 0.7
+
+
+def test_openai_retriever_falls_back_when_no_key(monkeypatch) -> None:
+    from specter.api.qa_route import RetrieverRequest
+    from specter.qa.openai_retriever import make_openai_retriever
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    retriever = make_openai_retriever()
+    res = retriever(RetrieverRequest(question="anything"))
+    assert res.answer == ""
+    assert res.confidence == 0.0
+    assert res.citations == []
+
+
+# ─── BYOK header parsing ──────────────────────────────────────────────────
+
+
+def _fake_request(headers: dict[str, str]):
+    """Tiny stub request — only ``request.headers.get(name, default)`` is used."""
+
+    class _Headers:
+        def __init__(self, h):
+            self._h = {k.lower(): v for k, v in h.items()}
+
+        def get(self, name, default=""):
+            return self._h.get(name.lower(), default)
+
+    class _R:
+        def __init__(self, h):
+            self.headers = _Headers(h)
+
+    return _R(headers)
+
+
+def test_byok_parses_valid_pair() -> None:
+    from specter.qa.byok import parse_byok_headers
+
+    req = _fake_request(
+        {"X-Specter-LLM-Provider": "claude", "X-Specter-LLM-Key": "sk-ant-xxx"}
+    )
+    provider, key = parse_byok_headers(req)
+    assert provider == "claude"
+    assert key == "sk-ant-xxx"
+
+
+def test_byok_rejects_unknown_provider() -> None:
+    from specter.qa.byok import parse_byok_headers
+
+    req = _fake_request(
+        {"X-Specter-LLM-Provider": "gemini", "X-Specter-LLM-Key": "x"}
+    )
+    provider, key = parse_byok_headers(req)
+    assert provider is None
+    assert key is None
+
+
+def test_byok_rejects_oversized_key() -> None:
+    from specter.qa.byok import parse_byok_headers
+
+    req = _fake_request(
+        {"X-Specter-LLM-Provider": "openai", "X-Specter-LLM-Key": "x" * 3000}
+    )
+    provider, key = parse_byok_headers(req)
+    assert provider is None
+    assert key is None
+
+
+def test_byok_rejects_partial_pair() -> None:
+    from specter.qa.byok import parse_byok_headers
+
+    # provider only
+    req = _fake_request({"X-Specter-LLM-Provider": "claude"})
+    assert parse_byok_headers(req) == (None, None)
+    # key only
+    req = _fake_request({"X-Specter-LLM-Key": "sk-x"})
+    assert parse_byok_headers(req) == (None, None)
+
+
+def test_resolve_request_retriever_falls_through_to_default() -> None:
+    """No BYOK headers → default retriever is returned unchanged."""
+    from specter.api.qa_route import RetrieverRequest, RetrieverResponse
+    from specter.qa.byok import resolve_request_retriever
+
+    sentinel: list[bool] = []
+
+    def default(_req: RetrieverRequest) -> RetrieverResponse:
+        sentinel.append(True)
+        return RetrieverResponse(answer="default", confidence=0.0)
+
+    req = _fake_request({})
+    chosen = resolve_request_retriever(req, default=default)
+    chosen(RetrieverRequest(question="x"))
+    assert sentinel == [True]

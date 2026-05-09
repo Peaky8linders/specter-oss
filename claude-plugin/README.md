@@ -111,13 +111,23 @@ pip install 'specter[plugin]>=0.1.2'
 
 ## Beyond the plugin: the Suits-themed comic SPA
 
-`specter` v0.1.4 adds a five-voice agent overlay (Harvey / Mike /
-Rachel / Louis / Jessica) and a pop-art comic-book SPA that runs as a
-local FastAPI app. The Claude Code plugin is unaffected — slash
-commands and MCP tools work the same. The agent layer is an *extra*
-surface: install with `pip install -e '.[api]'` and run
-`uvicorn specter.api.dev_app:app --reload`. See the [root README](../README.md#3-comic-book-spa--suits-themed-agent-overlay)
-for character roster and screenshots.
+`specter` v0.1.6 ships a five-voice agent overlay (Harvey / Mike /
+Rachel / Louis / Jessica) and a two-pane Casebook SPA. The settings
+drawer has a **Provider** tab for bringing your own Anthropic Claude /
+OpenAI ChatGPT / Mistral key, and a **Team** tab for customising each
+character independently — pick the model per persona, rewrite the
+system prompt, mix-and-match providers across the team. Mike's article
+recall is enriched (default-on) by an optional adapter to a locally-
+running Will Chen `mike` legal AI fork
+([willchen96/mike](https://github.com/willchen96/mike) /
+[mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss)) on
+`http://127.0.0.1:3000`; fail-soft if nothing is listening.
+
+The Claude Code plugin is unaffected — slash commands and MCP tools
+work the same. The agent layer is an *extra* surface: install with
+`pip install -e '.[api]'` and run `uvicorn specter.api.dev_app:app
+--reload`. See the [root README](../README.md#3-casebook-spa--suits-themed-agent-overlay)
+for the character roster, the team-customisation flow, and BYOK details.
 
 ## License
 
