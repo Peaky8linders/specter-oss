@@ -20,16 +20,26 @@ plus the 8-control LatticeFlow ATLAS catalog for Article 15.
 
 ```
 specter/
-├── data/              article catalog, taxonomy, roles, ontology, rationalizations
+├── data/              article catalog (113 articles + 13 annexes), taxonomy,
+│                      9-role obligation registry, Article 15 controls (8 LatticeFlow
+│                      ATLAS controls), ontology mapping, rationalizations
 ├── judge/             LLM-as-Judge: ComplianceRewardHackDetector + three-agent verifier
-├── qa/                grounded Q&A models, auth, optional Mistral retriever
-├── api/               FastAPI router (POST /v1/eu-ai-act/ask)
-├── agents/            Suits-themed multi-agent overlay (Mike/Rachel/Louis/Jessica)
+├── llm/               provider abstraction — Mistral / Anthropic Claude / OpenAI.
+│                      Singleton per provider; lazy SDK init; soft-fail on auth.
+├── qa/                grounded Q&A models, auth, retrievers per provider
+│                      (mistral_retriever / claude_retriever / openai_retriever)
+├── api/               FastAPI routers — POST /v1/eu-ai-act/ask + POST /v1/case
+│                      + GET /v1/case/personas + dev_app.py mounting /webapp/
+├── agents/            Suits-themed five-voice overlay
+│                      (Harvey / Mike / Rachel / Louis / Jessica)
 ├── ontology/          RDF/Turtle OWL ontology (AIRO + DPV)
 └── mcp_server.py      stdio MCP server for Claude Code
 
 claude-plugin/         Claude Code plugin manifest, .mcp.json, commands/*.md
-webapp/                Comic-book SPA front-end for the agent layer (static)
+webapp/                Casebook SPA — vanilla ES2022, two-pane ChatGPT-style
+                       layout, persistent case history (localStorage),
+                       BYOK settings drawer (provider + key, never sent to a
+                       backend other than the user's chosen LLM)
 tests/                 pytest smoke tests pinning the public surface
 ```
 
@@ -59,13 +69,14 @@ tests/                 pytest smoke tests pinning the public surface
 
 ## Suits-themed agent layer (`specter/agents/`)
 
-A small overlay that reframes a compliance question as a "case" worked by four
+A small overlay that reframes a compliance question as a "case" worked by five
 characters loosely inspired by the TV series *Suits* and the local-first OSS
 fork of Will Chen's `mike` legal AI platform
 ([mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss)).
 
 | Agent | Role | Backed by |
 |---|---|---|
+| **Harvey Specter** | Senior partner — project mascot. Brand face on the cover panel; not in dialogue turns by default. | n/a — `Voice.HARVEY` exists for completeness; `WORKING_VOICES` excludes him |
 | **Mike Ross** | Photographic-memory associate. Recalls articles + prior cases. | `ARTICLE_EXISTENCE`, `articles_for_role`, local JSON memory |
 | **Rachel Zane** | Paralegal who structures the case + drives Mike. Frames the question. | `taxonomy`, `articles_requirements` |
 | **Louis Litt** | The anti-Specter. Adversarial scrutiny — finds reward-hacks, hallucinations, gaps. | `ComplianceRewardHackDetector`, `ThreeAgentVerifier` (adversary lens) |
@@ -73,17 +84,50 @@ fork of Will Chen's `mike` legal AI platform
 
 The agents are **deterministic** by default (rule-based personalities with
 voice templates) so the test suite can pin behavior. Optional LLM-backed mode
-calls Mistral via `make_mistral_retriever`.
+calls Mistral / Anthropic / OpenAI via the provider abstraction in
+`specter/llm/`.
 
-API: `POST /v1/case` returns a `CaseDialogue` (ordered turns, each with
-`speaker`, `voice`, `claim`, `citations`, `confidence`). Front-end at
-`/webapp/` renders this as a comic book.
+API:
+* `POST /v1/case` — runs the four-working-voice deliberation pipeline
+  (Rachel → Mike → Louis → Rachel → Jessica) and returns a `CaseDialogue`.
+* `GET  /v1/case/personas` — bootstrap roster the SPA reads on first load.
+
+Front-end at `/webapp/` is a two-pane ChatGPT-style workspace: persistent case
+history sidebar (localStorage, 50-case bounded) and a main pane that paints
+the selected case as a five-message stream + verdict + conflicts.
+
+## LLM provider abstraction (`specter/llm/`)
+
+Specter does not own a hosted backend. Every LLM call goes through a small
+provider singleton in `specter/llm/`; retrievers in `specter/qa/` consume the
+provider and adapt its response into the `RetrieverResponse` shape that
+`make_qa_router` expects.
+
+Three providers ship in-tree, all with identical surface (`*_Provider`,
+`*_Request`, `*_Response`, `is_*_enabled`, `get_*_provider`):
+
+| Provider | Env var | Retriever factory |
+|---|---|---|
+| Mistral La Plateforme | `MISTRAL_API_KEY` | `make_mistral_retriever()` |
+| Anthropic Claude | `ANTHROPIC_API_KEY` | `make_claude_retriever()` |
+| OpenAI ChatGPT | `OPENAI_API_KEY` | `make_openai_retriever()` |
+
+Each provider is **fail-soft**: `complete()` never raises. Auth/transport/
+parse errors land in `Response.error` so callers (the retriever) can fall
+through to the route's deterministic closed-world refusal.
+
+**BYOK pattern** — every retriever factory accepts `api_key=...` so a host
+can ship a multi-tenant deployment where the key is per-request. The webapp
+ships a settings drawer that stores the user's chosen provider + key in
+`localStorage` and forwards them as `X-Specter-LLM-Provider` /
+`X-Specter-LLM-Key` headers. Server-side, the case + QA routes read those
+headers, build a per-request retriever, and never persist the key.
 
 ## Common commands
 
 ```bash
 # Install the editable package + dev deps
-pip install -e .[dev,api,plugin,mistral]
+pip install -e .[dev,api,plugin,mistral,anthropic,openai]
 
 # Run tests
 pytest -v
@@ -93,13 +137,18 @@ ruff check specter tests
 ruff format specter tests
 
 # Run the FastAPI app locally with the agent + Q&A routes
-uvicorn specter.api.dev_app:app --reload  # if dev_app exists
+uvicorn specter.api.dev_app:app --reload
+# Then open http://127.0.0.1:8000/  →  redirects to /webapp/
 ```
 
 ## Things to remember
 
 - The Q&A endpoint is **anonymous-by-default** with optional `X-Specter-Api-Key`
   header for the 60/min privileged tier. Don't add hard auth requirements.
+- BYOK headers (`X-Specter-LLM-Provider`, `X-Specter-LLM-Key`) override the
+  server's env-var-configured retriever for a single request. The key is
+  never logged or persisted; `_hash16` is used everywhere a bucket key needs
+  to derive from it.
 - `mike-oss` is TypeScript/Next.js — not importable from Python. Treat it as
   *spirit + optional HTTP adapter*, not a hard dependency.
 - README + `claude-plugin/README.md` are user-facing. Keep the "what's in /

@@ -55,6 +55,13 @@ from specter.qa.models import (
     reference_from_article_ref,
 )
 
+# Imported lazily inside the request handler to avoid a circular import
+# (byok module imports RetrieverFn from this file). The handler resolves
+# the per-request retriever from BYOK headers when present and falls
+# through to the route's configured default otherwise.
+#
+# from specter.qa.byok import resolve_request_retriever  # noqa: ERA001
+
 # ─── KB version pin ─────────────────────────────────────────────────────────
 # Stamped on every response so a regulator amendment can be traced through
 # downstream caches. Keep in lockstep with your KB content version.
@@ -300,7 +307,18 @@ def make_qa_router(
             question=question,
             system_description=system_context,
         )
-        rag_res = retriever(rag_req)
+
+        # BYOK header path: if the caller provided X-Specter-LLM-Provider
+        # + X-Specter-LLM-Key, build a one-shot retriever bound to that
+        # key for this request only. The key is never persisted; the
+        # per-request retriever is garbage-collected at the end of the
+        # request. Falls through to the route-level ``retriever`` when
+        # no headers are present or the requested provider's SDK is not
+        # installed on this deploy.
+        from specter.qa.byok import resolve_request_retriever
+
+        active_retriever = resolve_request_retriever(request, default=retriever)
+        rag_res = active_retriever(rag_req)
 
         # Reference validation: bad refs return None and are filtered out.
         # Sort by citation strength (Article > Annex; more specific paragraph

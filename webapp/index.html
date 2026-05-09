@@ -39,8 +39,21 @@
         <p class="case-nav__empty" id="case-nav-empty">No cases yet — start one on the right.</p>
       </nav>
 
+      <div class="sidebar-actions">
+        <button class="sidebar-action" id="settings-btn" type="button" aria-haspopup="dialog" aria-controls="settings-dialog">
+          <span class="sidebar-action__icon" aria-hidden="true">⚙</span>
+          <span class="sidebar-action__label">Settings</span>
+          <span class="sidebar-action__badge" id="settings-provider-badge" aria-hidden="true">default</span>
+        </button>
+        <button class="sidebar-action" id="shortcuts-btn" type="button" aria-haspopup="dialog" aria-controls="shortcuts-dialog">
+          <span class="sidebar-action__icon" aria-hidden="true">⌘</span>
+          <span class="sidebar-action__label">Shortcuts</span>
+          <span class="sidebar-action__kbd" aria-hidden="true">?</span>
+        </button>
+      </div>
+
       <footer class="brand__footer">
-        <span class="brand__version" id="brand-version">v0.1.4</span>
+        <span class="brand__version" id="brand-version">v0.1.5</span>
         <span aria-hidden="true" class="brand__dot">·</span>
         <a class="brand__link" href="https://github.com/Peaky8linders/specter-oss" target="_blank" rel="noopener">GitHub</a>
       </footer>
@@ -52,6 +65,7 @@
       <!-- Empty state (when no case selected) -->
       <section class="empty-state" id="empty-state" aria-label="Welcome">
         <div class="empty-state__inner">
+          <p class="empty-state__eyebrow">Pearson Hardman · EU AI Act practice</p>
           <h2 class="empty-state__title">What's the case, counselor?</h2>
           <p class="empty-state__sub">
             Five characters work the EU AI Act alongside you.
@@ -61,7 +75,10 @@
             <strong>Jessica</strong> rules.
           </p>
           <ul class="empty-roster" id="empty-roster" role="list"></ul>
-          <p class="empty-state__hint">Type below — Cmd/Ctrl + Enter to submit.</p>
+          <p class="empty-state__hint">
+            Type below — <kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Enter</kbd> to submit.
+            Press <kbd>?</kbd> for shortcuts.
+          </p>
         </div>
       </section>
 
@@ -106,24 +123,128 @@
               <option value="deployer">Deployer</option>
               <option value="importer">Importer</option>
               <option value="distributor">Distributor</option>
-              <option value="authorised representative">Authorised representative</option>
-              <option value="product manufacturer">Product manufacturer</option>
-              <option value="general-purpose AI provider">GPAI provider</option>
-              <option value="general-purpose AI deployer">GPAI deployer</option>
-              <option value="notified body">Notified body</option>
+              <option value="authorised_representative">Authorised representative</option>
+              <option value="product_manufacturer">Product manufacturer</option>
+              <option value="gpai_provider">GPAI provider</option>
+              <option value="gpai_deployer">GPAI deployer</option>
+              <option value="notified_body">Notified body</option>
             </select>
           </label>
+          <span class="composer__provider" id="composer-provider" aria-live="polite"></span>
           <button type="submit" class="composer__submit" id="composer-submit">
-            <span>Open case</span>
+            <span class="composer__submit-label">Open case</span>
             <span aria-hidden="true" class="composer__arrow">→</span>
           </button>
         </div>
         <p class="composer__error" id="composer-error" role="alert" hidden></p>
-        <p class="composer__hint" id="composer-hint">Cmd/Ctrl + Enter to submit.</p>
+        <p class="composer__hint" id="composer-hint">⌘/Ctrl + Enter to submit · ? for shortcuts</p>
       </form>
 
     </main>
   </div>
+
+  <!-- ─── Settings dialog (BYOK provider + key) ─────────────────────── -->
+  <div class="modal" id="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+    <div class="modal__backdrop" data-modal-close="settings-dialog"></div>
+    <div class="modal__panel" role="document">
+      <header class="modal__header">
+        <h3 id="settings-title" class="modal__title">Settings · Bring your own key</h3>
+        <button type="button" class="modal__close" data-modal-close="settings-dialog" aria-label="Close settings">×</button>
+      </header>
+
+      <form class="modal__body" id="settings-form">
+        <p class="modal__lede">
+          Pick the AI that works your case. Your key stays in this browser
+          (localStorage) and is sent <strong>only</strong> to the chosen provider
+          via the request headers — never logged or persisted server-side.
+        </p>
+
+        <fieldset class="settings-providers">
+          <legend class="visually-hidden">Choose a provider</legend>
+          <label class="settings-provider">
+            <input type="radio" name="provider" value="" />
+            <span class="settings-provider__head">
+              <span class="settings-provider__name">Server default</span>
+              <span class="settings-provider__price">Free</span>
+            </span>
+            <span class="settings-provider__note">Whatever the host wired (Mistral, stub, or none). Use this when you don't have a key.</span>
+          </label>
+          <label class="settings-provider">
+            <input type="radio" name="provider" value="claude" />
+            <span class="settings-provider__head">
+              <span class="settings-provider__name">Anthropic Claude</span>
+              <span class="settings-provider__price">Your usage</span>
+            </span>
+            <span class="settings-provider__note">Best regulator-grade prose. Get a key at console.anthropic.com.</span>
+          </label>
+          <label class="settings-provider">
+            <input type="radio" name="provider" value="openai" />
+            <span class="settings-provider__head">
+              <span class="settings-provider__name">OpenAI ChatGPT</span>
+              <span class="settings-provider__price">Your usage</span>
+            </span>
+            <span class="settings-provider__note">Fastest with gpt-4o-mini. Get a key at platform.openai.com.</span>
+          </label>
+          <label class="settings-provider">
+            <input type="radio" name="provider" value="mistral" />
+            <span class="settings-provider__head">
+              <span class="settings-provider__name">Mistral La Plateforme</span>
+              <span class="settings-provider__price">Your usage</span>
+            </span>
+            <span class="settings-provider__note">EU-hosted reference implementation. Get a key at console.mistral.ai.</span>
+          </label>
+        </fieldset>
+
+        <label class="settings-field" id="settings-key-field">
+          <span class="settings-field__label">API key</span>
+          <span class="settings-field__row">
+            <input
+              type="password"
+              id="settings-key"
+              name="api_key"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="sk-..."
+              maxlength="2048"
+            />
+            <button type="button" class="settings-field__reveal" id="settings-key-reveal" aria-pressed="false" aria-label="Show key">show</button>
+          </span>
+          <span class="settings-field__hint" id="settings-key-hint">
+            Stored locally. Never sent to specter-oss servers.
+          </span>
+        </label>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" id="settings-clear">Clear</button>
+          <button type="submit" class="btn btn--primary" id="settings-save">Save</button>
+        </div>
+        <p class="modal__status" id="settings-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── Shortcuts dialog ─────────────────────────────────────────── -->
+  <div class="modal" id="shortcuts-dialog" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" hidden>
+    <div class="modal__backdrop" data-modal-close="shortcuts-dialog"></div>
+    <div class="modal__panel modal__panel--narrow" role="document">
+      <header class="modal__header">
+        <h3 id="shortcuts-title" class="modal__title">Keyboard shortcuts</h3>
+        <button type="button" class="modal__close" data-modal-close="shortcuts-dialog" aria-label="Close shortcuts">×</button>
+      </header>
+      <div class="modal__body">
+        <dl class="shortcuts">
+          <dt><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Enter</kbd></dt><dd>Open the case</dd>
+          <dt><kbd>?</kbd></dt><dd>Show this dialog</dd>
+          <dt><kbd>n</kbd></dt><dd>Start a new case</dd>
+          <dt><kbd>,</kbd></dt><dd>Open settings</dd>
+          <dt><kbd>Esc</kbd></dt><dd>Close any open dialog</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Toast (transient confirmation) ───────────────────────────── -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script type="module" src="app.js"></script>
 </body>

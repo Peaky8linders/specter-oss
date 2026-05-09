@@ -369,6 +369,21 @@ def make_case_router(
                 },
             ) from exc
 
+        # Parse BYOK headers if the caller sent them. The deterministic
+        # orchestrator does not currently consume an LLM, but we observe
+        # the headers so a future LLM-backed mode can pick them up
+        # without changing the wire contract. The key itself is never
+        # logged — only a hash of its bucket so we can reason about
+        # tenant traffic in metrics without leaking material.
+        from specter.qa.byok import parse_byok_headers
+
+        byok_provider, byok_key = parse_byok_headers(request)
+        if byok_provider and byok_key:
+            _log.info(
+                "case.byok_observed provider=%s key_hash=%s",
+                byok_provider, _hash16(byok_key),
+            )
+
         try:
             dialogue = orchestrator.work(case)  # type: ignore[union-attr]
         except Exception as exc:  # noqa: BLE001 — convert to structured 502
