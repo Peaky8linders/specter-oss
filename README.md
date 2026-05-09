@@ -92,14 +92,17 @@ print(flags.blocked, flags.reasons)
 # True, ["kb_reality: article_paragraphs ['Art. 999'] not found in the regulation catalog"]
 ```
 
-### 3. Comic-book SPA + Suits-themed agent overlay
+### 3. Casebook SPA + Suits-themed agent overlay
 
-A local web app turns the same compliance question into a five-panel
-"case" worked by five characters loosely inspired by *Suits* and the
-local-first OSS legal-AI fork
-[mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss)
+A local web app turns each compliance question into a "case" worked by
+five characters loosely inspired by *Suits* and the local-first OSS
+legal-AI fork [mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss)
 (itself a fork of Will Chen's
-[`willchen96/mike`](https://github.com/willchen96/mike)).
+[`willchen96/mike`](https://github.com/willchen96/mike)). The UI is a
+two-pane ChatGPT-style workspace — recent cases live in a left
+sidebar (persisted to your browser's localStorage), and the right pane
+shows the selected case as a 5-message stream with citations,
+confidence dots, and Jessica's final ruling.
 
 | Voice | Character | Role in the case |
 |---|---|---|
@@ -142,8 +145,8 @@ specter/
 └── ontology/     RDF/Turtle OWL ontology aligning EU AI Act with AIRO + DPV
 
 claude-plugin/    Claude Code plugin manifest + slash commands + MCP config
-webapp/           Pop-art comic-book SPA — vanilla ES2022, no build step,
-                  five hand-authored SVG avatars (Harvey leads the hero)
+webapp/           Casebook SPA — vanilla ES2022, no build step, two-pane
+                  ChatGPT-style layout with persistent case history
 ```
 
 ## Quickstart — three core surfaces

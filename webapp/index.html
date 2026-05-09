@@ -3,214 +3,127 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>SPECTER &amp; ASSOCIATES — The Compliance Casebook · Issue #1</title>
-  <meta name="description" content="Pop-art comic-book casebook for the EU AI Act. Mike, Rachel, Louis &amp; Jessica work the case. Harvey closes."/>
+  <title>Specter & Associates · The Casebook</title>
+  <meta name="description" content="A five-voice EU AI Act case-by-case workspace. Mike, Rachel, Louis & Jessica work the case. Harvey closes."/>
 
-  <!-- Google Fonts: Bangers (display), Bowlby One (callouts), Permanent Marker (handwriting), Inter (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Bowlby+One&amp;family=Permanent+Marker&amp;family=Inter:wght@400;500;600;700;900&amp;display=swap"/>
-
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <!-- ─────────────────────────────────────────────────────────── -->
-  <!--  Inline SVG defs: reusable ray-burst symbols + halftone     -->
-  <!-- ─────────────────────────────────────────────────────────── -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <pattern id="page-halftone" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-        <circle cx="4" cy="4" r="1.2" fill="#0E0F12"/>
-      </pattern>
+  <div class="app" id="app" data-sidebar="open">
 
-      <!-- Reusable ray bursts per voice -->
-      <symbol id="ray-burst-harvey" viewBox="-260 -260 520 520">
-        <polygon points="0,0 -520,-180 -520,-60"  fill="#E8341E"/>
-        <polygon points="0,0 -520,-60  -520,60"   fill="#F08C2A"/>
-        <polygon points="0,0 -520,60   -520,180"  fill="#F2C531"/>
-        <polygon points="0,0 -520,180  -180,520"  fill="#D33682"/>
-        <polygon points="0,0  180,520  520,180"   fill="#A03A2C"/>
-        <polygon points="0,0  520,180  520,60"    fill="#F08C2A"/>
-        <polygon points="0,0  520,60   520,-60"   fill="#F2C531"/>
-        <polygon points="0,0  520,-60  520,-180"  fill="#E8341E"/>
-        <polygon points="0,0  520,-180 180,-520"  fill="#D33682"/>
-        <polygon points="0,0  180,-520 -180,-520" fill="#22A4D4"/>
-        <polygon points="0,0 -180,-520 -520,-180" fill="#A03A2C"/>
-      </symbol>
+    <!-- ─── Mobile sidebar toggle ────────────────────────────────────── -->
+    <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Toggle case list" aria-controls="sidebar" aria-expanded="true">
+      <span class="sidebar-toggle__bar" aria-hidden="true"></span>
+      <span class="sidebar-toggle__bar" aria-hidden="true"></span>
+      <span class="sidebar-toggle__bar" aria-hidden="true"></span>
+    </button>
 
-      <symbol id="ray-burst-mike" viewBox="-260 -260 520 520">
-        <polygon points="0,0 -520,-180 -520,-60"  fill="#22A4D4"/>
-        <polygon points="0,0 -520,-60  -520,60"   fill="#6CB4EE"/>
-        <polygon points="0,0 -520,60   -520,180"  fill="#1B3A6B"/>
-        <polygon points="0,0 -520,180  -180,520"  fill="#22A4D4"/>
-        <polygon points="0,0  180,520  520,180"   fill="#1B3A6B"/>
-        <polygon points="0,0  520,180  520,60"    fill="#6CB4EE"/>
-        <polygon points="0,0  520,60   520,-60"   fill="#F2C531"/>
-        <polygon points="0,0  520,-60  520,-180"  fill="#22A4D4"/>
-        <polygon points="0,0  520,-180 180,-520"  fill="#6CB4EE"/>
-        <polygon points="0,0  180,-520 -180,-520" fill="#1B3A6B"/>
-        <polygon points="0,0 -180,-520 -520,-180" fill="#6CB4EE"/>
-      </symbol>
-
-      <symbol id="ray-burst-rachel" viewBox="-260 -260 520 520">
-        <polygon points="0,0 -520,-180 -520,-60"  fill="#A8324A"/>
-        <polygon points="0,0 -520,-60  -520,60"   fill="#F5E6E0"/>
-        <polygon points="0,0 -520,60   -520,180"  fill="#A8324A"/>
-        <polygon points="0,0 -520,180  -180,520"  fill="#E8341E"/>
-        <polygon points="0,0  180,520  520,180"   fill="#A8324A"/>
-        <polygon points="0,0  520,180  520,60"    fill="#F5E6E0"/>
-        <polygon points="0,0  520,60   520,-60"   fill="#F08C2A"/>
-        <polygon points="0,0  520,-60  520,-180"  fill="#E8341E"/>
-        <polygon points="0,0  520,-180 180,-520"  fill="#F5E6E0"/>
-        <polygon points="0,0  180,-520 -180,-520" fill="#A8324A"/>
-        <polygon points="0,0 -180,-520 -520,-180" fill="#F5E6E0"/>
-      </symbol>
-
-      <symbol id="ray-burst-louis" viewBox="-260 -260 520 520">
-        <polygon points="0,0 -520,-180 -520,-60"  fill="#5C2A86"/>
-        <polygon points="0,0 -520,-60  -520,60"   fill="#D4A017"/>
-        <polygon points="0,0 -520,60   -520,180"  fill="#5C2A86"/>
-        <polygon points="0,0 -520,180  -180,520"  fill="#D33682"/>
-        <polygon points="0,0  180,520  520,180"   fill="#5C2A86"/>
-        <polygon points="0,0  520,180  520,60"    fill="#D4A017"/>
-        <polygon points="0,0  520,60   520,-60"   fill="#F2C531"/>
-        <polygon points="0,0  520,-60  520,-180"  fill="#5C2A86"/>
-        <polygon points="0,0  520,-180 180,-520"  fill="#D4A017"/>
-        <polygon points="0,0  180,-520 -180,-520" fill="#5C2A86"/>
-        <polygon points="0,0 -180,-520 -520,-180" fill="#D33682"/>
-      </symbol>
-
-      <symbol id="ray-burst-jessica" viewBox="-260 -260 520 520">
-        <polygon points="0,0 -520,-180 -520,-60"  fill="#1F8A4C"/>
-        <polygon points="0,0 -520,-60  -520,60"   fill="#0E0F12"/>
-        <polygon points="0,0 -520,60   -520,180"  fill="#1F8A4C"/>
-        <polygon points="0,0 -520,180  -180,520"  fill="#F2C531"/>
-        <polygon points="0,0  180,520  520,180"   fill="#1F8A4C"/>
-        <polygon points="0,0  520,180  520,60"    fill="#0E0F12"/>
-        <polygon points="0,0  520,60   520,-60"   fill="#1F8A4C"/>
-        <polygon points="0,0  520,-60  520,-180"  fill="#0E0F12"/>
-        <polygon points="0,0  520,-180 180,-520"  fill="#F2C531"/>
-        <polygon points="0,0  180,-520 -180,-520" fill="#1F8A4C"/>
-        <polygon points="0,0 -180,-520 -520,-180" fill="#D33682"/>
-      </symbol>
-    </defs>
-  </svg>
-
-  <!-- Halftone overlay (fixed) -->
-  <div class="page-halftone" aria-hidden="true"></div>
-
-  <main class="page">
-
-    <!-- ─── Hero — HARVEY leads ─── -->
-    <header class="hero" id="hero">
-      <article class="hero__portrait" aria-label="Harvey Specter — cover star">
-        <svg class="hero__burst" viewBox="-260 -260 520 520" aria-hidden="true">
-          <use href="#ray-burst-harvey"/>
-        </svg>
-        <div class="hero__halftone" aria-hidden="true"></div>
-        <span class="hero__avatar hero__avatar--initials avatar-initials" data-voice="harvey" aria-hidden="true">HS</span>
-        <span class="hero__nameplate">HARVEY SPECTER</span>
-        <span class="hero__signature">— He closes.</span>
-      </article>
-
-      <div class="hero__copy">
-        <p class="hero__kicker">SPECTER OSS PRESENTS</p>
-        <h1 class="hero__title">SPECTER<br/>&amp; ASSOCIATES</h1>
-        <p class="hero__subtitle">THE COMPLIANCE CASEBOOK · ISSUE #1</p>
-        <p class="hero__strapline">
-          MIKE, RACHEL, LOUIS &amp; JESSICA WORK THE EU AI ACT.<br/>
-          <strong>HARVEY CLOSES.</strong>
-        </p>
-        <div class="hero__badge" aria-hidden="true">
-          <span class="hero__badge-stars">★★★★★</span>
-          <span class="hero__badge-text">5-PANEL DELIBERATION · CITES INCLUDED</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- ─── Roster strip ─── -->
-    <section class="roster" id="roster" aria-label="The associates">
-      <h2 class="roster__heading">THE ASSOCIATES</h2>
-      <ul class="roster__list" id="roster-list"></ul>
-    </section>
-
-    <!-- ─── Case input panel ─── -->
-    <section class="case-form-wrap" id="case-form-wrap" aria-label="Open a case">
-      <form class="case-form" id="case-form">
-        <span class="case-form__tape case-form__tape--left" aria-hidden="true"></span>
-        <span class="case-form__tape case-form__tape--right" aria-hidden="true"></span>
-
-        <h2 class="case-form__heading">WHAT'S THE CASE, COUNSELOR?</h2>
-
-        <label class="case-form__label" for="case-question">
-          <span>YOUR FACTS</span>
-        </label>
-        <textarea id="case-question" name="question" class="case-form__textarea"
-                  rows="4" required maxlength="10000"
-                  placeholder="Describe the deployment, the data, the obligation you're worried about…"></textarea>
-
-        <label class="case-form__label" for="case-role">
-          <span>YOUR ROLE UNDER THE ACT</span>
-        </label>
-        <select id="case-role" name="role" class="case-form__select">
-          <option value="">— no role —</option>
-          <option value="provider">provider</option>
-          <option value="deployer">deployer</option>
-          <option value="importer">importer</option>
-          <option value="distributor">distributor</option>
-          <option value="authorised representative">authorised representative</option>
-          <option value="product manufacturer">product manufacturer</option>
-          <option value="general-purpose AI provider">general-purpose AI provider</option>
-          <option value="general-purpose AI deployer">general-purpose AI deployer</option>
-          <option value="notified body">notified body</option>
-        </select>
-
-        <div class="case-form__actions">
-          <button type="submit" class="stamp-btn" id="open-case-btn">
-            <span class="stamp-btn__inner">OPEN THE CASE</span>
-          </button>
-          <p class="case-form__hint">Try it — Cmd/Ctrl + Enter to submit.</p>
-        </div>
-
-        <div class="case-form__error" id="case-form-error" role="alert" hidden></div>
-      </form>
-    </section>
-
-    <!-- ─── Comic page (rendered after submit) ─── -->
-    <section class="comic-page" id="comic-page" aria-live="polite" aria-label="Case dialogue" hidden>
-      <header class="comic-page__head">
-        <h2 class="comic-page__title" id="comic-page-title">THE CASE</h2>
-        <p class="comic-page__sub" id="comic-page-sub"></p>
+    <!-- ─── Sidebar: brand + new case + case list ───────────────────── -->
+    <aside class="sidebar" id="sidebar" aria-label="Case history">
+      <header class="brand">
+        <h1 class="brand__title">Specter</h1>
+        <p class="brand__sub">&amp; Associates · The Casebook</p>
       </header>
 
-      <div class="comic-grid" id="comic-grid"></div>
+      <button class="new-case-btn" id="new-case-btn" type="button">
+        <span class="new-case-btn__plus" aria-hidden="true">＋</span>
+        <span>New case</span>
+      </button>
 
-      <aside class="conflicts" id="conflicts" hidden>
-        <h3 class="conflicts__heading">ON THE RECORD —</h3>
-        <ul class="conflicts__list" id="conflicts-list"></ul>
-      </aside>
+      <nav class="case-nav" aria-label="Open cases">
+        <h2 class="case-nav__heading">Recent cases</h2>
+        <ul class="case-list" id="case-list" role="list"></ul>
+        <p class="case-nav__empty" id="case-nav-empty">No cases yet — start one on the right.</p>
+      </nav>
 
-      <div class="verdict-banner" id="verdict-banner" hidden>
-        <span class="verdict-banner__label">JESSICA RULES:</span>
-        <p class="verdict-banner__text" id="verdict-text"></p>
-        <p class="verdict-banner__refs" id="verdict-refs"></p>
-      </div>
+      <footer class="brand__footer">
+        <span class="brand__version" id="brand-version">v0.1.4</span>
+        <span aria-hidden="true" class="brand__dot">·</span>
+        <a class="brand__link" href="https://github.com/Peaky8linders/specter-oss" target="_blank" rel="noopener">GitHub</a>
+      </footer>
+    </aside>
 
-      <div class="comic-page__actions">
-        <button type="button" class="stamp-btn stamp-btn--alt" id="new-case-btn">
-          <span class="stamp-btn__inner">NEW CASE</span>
-        </button>
-      </div>
-    </section>
+    <!-- ─── Main pane: empty state + case detail + sticky composer ───── -->
+    <main class="case-view" id="case-view">
 
-    <!-- ─── Footer ─── -->
-    <footer class="colophon">
-      <span class="colophon__star" aria-hidden="true">★</span>
-      <span>MADE WITH SPECTER · v0.1</span>
-      <span class="colophon__star" aria-hidden="true">★</span>
-    </footer>
-  </main>
+      <!-- Empty state (when no case selected) -->
+      <section class="empty-state" id="empty-state" aria-label="Welcome">
+        <div class="empty-state__inner">
+          <h2 class="empty-state__title">What's the case, counselor?</h2>
+          <p class="empty-state__sub">
+            Five characters work the EU AI Act alongside you.
+            <strong>Mike</strong> pulls articles from the catalog,
+            <strong>Rachel</strong> structures the case,
+            <strong>Louis</strong> finds what Mike missed, and
+            <strong>Jessica</strong> rules.
+          </p>
+          <ul class="empty-roster" id="empty-roster" role="list"></ul>
+          <p class="empty-state__hint">Type below — Cmd/Ctrl + Enter to submit.</p>
+        </div>
+      </section>
+
+      <!-- Case detail (when a case is selected) -->
+      <section class="case-detail" id="case-detail" hidden aria-label="Case dialogue">
+        <header class="case-header">
+          <p class="case-header__id" id="case-header-id"></p>
+          <h2 class="case-header__title" id="case-header-title"></h2>
+          <p class="case-header__meta" id="case-header-meta"></p>
+        </header>
+
+        <ol class="message-stream" id="message-stream" role="list"></ol>
+
+        <aside class="verdict" id="verdict" hidden aria-label="Final ruling">
+          <span class="verdict__label">Jessica rules</span>
+          <p class="verdict__text" id="verdict-text"></p>
+          <p class="verdict__refs" id="verdict-refs"></p>
+        </aside>
+
+        <aside class="conflicts" id="conflicts" hidden aria-label="Conflicts on the record">
+          <h3 class="conflicts__heading">On the record</h3>
+          <ul class="conflicts__list" id="conflicts-list" role="list"></ul>
+        </aside>
+      </section>
+
+      <!-- Sticky composer at the bottom of the main pane -->
+      <form class="composer" id="composer" autocomplete="off">
+        <label for="composer-question" class="visually-hidden">Case description</label>
+        <textarea
+          id="composer-question"
+          name="question"
+          rows="1"
+          required
+          placeholder="What's the case, counselor?"
+          aria-describedby="composer-error"
+        ></textarea>
+        <div class="composer__row">
+          <label for="composer-role" class="composer__role-label">Role
+            <select id="composer-role" name="role" class="composer__role">
+              <option value="">— no role —</option>
+              <option value="provider">Provider</option>
+              <option value="deployer">Deployer</option>
+              <option value="importer">Importer</option>
+              <option value="distributor">Distributor</option>
+              <option value="authorised representative">Authorised representative</option>
+              <option value="product manufacturer">Product manufacturer</option>
+              <option value="general-purpose AI provider">GPAI provider</option>
+              <option value="general-purpose AI deployer">GPAI deployer</option>
+              <option value="notified body">Notified body</option>
+            </select>
+          </label>
+          <button type="submit" class="composer__submit" id="composer-submit">
+            <span>Open case</span>
+            <span aria-hidden="true" class="composer__arrow">→</span>
+          </button>
+        </div>
+        <p class="composer__error" id="composer-error" role="alert" hidden></p>
+        <p class="composer__hint" id="composer-hint">Cmd/Ctrl + Enter to submit.</p>
+      </form>
+
+    </main>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
