@@ -18,10 +18,22 @@
 const API_BASE = "";
 const STORAGE_KEY = "specter:cases:v1";
 const SETTINGS_KEY = "specter:settings:v1";
+const TEAM_KEY = "specter:team:v1";
 const STORAGE_VERSION = 1;
 const MAX_STORED_CASES = 50;
+const MAX_PROMPT_LEN = 4000;
 
 const VALID_PROVIDERS = new Set(["", "mistral", "claude", "openai"]);
+// "inherit" means: use whatever the global Provider tab is set to
+const VALID_TEAM_PROVIDERS = new Set(["inherit", "mistral", "claude", "openai"]);
+const WORKING_VOICES = ["mike", "rachel", "louis", "jessica"];
+
+// Sensible model menus per provider — kept short on purpose.
+const MODELS_PER_PROVIDER = {
+  claude:  ["claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"],
+  openai:  ["gpt-4o", "gpt-4o-mini"],
+  mistral: ["mistral-large-latest", "mistral-small-latest"],
+};
 
 const PROVIDER_LABELS = {
   "":        "default",
@@ -42,6 +54,40 @@ const DEFAULT_PERSONAS = [
 
 const PERSONA_INITIALS = {
   harvey: "HS", mike: "MR", rachel: "RZ", louis: "LL", jessica: "JP",
+};
+
+// Mirrors the system_prompt strings in specter/agents/personas.py. We
+// duplicate them here (not fetch from the server) so the user can edit
+// the prompt offline and see the canonical text without an API round-
+// trip. If the server ever drifts, the route still wins on the wire —
+// these defaults are only used to seed the "Reset" button + the
+// placeholder text in the team editor.
+const DEFAULT_PERSONA_PROMPTS = {
+  mike:
+    "You are Mike Ross, photographic-memory associate at Pearson Hardman.\n" +
+    "You read every regulation once and remember every cite.\n" +
+    "- Speak in short, clipped sentences. Lead with the article number.\n" +
+    "- Always cite. Never speculate.\n" +
+    "- If you don't know, say \"Nothing on file.\" — don't invent articles.\n" +
+    "- Tone: confident, precise, a little wry.",
+  rachel:
+    "You are Rachel Zane, paralegal — you frame the case before anyone speaks.\n" +
+    "- Open by naming what we're being asked. Identify the role if given.\n" +
+    "- Mediate disagreements between Mike and Louis in one line.\n" +
+    "- Tone: pragmatic, structural, no theatrics.\n" +
+    "- Never cite articles yourself; that's Mike's job. You point at his work.",
+  louis:
+    "You are Louis Litt — you exist to find what Mike missed.\n" +
+    "- Object to anything that looks hallucinated, sloppy, or off-topic.\n" +
+    "- If everything checks out, concede with a sneer (\"Fine, Ross.\").\n" +
+    "- Tone: bombastic, sarcastic, prone to exclamation. \"Litt up.\" is yours.\n" +
+    "- You speak in SHOUT panels when you object.",
+  jessica:
+    "You are Jessica Pearson, managing partner. The final ruling is yours.\n" +
+    "- One line. Decide. Move on.\n" +
+    "- If Louis raised a real objection, lower the verdict's confidence.\n" +
+    "- Tone: terse, executive, irreversible.\n" +
+    "- Sign off with the verdict, not a discussion.",
 };
 
 const ROLE_LABELS = {
@@ -97,6 +143,13 @@ const els = () => ({
   settingsKeyField:   $("settings-key-field"),
   settingsClear:      $("settings-clear"),
   settingsStatus:     $("settings-status"),
+  settingsResetTeam:  $("settings-reset-team"),
+  // tabs
+  tabProvider:        $("tab-provider"),
+  tabTeam:            $("tab-team"),
+  paneProvider:       $("pane-provider"),
+  paneTeam:           $("pane-team"),
+  teamEditor:         $("team-editor"),
   shortcutsBtn:       $("shortcuts-btn"),
   shortcutsDialog:    $("shortcuts-dialog"),
   // toast
@@ -148,6 +201,7 @@ const caseStore = {
       saved_at: now,
       objected,
       provider: meta.provider || "",
+      customised: !!meta.customised,
       dialogue,
     };
     if (idx >= 0) state.cases[idx] = record;
@@ -200,9 +254,91 @@ const settingsStore = {
   },
 };
 
+/* ─── localStorage-backed team store (per-persona overrides) ───────── */
+
+/* Schema:
+ *   {
+ *     mike:    { enabled: bool, provider: "inherit"|"claude"|..., model: str, system_prompt: str },
+ *     rachel:  { ... },
+ *     louis:   { ... },
+ *     jessica: { ... },
+ *   }
+ * Only personas with `enabled === true` get sent to the server. Anything
+ * else falls through to the deterministic claim. ``provider: "inherit"``
+ * means "use whatever the global Provider tab is set to" — that's the
+ * common case; users tweak prompts more often than they switch providers.
+ */
+const teamStore = {
+  _default() {
+    const out = {};
+    for (const v of WORKING_VOICES) {
+      out[v] = {
+        enabled: false,
+        provider: "inherit",
+        model: "",
+        system_prompt: "",
+      };
+    }
+    return out;
+  },
+  read() {
+    try {
+      const raw = localStorage.getItem(TEAM_KEY);
+      if (!raw) return this._default();
+      const parsed = JSON.parse(raw);
+      const merged = this._default();
+      for (const v of WORKING_VOICES) {
+        const row = parsed?.[v];
+        if (row && typeof row === "object") {
+          merged[v] = {
+            enabled: !!row.enabled,
+            provider: VALID_TEAM_PROVIDERS.has(row.provider) ? row.provider : "inherit",
+            model: typeof row.model === "string" ? row.model.slice(0, 128) : "",
+            system_prompt: typeof row.system_prompt === "string"
+              ? row.system_prompt.slice(0, MAX_PROMPT_LEN)
+              : "",
+          };
+        }
+      }
+      return merged;
+    } catch {
+      return this._default();
+    }
+  },
+  write(value) {
+    const sanitised = this._default();
+    for (const v of WORKING_VOICES) {
+      const row = value?.[v];
+      if (row && typeof row === "object") {
+        sanitised[v] = {
+          enabled: !!row.enabled,
+          provider: VALID_TEAM_PROVIDERS.has(row.provider) ? row.provider : "inherit",
+          model: typeof row.model === "string" ? row.model.slice(0, 128) : "",
+          system_prompt: typeof row.system_prompt === "string"
+            ? row.system_prompt.slice(0, MAX_PROMPT_LEN)
+            : "",
+        };
+      }
+    }
+    try { localStorage.setItem(TEAM_KEY, JSON.stringify(sanitised)); } catch { /* noop */ }
+    return sanitised;
+  },
+  clear() {
+    try { localStorage.removeItem(TEAM_KEY); } catch { /* noop */ }
+    return this._default();
+  },
+  // True if any persona is enabled — used to decide whether to send the
+  // overrides on the wire and to light up the "customised" badge.
+  isCustomised(value) {
+    const v = value || this.read();
+    return WORKING_VOICES.some((voice) => v[voice]?.enabled);
+  },
+};
+
 /* ─── App state ───────────────────────────────────────────────────── */
 
 let activeCaseId = null;
+let activeSettingsTab = "provider";  // "provider" | "team"
 
 /* ─── Init ────────────────────────────────────────────────────────── */
 
@@ -340,7 +476,7 @@ function selectCase(caseId) {
   const stored = caseStore.get(caseId);
   if (!stored) return;
   activeCaseId = caseId;
-  showCaseDetail(stored.dialogue, stored.provider);
+  showCaseDetail(stored.dialogue, stored.provider, stored.customised);
   renderSidebar();
   closeMobileSidebar();
 }
@@ -374,11 +510,11 @@ function showEmptyState() {
   autoGrowTextarea(question);
 }
 
-function showCaseDetail(dialogue, provider) {
+function showCaseDetail(dialogue, provider, customised) {
   const { emptyState, caseDetail } = els();
   emptyState.hidden = true;
   caseDetail.hidden = false;
-  renderCaseHeader(dialogue, provider);
+  renderCaseHeader(dialogue, provider, customised);
   renderMessageStream(dialogue.turns || []);
   renderVerdict(dialogue);
   renderConflicts(dialogue.conflicts || []);
@@ -388,7 +524,7 @@ function showCaseDetail(dialogue, provider) {
   caseDetail.scrollTop = 0;
 }
 
-function renderCaseHeader(dialogue, provider) {
+function renderCaseHeader(dialogue, provider, customised) {
   const { caseHeaderId, caseHeaderTitle, caseHeaderMeta } = els();
   caseHeaderId.textContent = `Case · ${dialogue.case_id || "—"}`;
   caseHeaderTitle.textContent = dialogue.question || "(untitled case)";
@@ -398,9 +534,13 @@ function renderCaseHeader(dialogue, provider) {
   const confidence = (dialogue.confidence || 0).toFixed(2);
   const providerKey = provider && VALID_PROVIDERS.has(provider) && provider !== "" ? provider : "server";
   const providerLabel = providerKey === "server" ? "Server default" : (PROVIDER_LABELS[providerKey] || providerKey);
+  const customBadge = customised
+    ? `<span class="case-header__custom" title="One or more characters used a custom system prompt or model">Custom team</span>`
+    : "";
   caseHeaderMeta.innerHTML = `
     <span class="case-header__pill">${escHtml(roleLabel)}</span>
     <span class="case-header__provider" data-provider="${escAttr(providerKey)}">${escHtml(providerLabel)}</span>
+    ${customBadge}
     <span>${refCount} citation${refCount === 1 ? "" : "s"}</span>
     <span aria-hidden="true">·</span>
     <span>confidence ${escHtml(confidence)}</span>
@@ -583,8 +723,11 @@ function attachListeners() {
   e.shortcutsBtn?.addEventListener("click", () => openModal("shortcuts-dialog"));
   e.settingsForm?.addEventListener("submit", onSettingsSave);
   e.settingsClear?.addEventListener("click", onSettingsClear);
+  e.settingsResetTeam?.addEventListener("click", onSettingsResetTeam);
   e.settingsKeyReveal?.addEventListener("click", toggleKeyReveal);
   e.settingsForm?.addEventListener("change", onSettingsProviderChange);
+  e.tabProvider?.addEventListener("click", () => switchTab("provider"));
+  e.tabTeam?.addEventListener("click", () => switchTab("team"));
 
   // Modal dismiss: any [data-modal-close] or backdrop click
   document.querySelectorAll("[data-modal-close]").forEach((el) => {
@@ -622,11 +765,13 @@ async function onSubmit(ev) {
   setSubmitLoading(true);
   try {
     const settings = settingsStore.read();
-    const dialogue = await postCase(question, role, settings);
-    caseStore.upsert(dialogue, { provider: settings.provider });
+    const team = teamStore.read();
+    const dialogue = await postCase(question, role, settings, team);
+    const customised = teamStore.isCustomised(team);
+    caseStore.upsert(dialogue, { provider: settings.provider, customised });
     activeCaseId = dialogue.case_id;
     renderSidebar();
-    showCaseDetail(dialogue, settings.provider);
+    showCaseDetail(dialogue, settings.provider, customised);
   } catch (err) {
     console.error(err);
     setComposerError("Couldn't open the case. Is the API up? Try again.");
@@ -635,16 +780,46 @@ async function onSubmit(ev) {
   }
 }
 
-async function postCase(question, role, settings) {
+async function postCase(question, role, settings, team) {
   const headers = { "Content-Type": "application/json", Accept: "application/json" };
   if (settings && settings.provider && settings.api_key) {
     headers["X-Specter-LLM-Provider"] = settings.provider;
     headers["X-Specter-LLM-Key"] = settings.api_key;
   }
+
+  // Persona overrides — only the personas the user explicitly enabled,
+  // and only the fields that differ from the defaults. Per-persona
+  // provider/key fields are LEFT EMPTY when set to "inherit" so the
+  // server falls through to the BYOK header pair above. Custom system
+  // prompts always go (those are the whole point of the team tab).
+  const overrides = [];
+  if (team) {
+    for (const voice of WORKING_VOICES) {
+      const row = team[voice];
+      if (!row?.enabled) continue;
+      const o = { voice };
+      if (row.system_prompt && row.system_prompt.trim()) {
+        o.system_prompt = row.system_prompt.slice(0, MAX_PROMPT_LEN);
+      }
+      if (row.provider && row.provider !== "inherit") {
+        o.provider = row.provider;
+      }
+      if (row.model) o.model = row.model;
+      overrides.push(o);
+    }
+  }
+
+  const body = {
+    question,
+    role: role || null,
+    enable_louis_objection: true,
+  };
+  if (overrides.length > 0) body.persona_overrides = overrides;
+
   const res = await fetch(`${API_BASE}/v1/case`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ question, role: role || null, enable_louis_objection: true }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -669,10 +844,12 @@ function setSubmitLoading(loading) {
 
 /* ─── Settings dialog ────────────────────────────────────────────── */
 
-function openSettings() {
+function openSettings(tab) {
   const e = els();
   const settings = settingsStore.read();
-  // Fill the form from storage
+  const team = teamStore.read();
+
+  // Fill the Provider tab from storage
   const radios = e.settingsForm?.querySelectorAll("input[name=provider]") || [];
   radios.forEach((r) => { r.checked = (r.value === settings.provider); });
   if (e.settingsKey) e.settingsKey.value = settings.api_key || "";
@@ -683,12 +860,228 @@ function openSettings() {
   }
   if (e.settingsStatus) e.settingsStatus.textContent = "";
   reflectKeyFieldVisibility(settings.provider);
+
+  // Render the Team tab
+  renderTeamEditor(team);
+  reflectTeamCustomisation(team);
+
+  // Pick which tab to show
+  switchTab(tab || activeSettingsTab || "provider");
+
   openModal("settings-dialog");
-  // Focus first interactive element after the dialog is visible.
   setTimeout(() => {
-    const firstChecked = e.settingsForm?.querySelector("input[name=provider]:checked");
-    firstChecked?.focus();
+    const focusEl = activeSettingsTab === "team"
+      ? e.teamEditor?.querySelector(".team-card__toggle")
+      : e.settingsForm?.querySelector("input[name=provider]:checked");
+    focusEl?.focus();
   }, 30);
+}
+
+function switchTab(tab) {
+  const e = els();
+  activeSettingsTab = tab === "team" ? "team" : "provider";
+  // Tab buttons
+  [e.tabProvider, e.tabTeam].forEach((btn) => {
+    if (!btn) return;
+    btn.setAttribute("aria-selected", btn.dataset.tab === activeSettingsTab ? "true" : "false");
+  });
+  // Panes
+  if (e.paneProvider) e.paneProvider.hidden = (activeSettingsTab !== "provider");
+  if (e.paneTeam)     e.paneTeam.hidden     = (activeSettingsTab !== "team");
+  if (e.settingsResetTeam) e.settingsResetTeam.hidden = (activeSettingsTab !== "team");
+}
+
+/* ─── Team editor: render + read-from-DOM ───────────────────────── */
+
+function renderTeamEditor(team) {
+  const root = els().teamEditor;
+  if (!root) return;
+  root.innerHTML = "";
+  for (const voice of WORKING_VOICES) {
+    root.appendChild(renderTeamCard(voice, team[voice]));
+  }
+}
+
+function renderTeamCard(voice, row) {
+  const persona = DEFAULT_PERSONAS.find((p) => p.voice === voice);
+  const card = document.createElement("article");
+  card.className = "team-card";
+  card.dataset.voice = voice;
+  card.dataset.on = row.enabled ? "true" : "false";
+
+  // ─── Header: avatar + identity + on/off toggle ───
+  const header = document.createElement("div");
+  header.className = "team-card__header";
+  header.innerHTML = `
+    <span class="avatar-initials team-card__avatar" data-voice="${escAttr(voice)}" aria-hidden="true">${escHtml(PERSONA_INITIALS[voice] || "??")}</span>
+    <span class="team-card__id">
+      <span class="team-card__name">${escHtml(persona?.name || titleCase(voice))}</span>
+      <span class="team-card__title">${escHtml(persona?.title || "")}</span>
+    </span>
+  `;
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "team-card__toggle";
+  toggle.dataset.role = "toggle";
+  toggle.setAttribute("aria-pressed", String(row.enabled));
+  toggle.textContent = row.enabled ? "On — LLM voice" : "Off — deterministic";
+  toggle.addEventListener("click", () => {
+    const on = card.dataset.on !== "true";
+    card.dataset.on = on ? "true" : "false";
+    toggle.setAttribute("aria-pressed", String(on));
+    toggle.textContent = on ? "On — LLM voice" : "Off — deterministic";
+  });
+  header.appendChild(toggle);
+  card.appendChild(header);
+
+  // ─── Body: provider, model, system prompt ───
+  const body = document.createElement("div");
+  body.className = "team-card__body";
+
+  // Provider row
+  const provider = teamRow(
+    "Provider",
+    (() => {
+      const sel = document.createElement("select");
+      sel.className = "team-card__select";
+      sel.dataset.role = "provider";
+      const opts = [
+        ["inherit", "↑ Inherit (use Provider tab)"],
+        ["claude", "Anthropic Claude"],
+        ["openai", "OpenAI ChatGPT"],
+        ["mistral", "Mistral La Plateforme"],
+      ];
+      for (const [v, label] of opts) {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = label;
+        if (v === row.provider) opt.selected = true;
+        sel.appendChild(opt);
+      }
+      sel.addEventListener("change", () => {
+        rebuildModelMenu(card, sel.value, row.model);
+      });
+      return sel;
+    })(),
+    "Picks which API your custom voice for this character uses. Inherit uses the global Provider tab key.",
+  );
+  body.appendChild(provider);
+
+  // Model row
+  const modelHolder = document.createElement("div");
+  modelHolder.className = "team-card__model-holder";
+  body.appendChild(teamRow("Model", modelHolder, ""));
+  rebuildModelMenu(card, row.provider, row.model, modelHolder);
+
+  // System prompt row
+  const sysWrap = document.createElement("div");
+  sysWrap.style.minWidth = "0";
+  const sys = document.createElement("textarea");
+  sys.className = "team-card__textarea";
+  sys.dataset.role = "system_prompt";
+  sys.rows = 6;
+  sys.maxLength = MAX_PROMPT_LEN;
+  sys.placeholder = DEFAULT_PERSONA_PROMPTS[voice] || "";
+  sys.value = row.system_prompt || "";
+  sysWrap.appendChild(sys);
+  const sysHint = document.createElement("span");
+  sysHint.className = "team-card__hint";
+  sysHint.textContent = "Empty = use the canonical voice template (shown as placeholder).";
+  sysWrap.appendChild(sysHint);
+
+  body.appendChild(teamRow("Personality", sysWrap, ""));
+
+  // Reset row
+  const reset = document.createElement("button");
+  reset.type = "button";
+  reset.className = "team-card__reset";
+  reset.textContent = "Reset to default";
+  reset.addEventListener("click", () => {
+    card.querySelector(".team-card__toggle").click();
+    card.querySelector(".team-card__toggle").click();   // toggle on then off so on stays
+    card.querySelector("[data-role=provider]").value = "inherit";
+    rebuildModelMenu(card, "inherit", "");
+    sys.value = "";
+  });
+  body.appendChild(reset);
+
+  card.appendChild(body);
+  return card;
+}
+
+function teamRow(label, controlEl, hint) {
+  const wrap = document.createElement("div");
+  wrap.className = "team-card__row";
+  const labelEl = document.createElement("span");
+  labelEl.className = "team-card__label";
+  labelEl.textContent = label;
+  wrap.appendChild(labelEl);
+  wrap.appendChild(controlEl);
+  if (hint) {
+    const hintEl = document.createElement("span");
+    hintEl.className = "team-card__hint";
+    hintEl.textContent = hint;
+    wrap.appendChild(hintEl);
+  }
+  return wrap;
+}
+
+function rebuildModelMenu(card, provider, currentValue, holder) {
+  const target = holder || card.querySelector(".team-card__model-holder");
+  if (!target) return;
+  target.innerHTML = "";
+  if (!provider || provider === "inherit") {
+    const note = document.createElement("span");
+    note.className = "team-card__hint";
+    note.textContent = "Provider default model — pick a specific model only if you've selected an explicit provider above.";
+    target.appendChild(note);
+    return;
+  }
+  const sel = document.createElement("select");
+  sel.className = "team-card__select";
+  sel.dataset.role = "model";
+  const optBlank = document.createElement("option");
+  optBlank.value = "";
+  optBlank.textContent = "Provider default";
+  sel.appendChild(optBlank);
+  for (const id of MODELS_PER_PROVIDER[provider] || []) {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = id;
+    if (id === currentValue) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  target.appendChild(sel);
+}
+
+function readTeamFromDOM() {
+  const root = els().teamEditor;
+  const out = teamStore._default();
+  if (!root) return out;
+  for (const card of root.querySelectorAll(".team-card")) {
+    const voice = card.dataset.voice;
+    if (!WORKING_VOICES.includes(voice)) continue;
+    out[voice] = {
+      enabled: card.dataset.on === "true",
+      provider: card.querySelector("[data-role=provider]")?.value || "inherit",
+      model: card.querySelector("[data-role=model]")?.value || "",
+      system_prompt: card.querySelector("[data-role=system_prompt]")?.value || "",
+    };
+  }
+  return out;
+}
+
+function reflectTeamCustomisation(team) {
+  const e = els();
+  const customised = teamStore.isCustomised(team);
+  if (e.tabTeam) {
+    const subEl = e.tabTeam.querySelector(".settings-tab__sub");
+    if (subEl) {
+      subEl.textContent = customised
+        ? "Customised — voices are LLM-driven"
+        : "Customise voices & models";
+    }
+  }
 }
 
 function onSettingsProviderChange(ev) {
@@ -716,33 +1109,56 @@ function onSettingsSave(ev) {
       e.settingsStatus.textContent = "Add an API key for the chosen provider, or pick Server default.";
       e.settingsStatus.style.color = "#B12B17";
     }
+    switchTab("provider");
     e.settingsKey?.focus();
     return;
   }
 
+  // Persist Provider tab
   settingsStore.write({ provider, api_key: provider ? apiKey : "" });
+
+  // Persist Team tab — read whatever the user typed even if they
+  // didn't visit the tab; readTeamFromDOM() returns the default state
+  // for personas they didn't touch.
+  const teamFromDom = readTeamFromDOM();
+  teamStore.write(teamFromDom);
+
   if (e.settingsStatus) {
-    e.settingsStatus.textContent = "Saved. New cases will use this provider.";
+    const customised = teamStore.isCustomised(teamFromDom);
+    const teamSuffix = customised ? " · custom team active" : "";
+    e.settingsStatus.textContent = provider
+      ? `Saved. Using ${PROVIDER_LABELS[provider] || provider}${teamSuffix}.`
+      : `Saved. Using server default${teamSuffix}.`;
     e.settingsStatus.style.color = "";
   }
   refreshProviderIndicators();
+  reflectTeamCustomisation(teamFromDom);
   showToast(provider ? `Using ${PROVIDER_LABELS[provider] || provider}` : "Using server default");
-  // Close after a short beat so the user sees the confirmation.
   setTimeout(() => closeModal("settings-dialog"), 700);
 }
 
 function onSettingsClear() {
   const e = els();
   settingsStore.clear();
+  teamStore.clear();
   e.settingsForm?.reset();
   if (e.settingsKey) e.settingsKey.value = "";
   reflectKeyFieldVisibility("");
+  renderTeamEditor(teamStore.read());
+  reflectTeamCustomisation(teamStore.read());
   if (e.settingsStatus) {
-    e.settingsStatus.textContent = "Cleared. Falling back to server default.";
+    e.settingsStatus.textContent = "Cleared everything. Falling back to server default.";
     e.settingsStatus.style.color = "";
   }
   refreshProviderIndicators();
   showToast("Settings cleared");
+}
+
+function onSettingsResetTeam() {
+  teamStore.clear();
+  renderTeamEditor(teamStore.read());
+  reflectTeamCustomisation(teamStore.read());
+  showToast("Team reset to defaults");
 }
 
 function toggleKeyReveal() {

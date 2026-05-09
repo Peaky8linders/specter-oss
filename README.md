@@ -10,7 +10,7 @@
 
 ```bash
 # Claude Code plugin (recommended) — get 6 slash commands + 6 MCP tools
-pip install 'specter[plugin]>=0.1.5'
+pip install 'specter[plugin]>=0.1.6'
 claude plugins install github:Peaky8linders/specter-oss/claude-plugin
 
 # Python library — for direct programmatic access
@@ -37,7 +37,7 @@ required — the MCP server runs locally against the bundled article
 catalog.
 
 ```bash
-pip install 'specter[plugin]>=0.1.5'
+pip install 'specter[plugin]>=0.1.6'
 
 # From a checkout of the repo:
 claude plugins install ./claude-plugin
@@ -106,15 +106,34 @@ sidebar (persisted to your browser's localStorage), and the right pane
 shows the selected case as a 5-message stream with citations,
 confidence dots, and Jessica's final ruling.
 
-The webapp ships a **Settings drawer** (sidebar bottom or `,` key) that
-lets you bring your own API key for Mistral, Anthropic Claude, or
-OpenAI ChatGPT. The key stays in `localStorage` on your device and
-flows to the backend only on the request itself, via two headers
-(`X-Specter-LLM-Provider`, `X-Specter-LLM-Key`). The server uses the
-key for that one call and never persists it. Keyboard shortcuts:
-<kbd>?</kbd> for the cheat sheet, <kbd>,</kbd> for settings,
-<kbd>n</kbd> for a new case, <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Enter</kbd>
-to submit.
+The webapp ships a **Settings drawer** (sidebar bottom or `,` key) with
+two tabs:
+
+* **Provider** — bring your own API key for Mistral, Anthropic Claude,
+  or OpenAI ChatGPT. The key stays in `localStorage` on your device and
+  flows to the backend only on the request itself, via two headers
+  (`X-Specter-LLM-Provider`, `X-Specter-LLM-Key`). The server uses the
+  key for that one call and never persists it.
+* **Your Suits team** — customise each character independently. Toggle
+  any of the four working voices (Mike, Rachel, Louis, Jessica) into
+  LLM mode, swap the underlying model (e.g. Mike on Claude Opus, Louis
+  on GPT-4o-mini, Jessica on Mistral Large), and rewrite their system
+  prompts to change personality / style / output language. The
+  deterministic citation pass stays — Mike still finds the right
+  articles — only the *wording* becomes LLM-driven for the personas
+  you've enabled. Customisations live in `localStorage` only; nothing
+  is shared between machines.
+
+Mike's article recall is also enriched by an optional, default-on
+adapter to a locally-running [`willchen96/mike`](https://github.com/willchen96/mike)
+(or [mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss))
+instance on `http://127.0.0.1:3000`. The bridge is fail-soft — if
+nothing is listening on that port, Mike's panel still ships with the
+canonical-catalog citations. Disable with `SPECTER_MIKE_BRIDGE=off`.
+
+Keyboard shortcuts: <kbd>?</kbd> for the cheat sheet, <kbd>,</kbd> for
+settings, <kbd>n</kbd> for a new case,
+<kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>Enter</kbd> to submit.
 
 | Voice | Character | Role in the case |
 |---|---|---|
@@ -309,7 +328,7 @@ get_control("C.1.8").citation         # verbatim regulation text
 
 ## Status
 
-`v0.1.5` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
+`v0.1.6` — public surface stable and end-to-end-verified. Expect breaking changes through `0.x` as the API converges; lock to a specific minor version in production.
 
 ## License
 

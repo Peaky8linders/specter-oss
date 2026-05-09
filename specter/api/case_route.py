@@ -77,6 +77,7 @@ try:  # pragma: no cover — import guard exercised only when agents missing
         CaseDialogue,
         CaseFile,
         CaseOrchestrator,
+        PersonaCustomisation,
     )
     from specter.agents.personas import (  # type: ignore[import-not-found]
         PERSONAS,
@@ -88,6 +89,7 @@ except Exception as exc:  # noqa: BLE001 — defensive guard
     CaseDialogue = None  # type: ignore[assignment, misc]
     CaseFile = None  # type: ignore[assignment, misc]
     CaseOrchestrator = None  # type: ignore[assignment, misc]
+    PersonaCustomisation = None  # type: ignore[assignment, misc]
     PERSONAS = None  # type: ignore[assignment]
     Voice = None  # type: ignore[assignment, misc]
     _AGENTS_AVAILABLE = False
@@ -122,6 +124,43 @@ _VALID_ROLES: frozenset[str] = frozenset(
 # ─── Wire shape: request body ───────────────────────────────────────────────
 
 
+_VALID_VOICES: frozenset[str] = frozenset(
+    {"harvey", "mike", "rachel", "louis", "jessica"}
+)
+_VALID_OVERRIDE_PROVIDERS: frozenset[str] = frozenset({"mistral", "claude", "openai"})
+
+# Per-persona system-prompt cap. The defaults in personas.py are ~400
+# chars; user customisations can be longer (chain-of-thought, examples)
+# but a 4 KiB cap keeps any single persona override well under most
+# providers' system-prompt limits and prevents accidental paste-bombs.
+_MAX_PERSONA_PROMPT = 4_000
+
+
+class PersonaOverride(BaseModel):
+    """One per-persona customisation for a single ``POST /v1/case`` call.
+
+    The user picks a voice (``mike`` / ``rachel`` / ``louis`` /
+    ``jessica``) and optionally:
+
+    * overrides the system prompt (custom personality / style guide)
+    * forces a specific LLM provider (``claude`` / ``openai`` /
+      ``mistral``) — overrides the request's BYOK header for this voice
+    * forces a specific model id
+
+    When at least one override is present AND a BYOK key is available
+    (either via headers or via a per-override ``api_key``), the
+    orchestrator switches to LLM-backed claim generation for that
+    voice. The deterministic citation-finding logic stays — only the
+    *voice* of the claim text changes.
+    """
+
+    voice: str = Field(min_length=1)
+    system_prompt: str | None = Field(default=None, max_length=_MAX_PERSONA_PROMPT)
+    provider: str | None = Field(default=None)
+    model: str | None = Field(default=None, max_length=128)
+    api_key: str | None = Field(default=None, max_length=2048)
+
+
 class CaseRequest(BaseModel):
     """``POST /v1/case`` request body.
 
@@ -135,11 +174,16 @@ class CaseRequest(BaseModel):
     orchestrator runs — matching the Q&A route's per-question cap. We
     silently truncate (rather than 422) so the SPA's textarea can
     paste-bomb without an error round-trip.
+
+    ``persona_overrides`` is the team-customisation surface — see
+    :class:`PersonaOverride`. Empty / absent → fully deterministic
+    rule-based dialogue (the v0.1.4 behaviour).
     """
 
     question: str = Field(min_length=1, max_length=10_000)
     role: str | None = Field(default=None)
     enable_louis_objection: bool = Field(default=True)
+    persona_overrides: list[PersonaOverride] | None = Field(default=None)
 
 
 # ─── Wire shape: persona catalog ────────────────────────────────────────────
@@ -201,6 +245,87 @@ def _case_dynamic_limit(key: str) -> str:
     if key.startswith(_RATE_KEY_PREFIX_AUTHED):
         return "60/minute"
     return "20/minute"
+
+
+# ─── Persona-override resolution ────────────────────────────────────────────
+
+
+def _resolve_persona_customisations(
+    overrides: list[PersonaOverride] | None,
+    request: Request,
+) -> dict[Voice, PersonaCustomisation] | None:
+    """Convert public ``PersonaOverride`` list → orchestrator customisations.
+
+    The route layer is the single place where the BYOK header pair
+    fans out into a per-persona key. Per-override ``provider`` /
+    ``api_key`` always wins over the headers; that lets a power user
+    run, say, Mike on Claude and Louis on ChatGPT in the same case
+    without forcing every persona through one global provider.
+
+    Returns ``None`` when no overrides are present so the orchestrator
+    can short-circuit cleanly.
+
+    Validates voices + providers loudly — anything unknown raises 422
+    from the route. We do NOT pre-validate the API key shape (provider
+    SDKs reject invalid keys with their own 4xx error, and any
+    pre-validation here would just duplicate that work).
+    """
+    if not overrides:
+        return None
+    if not _AGENTS_AVAILABLE:
+        return None
+
+    # Read header BYOK once so we can fall through per-override.
+    from specter.qa.byok import parse_byok_headers
+
+    header_provider, header_key = parse_byok_headers(request)
+
+    out: dict[Voice, PersonaCustomisation] = {}
+    for ov in overrides:
+        voice_str = (ov.voice or "").strip().lower()
+        if voice_str not in _VALID_VOICES:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={
+                    "code": "specter_invalid_voice",
+                    "message": (
+                        f"Unknown voice {ov.voice!r}. Expected one of: "
+                        f"{sorted(_VALID_VOICES)}."
+                    ),
+                },
+            )
+        # Provider resolution: per-override wins, else header BYOK.
+        provider_str = ov.provider
+        if provider_str is not None:
+            provider_str = provider_str.strip().lower()
+            if provider_str and provider_str not in _VALID_OVERRIDE_PROVIDERS:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail={
+                        "code": "specter_invalid_provider",
+                        "message": (
+                            f"Unknown provider {ov.provider!r}. Expected "
+                            f"one of: {sorted(_VALID_OVERRIDE_PROVIDERS)}."
+                        ),
+                    },
+                )
+        else:
+            provider_str = header_provider
+
+        # Key resolution: per-override wins, else header BYOK.
+        api_key = (ov.api_key or "").strip() or header_key
+
+        # Coerce voice string → enum so the orchestrator's dict-keyed
+        # lookup matches the Voice enum it stores in turn.speaker.
+        voice_enum = Voice(voice_str)
+
+        out[voice_enum] = PersonaCustomisation(
+            system_prompt=(ov.system_prompt or None),
+            provider=provider_str if provider_str else None,
+            model=(ov.model or None),
+            api_key=api_key if api_key else None,
+        )
+    return out or None
 
 
 # ─── Router factory ─────────────────────────────────────────────────────────
@@ -350,11 +475,23 @@ def make_case_router(
         # paste-bombs from the SPA textarea must not 422.
         question = body.question[:2_000]
 
+        # Persona overrides → orchestrator customisations. Validation
+        # rejects unknown voices / unknown providers loudly; missing
+        # fields fall through to the BYOK header path so a user who
+        # configured "use Claude for everyone" via the global
+        # X-Specter-LLM-* headers + a per-voice system_prompt only
+        # gets the LLM voice without re-pasting their key into every
+        # override.
+        persona_customisations = _resolve_persona_customisations(
+            body.persona_overrides, request
+        )
+
         try:
             case = CaseFile(  # type: ignore[misc]
                 question=question,
                 role=body.role,
                 enable_louis_objection=body.enable_louis_objection,
+                persona_customisations=persona_customisations,
             )
         except ValidationError as exc:
             # The agent layer's own model rejected something we passed

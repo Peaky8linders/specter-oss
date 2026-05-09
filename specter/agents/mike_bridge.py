@@ -61,14 +61,24 @@ class MikeOSSBridge:
         self,
         *,
         base_url: str | None = None,
-        timeout: float = 2.0,
+        timeout: float = 0.6,
     ) -> None:
         # Resolution precedence: explicit kwarg → ``MIKE_OSS_BASE_URL``
         # env var → built-in default. This mirrors how Specter's other
         # optional integrations resolve credentials (see
-        # ``specter/llm/mistral.py::MistralProvider``).
+        # ``specter.llm.mistral_provider.MistralProvider``).
+        #
+        # Default URL uses ``127.0.0.1`` (not ``localhost``) on purpose —
+        # on Windows ``localhost`` resolves to ``::1`` first, and a
+        # connection-refused on the IPv6 socket can wait for the OS
+        # retry budget before failing over to IPv4. Pinning v4 keeps
+        # the "nothing listening" case sub-millisecond, which matters
+        # because the orchestrator probes the bridge on every case.
         if base_url is None:
-            base_url = os.environ.get("MIKE_OSS_BASE_URL", "http://localhost:3000")
+            base_url = os.environ.get(
+                "MIKE_OSS_BASE_URL",
+                "http://127.0.0.1:3000",
+            )
         # Normalize: strip a trailing slash so endpoint joins are clean.
         self._base_url: str = base_url.rstrip("/")
         self._timeout: float = timeout

@@ -53,7 +53,7 @@
       </div>
 
       <footer class="brand__footer">
-        <span class="brand__version" id="brand-version">v0.1.5</span>
+        <span class="brand__version" id="brand-version">v0.1.6</span>
         <span aria-hidden="true" class="brand__dot">·</span>
         <a class="brand__link" href="https://github.com/Peaky8linders/specter-oss" target="_blank" rel="noopener">GitHub</a>
       </footer>
@@ -143,78 +143,107 @@
     </main>
   </div>
 
-  <!-- ─── Settings dialog (BYOK provider + key) ─────────────────────── -->
+  <!-- ─── Settings dialog (BYOK provider + key + team) ──────────────── -->
   <div class="modal" id="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
     <div class="modal__backdrop" data-modal-close="settings-dialog"></div>
-    <div class="modal__panel" role="document">
+    <div class="modal__panel modal__panel--wide" role="document">
       <header class="modal__header">
         <h3 id="settings-title" class="modal__title">Settings · Bring your own key</h3>
         <button type="button" class="modal__close" data-modal-close="settings-dialog" aria-label="Close settings">×</button>
       </header>
 
+      <nav class="settings-tabs" role="tablist" aria-label="Settings sections">
+        <button type="button" class="settings-tab" role="tab" data-tab="provider" aria-selected="true" id="tab-provider">
+          <span class="settings-tab__title">Provider</span>
+          <span class="settings-tab__sub">Default key for your team</span>
+        </button>
+        <button type="button" class="settings-tab" role="tab" data-tab="team" aria-selected="false" id="tab-team">
+          <span class="settings-tab__title">Your Suits team</span>
+          <span class="settings-tab__sub">Customise voices & models</span>
+        </button>
+      </nav>
+
       <form class="modal__body" id="settings-form">
-        <p class="modal__lede">
-          Pick the AI that works your case. Your key stays in this browser
-          (localStorage) and is sent <strong>only</strong> to the chosen provider
-          via the request headers — never logged or persisted server-side.
-        </p>
+        <!-- ── Tab 1: Provider (BYOK) ─────────────────────────────── -->
+        <section class="settings-pane" id="pane-provider" role="tabpanel" aria-labelledby="tab-provider">
+          <p class="modal__lede">
+            Pick the AI that works your case. Your key stays in this browser
+            (localStorage) and is sent <strong>only</strong> to the chosen provider
+            via the request headers — never logged or persisted server-side.
+          </p>
 
-        <fieldset class="settings-providers">
-          <legend class="visually-hidden">Choose a provider</legend>
-          <label class="settings-provider">
-            <input type="radio" name="provider" value="" />
-            <span class="settings-provider__head">
-              <span class="settings-provider__name">Server default</span>
-              <span class="settings-provider__price">Free</span>
-            </span>
-            <span class="settings-provider__note">Whatever the host wired (Mistral, stub, or none). Use this when you don't have a key.</span>
-          </label>
-          <label class="settings-provider">
-            <input type="radio" name="provider" value="claude" />
-            <span class="settings-provider__head">
-              <span class="settings-provider__name">Anthropic Claude</span>
-              <span class="settings-provider__price">Your usage</span>
-            </span>
-            <span class="settings-provider__note">Best regulator-grade prose. Get a key at console.anthropic.com.</span>
-          </label>
-          <label class="settings-provider">
-            <input type="radio" name="provider" value="openai" />
-            <span class="settings-provider__head">
-              <span class="settings-provider__name">OpenAI ChatGPT</span>
-              <span class="settings-provider__price">Your usage</span>
-            </span>
-            <span class="settings-provider__note">Fastest with gpt-4o-mini. Get a key at platform.openai.com.</span>
-          </label>
-          <label class="settings-provider">
-            <input type="radio" name="provider" value="mistral" />
-            <span class="settings-provider__head">
-              <span class="settings-provider__name">Mistral La Plateforme</span>
-              <span class="settings-provider__price">Your usage</span>
-            </span>
-            <span class="settings-provider__note">EU-hosted reference implementation. Get a key at console.mistral.ai.</span>
-          </label>
-        </fieldset>
+          <fieldset class="settings-providers">
+            <legend class="visually-hidden">Choose a provider</legend>
+            <label class="settings-provider">
+              <input type="radio" name="provider" value="" />
+              <span class="settings-provider__head">
+                <span class="settings-provider__name">Server default</span>
+                <span class="settings-provider__price">Free</span>
+              </span>
+              <span class="settings-provider__note">Whatever the host wired (Mistral, stub, or none). Use this when you don't have a key.</span>
+            </label>
+            <label class="settings-provider">
+              <input type="radio" name="provider" value="claude" />
+              <span class="settings-provider__head">
+                <span class="settings-provider__name">Anthropic Claude</span>
+                <span class="settings-provider__price">Your usage</span>
+              </span>
+              <span class="settings-provider__note">Best regulator-grade prose. Get a key at console.anthropic.com.</span>
+            </label>
+            <label class="settings-provider">
+              <input type="radio" name="provider" value="openai" />
+              <span class="settings-provider__head">
+                <span class="settings-provider__name">OpenAI ChatGPT</span>
+                <span class="settings-provider__price">Your usage</span>
+              </span>
+              <span class="settings-provider__note">Fastest with gpt-4o-mini. Get a key at platform.openai.com.</span>
+            </label>
+            <label class="settings-provider">
+              <input type="radio" name="provider" value="mistral" />
+              <span class="settings-provider__head">
+                <span class="settings-provider__name">Mistral La Plateforme</span>
+                <span class="settings-provider__price">Your usage</span>
+              </span>
+              <span class="settings-provider__note">EU-hosted reference implementation. Get a key at console.mistral.ai.</span>
+            </label>
+          </fieldset>
 
-        <label class="settings-field" id="settings-key-field">
-          <span class="settings-field__label">API key</span>
-          <span class="settings-field__row">
-            <input
-              type="password"
-              id="settings-key"
-              name="api_key"
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="sk-..."
-              maxlength="2048"
-            />
-            <button type="button" class="settings-field__reveal" id="settings-key-reveal" aria-pressed="false" aria-label="Show key">show</button>
-          </span>
-          <span class="settings-field__hint" id="settings-key-hint">
-            Stored locally. Never sent to specter-oss servers.
-          </span>
-        </label>
+          <label class="settings-field" id="settings-key-field">
+            <span class="settings-field__label">API key</span>
+            <span class="settings-field__row">
+              <input
+                type="password"
+                id="settings-key"
+                name="api_key"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="sk-..."
+                maxlength="2048"
+              />
+              <button type="button" class="settings-field__reveal" id="settings-key-reveal" aria-pressed="false" aria-label="Show key">show</button>
+            </span>
+            <span class="settings-field__hint" id="settings-key-hint">
+              Stored locally. Never sent to specter-oss servers.
+            </span>
+          </label>
+        </section>
+
+        <!-- ── Tab 2: Team (per-persona model + system prompt) ───── -->
+        <section class="settings-pane" id="pane-team" role="tabpanel" aria-labelledby="tab-team" hidden>
+          <p class="modal__lede">
+            Each character has a personality template. Tweak the
+            system prompt to change how they sound. Pick a different
+            model per character if you want — the deterministic
+            citation-finding stays put, only the <em>voice</em> changes.
+            <strong>Customisations live in this browser only.</strong>
+          </p>
+          <div class="team-editor" id="team-editor">
+            <!-- Populated by app.js from PERSONAS + saved overrides -->
+          </div>
+        </section>
 
         <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" id="settings-reset-team" hidden>Reset team</button>
           <button type="button" class="btn btn--ghost" id="settings-clear">Clear</button>
           <button type="submit" class="btn btn--primary" id="settings-save">Save</button>
         </div>

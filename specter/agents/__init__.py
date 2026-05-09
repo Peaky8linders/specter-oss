@@ -33,6 +33,7 @@ from specter.agents.case import (
     CaseFile,
     CaseOrchestrator,
     Citation,
+    PersonaCustomisation,
     Turn,
 )
 from specter.agents.memory import MikeMemory
@@ -48,6 +49,7 @@ __all__ = [
     "MikeMemory",
     "MikeOSSBridge",
     "Persona",
+    "PersonaCustomisation",
     "Turn",
     "Voice",
 ]

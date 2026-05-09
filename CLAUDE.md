@@ -83,18 +83,41 @@ fork of Will Chen's `mike` legal AI platform
 | **Jessica Pearson** | The boss. Final ruling, weights conflicting voices. | `ThreeAgentVerifier` (referee lens) |
 
 The agents are **deterministic** by default (rule-based personalities with
-voice templates) so the test suite can pin behavior. Optional LLM-backed mode
-calls Mistral / Anthropic / OpenAI via the provider abstraction in
-`specter/llm/`.
+voice templates) so the test suite can pin behavior. Optional LLM-backed
+mode is *per-persona* — see `PersonaCustomisation` below.
+
+**Mike-OSS bridge** is on by default. The orchestrator constructs a
+`MikeOSSBridge` pointed at `MIKE_OSS_BASE_URL` (default
+`http://127.0.0.1:3000` — the Next.js dev port for Will Chen's `mike`
+legal AI fork). The bridge is fail-soft: if nothing is listening, every
+probe returns False sub-millisecond and Mike's recall pass uses the
+canonical article catalog only. Disable per-deploy with
+`SPECTER_MIKE_BRIDGE=off` (or pass `bridge=False`).
+
+**Per-persona customisation** — `CaseFile.persona_customisations` is a
+`dict[Voice, PersonaCustomisation]` (provider, model, system_prompt,
+api_key). When a voice has any usable customisation (system prompt OR
+provider+key), the orchestrator overlays an LLM-generated claim on top
+of the deterministic citations / flags / confidence. The route layer
+(`POST /v1/case`) accepts the public `PersonaOverride[]` form in the
+body and the BYOK header pair fans out as the per-persona key when
+the override doesn't supply its own. **Citations / flags / confidence
+stay deterministic** even in LLM mode — only the wording of the claim
+changes, so the hallucination-reduction posture is unchanged.
 
 API:
 * `POST /v1/case` — runs the four-working-voice deliberation pipeline
   (Rachel → Mike → Louis → Rachel → Jessica) and returns a `CaseDialogue`.
+  Accepts `persona_overrides` for team customisation.
 * `GET  /v1/case/personas` — bootstrap roster the SPA reads on first load.
 
-Front-end at `/webapp/` is a two-pane ChatGPT-style workspace: persistent case
-history sidebar (localStorage, 50-case bounded) and a main pane that paints
-the selected case as a five-message stream + verdict + conflicts.
+Front-end at `/webapp/` is a two-pane ChatGPT-style workspace: persistent
+case history sidebar (localStorage, 50-case bounded) and a main pane that
+paints the selected case as a five-message stream + verdict + conflicts.
+Settings drawer is tabbed: **Provider** (BYOK key, applies to all voices)
+and **Team** (per-persona toggle, model picker, system-prompt editor —
+all stored under `specter:team:v1` in `localStorage`, never echoed
+server-side).
 
 ## LLM provider abstraction (`specter/llm/`)
 
