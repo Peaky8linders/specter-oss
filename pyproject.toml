@@ -46,7 +46,7 @@ plugin = [
     "mcp>=1.27.0",
 ]
 mistral = [
-    "mistralai>=1.0",
+    "mistralai>=2.4.5",
 ]
 anthropic = [
     "anthropic>=0.39",
