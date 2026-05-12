@@ -104,7 +104,7 @@ class PersonaCustomisation(BaseModel):
     """
 
     system_prompt: str | None = None
-    provider: Literal["mistral", "claude", "openai"] | None = None
+    provider: Literal["claude", "openai"] | None = None
     model: str | None = None
     api_key: str | None = None
 
