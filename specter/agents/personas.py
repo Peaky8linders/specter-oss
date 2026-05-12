@@ -24,9 +24,7 @@ catchphrase the UI can drop in as a flourish on the first appearance.
 
 Voice templates live as multi-line ``system_prompt`` strings even
 though the deterministic pipeline does not call an LLM — the prompt
-captures the exact tone the rule-based claim generator imitates, and
-mirrors it for the optional LLM-backed mode where Mistral is asked to
-*continue* the dialogue in-character.
+captures the exact tone the rule-based claim generator imitates
 """
 
 from __future__ import annotations
