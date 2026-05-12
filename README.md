@@ -117,7 +117,7 @@ two tabs:
 * **Your Suits team** — customise each character independently. Toggle
   any of the four working voices (Mike, Rachel, Louis, Jessica) into
   LLM mode, swap the underlying model (e.g. Mike on Claude Opus, Louis
-  on GPT-4o-mini, Jessica on Mistral Large), and rewrite their system
+  on GPT-4o-mini), and rewrite their system
   prompts to change personality / style / output language. The
   deterministic citation pass stays — Mike still finds the right
   articles — only the *wording* becomes LLM-driven for the personas
@@ -125,9 +125,7 @@ two tabs:
   is shared between machines.
 
 Mike's article recall is also enriched by an optional, default-on
-adapter to a locally-running [`willchen96/mike`](https://github.com/willchen96/mike)
-(or [mikeOnBreeze/mike-oss](https://github.com/mikeOnBreeze/mike-oss))
-instance on `http://127.0.0.1:3000`. The bridge is fail-soft — if
+adapter to a locally-running [`willchen96/mike`](https://github.com/willchen96/mike). The bridge is fail-soft — if
 nothing is listening on that port, Mike's panel still ships with the
 canonical-catalog citations. Disable with `SPECTER_MIKE_BRIDGE=off`.
 
