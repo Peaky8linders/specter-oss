@@ -377,7 +377,6 @@ textarea, select, input { font: inherit; color: inherit; }
 
 .sidebar-action__badge[data-provider="claude"]  { color: #E2BC8A; background: rgba(226,188,138,0.12); }
 .sidebar-action__badge[data-provider="openai"]  { color: #6FE3A4; background: rgba(111,227,164,0.12); }
-.sidebar-action__badge[data-provider="mistral"] { color: #F89C66; background: rgba(248,156,102,0.14); }
 
 .sidebar-action__kbd {
   display: inline-flex;
@@ -667,7 +666,6 @@ textarea, select, input { font: inherit; color: inherit; }
 
 .case-header__provider[data-provider="claude"]::before  { background: #C99664; }
 .case-header__provider[data-provider="openai"]::before  { background: #1FA67A; }
-.case-header__provider[data-provider="mistral"]::before { background: #F26C39; }
 .case-header__provider[data-provider="server"]::before  { background: var(--ink-mute); }
 
 

@@ -6,7 +6,7 @@ Plugs into :func:`specter.api.qa_route.make_qa_router` as the
 ChatGPT to answer the question, grounding the prompt against the
 canonical EU AI Act article catalog.
 
-Hallucination posture identical to the Mistral / Claude retrievers —
+Hallucination posture identical to the Claude retriever —
 system prompt enforces grounded citations + ``NO_MATCH`` refusal token;
 emitted citations validated against ``ARTICLE_EXISTENCE`` before
 serialisation; errors fall through to the route's deterministic

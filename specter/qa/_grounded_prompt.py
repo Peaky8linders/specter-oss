@@ -1,6 +1,6 @@
 """Shared system-prompt + response parser for grounded LLM retrievers.
 
-The Mistral / Claude / OpenAI retrievers all need the same two things:
+The Claude / OpenAI retrievers all need the same two things:
 
 1. A system prompt that grounds the model on the EU AI Act article
    catalog and instructs it to emit a ``NO_MATCH`` token when no

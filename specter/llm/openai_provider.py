@@ -7,7 +7,7 @@ fail-soft completion (never raises). Used by:
 * :mod:`specter.qa.openai_retriever` — OpenAI-backed retriever for the
   public Q&A endpoint at :func:`specter.api.qa_route.make_qa_router`.
 
-Design rules (kept in lockstep with mistral_provider + claude_provider):
+Design rules (kept in lockstep with claude_provider):
 
 1. Lazy-init the SDK on first ``complete()``. Importing this module
    never raises if neither ``OPENAI_API_KEY`` nor ``api_key=...`` is

@@ -946,8 +946,7 @@ function renderTeamCard(voice, row) {
       const opts = [
         ["inherit", "↑ Inherit (use Provider tab)"],
         ["claude", "Anthropic Claude"],
-        ["openai", "OpenAI ChatGPT"],
-        ["mistral", "Mistral La Plateforme"],
+        ["openai", "OpenAI ChatGPT"]
       ];
       for (const [v, label] of opts) {
         const opt = document.createElement("option");

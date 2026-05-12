@@ -7,7 +7,7 @@ Claude to answer the question, grounding the prompt against the
 canonical EU AI Act article catalog.
 
 Hallucination posture (preserved from the upstream production
-deployment): identical to the Mistral retriever — system prompt
+deployment): identical to the Claude retriever — system prompt
 enforces grounded citations + ``NO_MATCH`` refusal token; emitted
 citations validated against ``ARTICLE_EXISTENCE`` before serialisation;
 errors fall through to the route's deterministic refusal.

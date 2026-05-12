@@ -17,8 +17,7 @@ Why this route exists:
   is a pure function of the question + the data-pure catalogs in
   :mod:`specter.data`. The five-turn pipeline (Rachel → Mike → Louis →
   Rachel → Jessica) ships without paying for an LLM round trip on the
-  hot path; an optional Mistral-backed mode lives behind the orchestrator
-  and is opt-in via env var, never the default.
+  hot path
 
 Hallucination-reduction guard:
 
