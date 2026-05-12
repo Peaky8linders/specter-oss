@@ -45,7 +45,7 @@ plugin = [
     "mcp>=1.27.0",
 ]
 anthropic = [
-    "anthropic>=0.39",
+    "anthropic>=0.101.0",
 ]
 openai = [
     "openai>=1.50",
