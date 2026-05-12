@@ -24,7 +24,7 @@ specter/
 │                      9-role obligation registry, Article 15 controls (8 LatticeFlow
 │                      ATLAS controls), ontology mapping, rationalizations
 ├── judge/             LLM-as-Judge: ComplianceRewardHackDetector + three-agent verifier
-├── llm/               provider abstraction — Mistral / Anthropic Claude / OpenAI.
+├── llm/               provider abstraction — Anthropic Claude / OpenAI.
 │                      Singleton per provider; lazy SDK init; soft-fail on auth.
 ├── qa/                grounded Q&A models, auth, retrievers per provider
 │                      (mistral_retriever / claude_retriever / openai_retriever)
