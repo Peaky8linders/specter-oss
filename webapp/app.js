@@ -31,15 +31,13 @@ const WORKING_VOICES = ["mike", "rachel", "louis", "jessica"];
 // Sensible model menus per provider — kept short on purpose.
 const MODELS_PER_PROVIDER = {
   claude:  ["claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"],
-  openai:  ["gpt-4o", "gpt-4o-mini"],
-  mistral: ["mistral-large-latest", "mistral-small-latest"],
+  openai:  ["gpt-4o", "gpt-4o-mini"] 
 };
 
 const PROVIDER_LABELS = {
   "":        "default",
   "claude":  "Claude",
-  "openai":  "ChatGPT",
-  "mistral": "Mistral",
+  "openai":  "ChatGPT"
 };
 
 /* ─── Persona fallback (stays in lockstep with specter/agents/personas.py) */
