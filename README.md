@@ -16,7 +16,6 @@ claude plugins install github:Peaky8linders/specter-oss/claude-plugin
 # Python library — for direct programmatic access
 pip install specter                # core: data + LLM-as-Judge
 pip install 'specter[api]'         # adds FastAPI router for grounded Q&A
-pip install 'specter[mistral]'     # adds Mistral-backed retriever
 pip install 'specter[anthropic]'   # adds Anthropic Claude-backed retriever
 pip install 'specter[openai]'      # adds OpenAI ChatGPT-backed retriever
 ```
