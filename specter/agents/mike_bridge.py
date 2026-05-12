@@ -64,10 +64,7 @@ class MikeOSSBridge:
         timeout: float = 0.6,
     ) -> None:
         # Resolution precedence: explicit kwarg → ``MIKE_OSS_BASE_URL``
-        # env var → built-in default. This mirrors how Specter's other
-        # optional integrations resolve credentials (see
-        # ``specter.llm.mistral_provider.MistralProvider``).
-        #
+        # env var → built-in default.
         # Default URL uses ``127.0.0.1`` (not ``localhost``) on purpose —
         # on Windows ``localhost`` resolves to ``::1`` first, and a
         # connection-refused on the IPv6 socket can wait for the OS
