@@ -38,7 +38,7 @@ dependencies = [
 
 [project.optional-dependencies]
 api = [
-    "fastapi>=0.110",
+    "fastapi>=0.136.1",
     "slowapi>=0.1.9",
 ]
 plugin = [
