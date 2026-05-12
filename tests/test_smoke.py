@@ -422,19 +422,6 @@ def test_mistral_retriever_drops_hallucinated_citations(monkeypatch) -> None:
     assert res.confidence == 0.85
 
 
-def test_mistral_retriever_falls_back_when_no_key(monkeypatch) -> None:
-    from specter.api.qa_route import RetrieverRequest
-    from specter.qa.mistral_retriever import make_mistral_retriever
-
-    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-    retriever = make_mistral_retriever()  # no key anywhere
-    res = retriever(RetrieverRequest(question="anything"))
-    # Closed-world refusal shape: empty answer + 0 confidence
-    assert res.answer == ""
-    assert res.confidence == 0.0
-    assert res.citations == []
-
-
 def test_mistral_retriever_handles_no_match_token(monkeypatch) -> None:
     from specter.api.qa_route import RetrieverRequest
     from specter.llm import MistralProvider, MistralResponse

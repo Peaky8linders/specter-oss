@@ -23,9 +23,9 @@ const STORAGE_VERSION = 1;
 const MAX_STORED_CASES = 50;
 const MAX_PROMPT_LEN = 4000;
 
-const VALID_PROVIDERS = new Set(["", "mistral", "claude", "openai"]);
+const VALID_PROVIDERS = new Set(["", "claude", "openai"]);
 // "inherit" means: use whatever the global Provider tab is set to
-const VALID_TEAM_PROVIDERS = new Set(["inherit", "mistral", "claude", "openai"]);
+const VALID_TEAM_PROVIDERS = new Set(["inherit", "claude", "openai"]);
 const WORKING_VOICES = ["mike", "rachel", "louis", "jessica"];
 
 // Sensible model menus per provider — kept short on purpose.

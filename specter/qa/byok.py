@@ -9,7 +9,7 @@ the server uses it for that one call, and the key is never persisted.
 The webapp ships a settings drawer that stores the user's chosen provider
 + key in ``localStorage`` and forwards them as two headers:
 
-* ``X-Specter-LLM-Provider`` — one of ``mistral`` / ``claude`` / ``openai``.
+* ``X-Specter-LLM-Provider`` — one of ``claude`` / ``openai``.
   Case-insensitive. Anything else is rejected.
 * ``X-Specter-LLM-Key`` — the user's API key. Bearer-style. Capped at 2K
   characters defensively.
@@ -66,7 +66,7 @@ HEADER_KEY = "X-Specter-LLM-Key"
 _MAX_KEY_LEN = 2048
 
 
-ProviderName = Literal["mistral", "claude", "openai"]
+ProviderName = Literal["claude", "openai"]
 _VALID_PROVIDERS: frozenset[str] = frozenset({"mistral", "claude", "openai"})
 
 

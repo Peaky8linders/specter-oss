@@ -126,7 +126,7 @@ _VALID_ROLES: frozenset[str] = frozenset(
 _VALID_VOICES: frozenset[str] = frozenset(
     {"harvey", "mike", "rachel", "louis", "jessica"}
 )
-_VALID_OVERRIDE_PROVIDERS: frozenset[str] = frozenset({"mistral", "claude", "openai"})
+_VALID_OVERRIDE_PROVIDERS: frozenset[str] = frozenset({"claude", "openai"})
 
 # Per-persona system-prompt cap. The defaults in personas.py are ~400
 # chars; user customisations can be longer (chain-of-thought, examples)
@@ -142,8 +142,7 @@ class PersonaOverride(BaseModel):
     ``jessica``) and optionally:
 
     * overrides the system prompt (custom personality / style guide)
-    * forces a specific LLM provider (``claude`` / ``openai`` /
-      ``mistral``) — overrides the request's BYOK header for this voice
+    * forces a specific LLM provider (``claude`` / ``openai``) — overrides the request's BYOK header for this voice
     * forces a specific model id
 
     When at least one override is present AND a BYOK key is available
@@ -525,7 +524,7 @@ def make_case_router(
         except Exception as exc:  # noqa: BLE001 — convert to structured 502
             # Never leak the traceback. The orchestrator runs entirely
             # in-process so a raise here is either (a) a real bug we want
-            # to fix, or (b) a Mistral-mode network blip — both classify
+            # to fix, or (b) a network blip — both classify
             # as "upstream pipeline failed" from the SPA's point of view.
             _log.warning("case orchestrator error: %s: %s", type(exc).__name__, exc)
             raise HTTPException(

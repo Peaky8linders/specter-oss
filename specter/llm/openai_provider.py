@@ -1,8 +1,6 @@
 """Shared, typed OpenAI ChatGPT provider for Specter.
 
-Mirrors the design contract of :mod:`specter.llm.mistral_provider`:
-one process-wide client, one retry policy, one structured-log envelope,
-fail-soft completion (never raises). Used by:
+Used by:
 
 * :mod:`specter.qa.openai_retriever` — OpenAI-backed retriever for the
   public Q&A endpoint at :func:`specter.api.qa_route.make_qa_router`.

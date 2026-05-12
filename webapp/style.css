@@ -1060,7 +1060,6 @@ textarea, select, input { font: inherit; color: inherit; }
 
 .composer__provider[data-provider="claude"]::before  { background: #C99664; }
 .composer__provider[data-provider="openai"]::before  { background: #1FA67A; }
-.composer__provider[data-provider="mistral"]::before { background: #F26C39; }
 
 .composer__submit {
   margin-left: auto;
