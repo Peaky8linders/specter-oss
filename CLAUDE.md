@@ -131,7 +131,6 @@ Three providers ship in-tree, all with identical surface (`*_Provider`,
 
 | Provider | Env var | Retriever factory |
 |---|---|---|
-| Mistral La Plateforme | `MISTRAL_API_KEY` | `make_mistral_retriever()` |
 | Anthropic Claude | `ANTHROPIC_API_KEY` | `make_claude_retriever()` |
 | OpenAI ChatGPT | `OPENAI_API_KEY` | `make_openai_retriever()` |
 
