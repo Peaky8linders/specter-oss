@@ -290,7 +290,7 @@ request:
 
 ```
 POST /v1/eu-ai-act/ask
-X-Specter-LLM-Provider: claude        # one of: mistral / claude / openai
+X-Specter-LLM-Provider: claude        # one of: claude / openai
 X-Specter-LLM-Key: sk-ant-...         # the user's own key, never persisted
 ```
 
