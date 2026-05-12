@@ -48,7 +48,7 @@ anthropic = [
     "anthropic>=0.39",
 ]
 openai = [
-    "openai>=1.50",
+    "openai>=2.36.0",
 ]
 dev = [
     "pytest>=9.0.3",
