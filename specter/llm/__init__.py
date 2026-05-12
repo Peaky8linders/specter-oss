@@ -3,8 +3,6 @@
 Three providers ship in-tree, all sharing the same fail-soft contract
 (``complete()`` never raises; failures land in ``Response.error``):
 
-* :mod:`specter.llm.mistral_provider` — Mistral La Plateforme
-  (``MISTRAL_API_KEY``).
 * :mod:`specter.llm.claude_provider` — Anthropic Claude
   (``ANTHROPIC_API_KEY``).
 * :mod:`specter.llm.openai_provider` — OpenAI ChatGPT
@@ -29,15 +27,7 @@ from specter.llm.claude_provider import (
     is_claude_enabled,
     reset_claude_provider,
 )
-from specter.llm.mistral_provider import (
-    MistralProvider,
-    MistralRequest,
-    MistralResponse,
-    get_mistral_provider,
-    is_mistral_enabled,
-    reset_mistral_provider,
-    resolve_provider,
-)
+
 from specter.llm.openai_provider import (
     OpenAIProvider,
     OpenAIRequest,
@@ -48,14 +38,6 @@ from specter.llm.openai_provider import (
 )
 
 __all__ = [
-    # Mistral
-    "MistralProvider",
-    "MistralRequest",
-    "MistralResponse",
-    "get_mistral_provider",
-    "is_mistral_enabled",
-    "reset_mistral_provider",
-    "resolve_provider",
     # Claude
     "ClaudeProvider",
     "ClaudeRequest",
