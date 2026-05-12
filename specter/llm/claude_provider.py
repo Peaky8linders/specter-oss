@@ -1,22 +1,13 @@
 """Shared, typed Anthropic Claude provider for Specter.
 
-Mirrors the design contract of :mod:`specter.llm.mistral_provider`:
-one process-wide client, one retry policy, one structured-log envelope,
-fail-soft completion (never raises). Used by:
+Used by:
 
 * :mod:`specter.qa.claude_retriever` — Claude-backed retriever for the
   public Q&A endpoint at :func:`specter.api.qa_route.make_qa_router`.
 
-Why a second provider?
-^^^^^^^^^^^^^^^^^^^^^^
-The Mistral retriever is the reference implementation for the Q&A
-surface. Hosts that prefer Claude (or whose tenants pay for Claude
-seats) wire this provider — same fail-soft contract, same closed-world
-refusal posture, same hallucination guard at the route layer. The
-provider itself does not know about EU AI Act citations; that is the
-retriever's job.
 
-Design rules (kept in lockstep with mistral_provider):
+
+Design rules:
 
 1. Lazy-init the SDK on first ``complete()``. Importing this module
    never raises if neither ``ANTHROPIC_API_KEY`` nor ``api_key=...`` is

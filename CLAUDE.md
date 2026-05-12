@@ -27,7 +27,7 @@ specter/
 ├── llm/               provider abstraction — Anthropic Claude / OpenAI.
 │                      Singleton per provider; lazy SDK init; soft-fail on auth.
 ├── qa/                grounded Q&A models, auth, retrievers per provider
-│                      (mistral_retriever / claude_retriever / openai_retriever)
+│                      (claude_retriever / openai_retriever)
 ├── api/               FastAPI routers — POST /v1/eu-ai-act/ask + POST /v1/case
 │                      + GET /v1/case/personas + dev_app.py mounting /webapp/
 ├── agents/            Suits-themed five-voice overlay
@@ -149,7 +149,7 @@ headers, build a per-request retriever, and never persist the key.
 
 ```bash
 # Install the editable package + dev deps
-pip install -e .[dev,api,plugin,mistral,anthropic,openai]
+pip install -e .[dev,api,plugin,anthropic,openai]
 
 # Run tests
 pytest -v
