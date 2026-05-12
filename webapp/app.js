@@ -6,7 +6,7 @@
    multi-turn) and persists it to local storage on success.
 
    Settings (BYOK): a small drawer lets the user pick a provider
-   (Mistral / Claude / OpenAI / server default) and paste their own API
+   (Claude / OpenAI / server default) and paste their own API
    key. The key is stored in localStorage on the user's device and sent
    to the backend on every request as `X-Specter-LLM-Provider` /
    `X-Specter-LLM-Key`. The route uses the per-request retriever for

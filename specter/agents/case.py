@@ -764,25 +764,7 @@ def _call_persona_llm(
                 _log.info("persona_llm.openai_error error=%s", res.error[:120])
                 return ""
             return _strip_quotes((res.text or "").strip())
-        if provider == "mistral":
-            from specter.llm.mistral_provider import MistralRequest, get_mistral_provider
 
-            res = get_mistral_provider(api_key=api_key).complete(
-                MistralRequest(
-                    system=system,
-                    user=user,
-                    model=model or "mistral-large-latest",
-                    max_tokens=200,
-                    temperature=0.6,
-                )
-            )
-            if res.error:
-                _log.info("persona_llm.mistral_error error=%s", res.error[:120])
-                return ""
-            return _strip_quotes((res.text or "").strip())
-    except Exception as exc:  # noqa: BLE001 — soft-fail per persona contract
-        _log.info("persona_llm.unexpected provider=%s exc=%s", provider, str(exc)[:120])
-        return ""
     return ""
 
 
