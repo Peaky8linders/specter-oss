@@ -1,7 +1,7 @@
 """BYOK (bring-your-own-key) helpers for per-request LLM provider selection.
 
 Specter's primary deployment posture is "operator configures one server-
-side env var (``MISTRAL_API_KEY`` / ``ANTHROPIC_API_KEY`` / ``OPENAI_API_KEY``)
+side env var (``ANTHROPIC_API_KEY`` / ``OPENAI_API_KEY``)
 and every request uses that retriever". The BYOK pattern is the second
 posture: a tenant supplies *their own* provider + key on every request,
 the server uses it for that one call, and the key is never persisted.
@@ -67,7 +67,7 @@ _MAX_KEY_LEN = 2048
 
 
 ProviderName = Literal["claude", "openai"]
-_VALID_PROVIDERS: frozenset[str] = frozenset({"mistral", "claude", "openai"})
+_VALID_PROVIDERS: frozenset[str] = frozenset({"claude", "openai"})
 
 
 def parse_byok_headers(request: Request) -> tuple[ProviderName | None, str | None]:
@@ -112,10 +112,6 @@ def build_byok_retriever(provider: ProviderName, api_key: str) -> RetrieverFn | 
     stays cheap to import on a deploy that ships only one of the three.
     """
     try:
-        if provider == "mistral":
-            from specter.qa.mistral_retriever import make_mistral_retriever
-
-            return make_mistral_retriever(api_key=api_key)
         if provider == "claude":
             from specter.qa.claude_retriever import make_claude_retriever
 

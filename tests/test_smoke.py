@@ -337,110 +337,14 @@ def test_article_15_citations_are_grounded() -> None:
         )
 
 
-# ─── Mistral provider ──────────────────────────────────────────────────────
-
-
-def test_mistral_provider_env_var_no_key_returns_soft_error(monkeypatch) -> None:
-    """No env var, no kwarg → MistralResponse.error populated, no exception."""
-    from specter.llm import MistralProvider, MistralRequest
-
-    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-    p = MistralProvider()
-    res = p.complete(MistralRequest(system="s", user="u"))
-    assert res.error is not None
-    assert "MISTRAL_API_KEY is not set" in res.error
-    assert res.text == ""
-
-
-def test_mistral_provider_kwarg_overrides_env_var(monkeypatch) -> None:
-    """``api_key=`` to the constructor wins over the env var."""
-    from specter.llm import MistralProvider
-
-    monkeypatch.setenv("MISTRAL_API_KEY", "env-var-key")
-    p = MistralProvider(api_key="kwarg-key")
-    # Inspect the resolution path
-    assert p._explicit_api_key == "kwarg-key"
-
-
-def test_is_mistral_enabled_with_kwarg(monkeypatch) -> None:
-    from specter.llm import is_mistral_enabled
-
-    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-    assert is_mistral_enabled() is False
-    assert is_mistral_enabled(api_key="x") is True
-
-    monkeypatch.setenv("MISTRAL_API_KEY", "x")
-    assert is_mistral_enabled() is True
-
-
 def test_resolve_provider_routing(monkeypatch) -> None:
     from specter.llm import resolve_provider
 
-    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-    assert resolve_provider("mistral") == "mistral"
     assert resolve_provider("stub") == "stub"
     assert resolve_provider("auto") == "stub"
     assert resolve_provider(None) == "stub"
     assert resolve_provider("") == "stub"
-    assert resolve_provider("auto", api_key="k") == "mistral"
-
-    monkeypatch.setenv("MISTRAL_API_KEY", "k")
-    assert resolve_provider("auto") == "mistral"
-
-
-# ─── Mistral retriever ─────────────────────────────────────────────────────
-
-
-def test_mistral_retriever_drops_hallucinated_citations(monkeypatch) -> None:
-    """End-to-end: stub Mistral returns 3 citations including a hallucination;
-    retriever drops the bad one before serialisation."""
-    from specter.api.qa_route import RetrieverRequest
-    from specter.llm import MistralProvider, MistralResponse
-    from specter.qa.mistral_retriever import make_mistral_retriever
-
-    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-
-    canned = (
-        '{"answer": "Article 15 requires accuracy and robustness.",'
-        ' "citations": ["Art. 15(1)", "Art. 15(4)", "Art. 999"],'
-        ' "confidence": 0.85}'
-    )
-
-    class StubProvider(MistralProvider):
-        def __init__(self):
-            super().__init__(api_key="stub")
-
-        def complete(self, req):  # type: ignore[override]
-            return MistralResponse(text=canned, model="stub")
-
-    retriever = make_mistral_retriever(api_key="stub", provider=StubProvider())
-    res = retriever(RetrieverRequest(question="What does Article 15 require?"))
-    refs = [c.article_ref for c in res.citations]
-    assert "Art. 15(1)" in refs
-    assert "Art. 15(4)" in refs
-    assert "Art. 999" not in refs  # hallucination dropped
-    assert res.confidence == 0.85
-
-
-def test_mistral_retriever_handles_no_match_token(monkeypatch) -> None:
-    from specter.api.qa_route import RetrieverRequest
-    from specter.llm import MistralProvider, MistralResponse
-    from specter.qa.mistral_retriever import make_mistral_retriever
-
-    monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-
-    class StubProvider(MistralProvider):
-        def __init__(self):
-            super().__init__(api_key="stub")
-
-        def complete(self, req):  # type: ignore[override]
-            return MistralResponse(text="NO_MATCH", model="stub")
-
-    retriever = make_mistral_retriever(api_key="stub", provider=StubProvider())
-    res = retriever(RetrieverRequest(question="What's the colour of the sky?"))
-    assert res.answer == ""
-    assert res.confidence == 0.0
-    assert res.citations == []
+    assert resolve_provider("auto", api_key="k") == "anthropic"
 
 
 # ─── Claude provider + retriever ───────────────────────────────────────────
