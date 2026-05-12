@@ -108,7 +108,7 @@ confidence dots, and Jessica's final ruling.
 The webapp ships a **Settings drawer** (sidebar bottom or `,` key) with
 two tabs:
 
-* **Provider** — bring your own API key for Mistral, Anthropic Claude,
+* **Provider** — bring your own API key for Anthropic Claude,
   or OpenAI ChatGPT. The key stays in `localStorage` on your device and
   flows to the backend only on the request itself, via two headers
   (`X-Specter-LLM-Provider`, `X-Specter-LLM-Key`). The server uses the
@@ -241,7 +241,7 @@ The router enforces:
 - **Reference validation** — every citation passes through `ARTICLE_EXISTENCE`; hallucinated articles drop silently before serialisation.
 - **Optional API-key auth** — set `SPECTER_API_KEY` to unlock a 60/min privileged tier; anonymous traffic is capped at 30/min per IP-hash.
 
-### LLM-backed retrievers (Mistral · Claude · ChatGPT)
+### LLM-backed retrievers (Claude · ChatGPT)
 
 The package ships three pluggable retrievers — pick one (or roll your
 own) and the QA endpoint goes from closed-world stub to a real grounded
@@ -250,10 +250,9 @@ never raises, and on error the route falls through to the deterministic
 no-match refusal so LLM prose grounded in nothing never reaches the wire.
 
 ```bash
-pip install 'specter[mistral]'      # or [anthropic], or [openai]
+pip install 'specter[anthropic]
 
 # Server-side env-var configuration (recommended for single-tenant deploys)
-export MISTRAL_API_KEY=...
 export ANTHROPIC_API_KEY=sk-ant-...
 export OPENAI_API_KEY=sk-...
 ```
@@ -263,14 +262,12 @@ from fastapi import FastAPI
 from specter.api.qa_route import make_qa_router
 
 # Pick the provider that matches your account
-from specter.qa.mistral_retriever import make_mistral_retriever
 from specter.qa.claude_retriever  import make_claude_retriever
 from specter.qa.openai_retriever  import make_openai_retriever
 
 retriever = make_claude_retriever()                           # reads ANTHROPIC_API_KEY from env
 retriever = make_claude_retriever(api_key="sk-ant-...")       # explicit key (multi-tenant)
 retriever = make_openai_retriever(model="gpt-4o-mini")        # cheaper / faster
-retriever = make_mistral_retriever(model="mistral-small-latest")
 
 app = FastAPI()
 app.include_router(make_qa_router(retriever=retriever))
